@@ -1,0 +1,310 @@
+---
+// LSEAT Aerospace - site header.
+// The logo is a raster-free SVG asset (public/logo.svg) shown on the official white
+// plate from the brochure artwork; the plate is required for contrast on deep navy.
+// The brand logo is an <img> element pointing at /logo.svg, rendered on the official
+// white plate for contrast on deep navy. It is brand identity, not a Lucide icon.
+//
+// Mobile menu: an off-canvas slide-over drawer. The panel and its scrim are rendered
+// as siblings AFTER </header> on purpose: the header carries .glassmorphism, which
+// applies backdrop-filter, and an ancestor with backdrop-filter/transform/filter
+// becomes the containing block for position: fixed descendants. Keeping the drawer
+// outside <header> guarantees the panel is positioned against the viewport and that
+// opening it never reflows the page.
+import { ArrowRight, FileText, Menu, X } from '@lucide/astro';
+
+const pathname = Astro.url.pathname.replace(/\/+$/, '');
+const isHome = pathname === '' || pathname === '/index';
+
+const navLinks = [
+  { label: 'Kinematics & CAD', hash: '#kinematics' },
+  { label: 'Specifications', hash: '#specifications' },
+  { label: '16G Compliance', hash: '#compliance' },
+  { label: 'ROI Simulator', hash: '#roi' },
+  { label: 'MRO Retrofit', hash: '#retrofit' },
+  { label: 'Contact', hash: '#contact' },
+].map((link) => ({ label: link.label, href: isHome ? link.hash : `/${link.hash}` }));
+
+const contactHref = isHome ? '#contact' : '/#contact';
+---
+
+<header class="sticky top-0 z-50 glassmorphism border-b border-electric-cyan/18">
+  <div class="relative h-0.5 w-full bg-titanium-gray/60" aria-hidden="true">
+    <div
+      id="lseat-scroll-progress"
+      class="absolute inset-y-0 left-0 w-0 bg-electric-cyan shadow-glow-cyan"
+    >
+    </div>
+  </div>
+
+  <div class="section-container">
+    <div class="flex h-18 md:h-20 items-center justify-between gap-6 xl:gap-3">
+      <!-- Tap target: the anchor carries min-h-12 (48px) and the visible white plate
+           is nested inside it, so the 48px hit area does not enlarge the plate or the
+           28px logo image. -->
+      <a
+        href="/"
+        class="inline-flex min-h-12 items-center rounded-lg"
+        aria-label="LSEAT Aerospace - back to home"
+      >
+        <span
+          class="inline-flex items-center rounded-lg bg-white px-2.5 py-1.5 shadow-sm ring-1 ring-black/10 xl:px-2"
+        >
+          <img
+            src="/logo.svg"
+            alt="LSEAT Aerospace"
+            width="112"
+            height="28"
+            class="h-7 w-auto"
+            loading="eager"
+            decoding="sync"
+          />
+        </span>
+      </a>
+
+      <nav class="hidden xl:flex items-center gap-2" aria-label="Main navigation">
+        {
+          navLinks.map((link) => (
+            <a
+              href={link.href}
+              class="btn-ghost whitespace-nowrap xl:px-1.5"
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <div
+        class="hidden xl:flex shrink-0 items-center gap-2 [&_.btn-primary]:whitespace-nowrap [&_.btn-primary]:px-5 [&_.btn-primary]:py-2.5 [&_.btn-primary]:text-body-sm xl:[&_.btn-primary]:px-4"
+      >
+        <a
+          href="/LSEAT-Brochure-2025.pdf"
+          download="LSEAT-Brochure-2025.pdf"
+          type="application/pdf"
+          class="btn-ghost hidden whitespace-nowrap px-2 gap-1.5 xl:inline-flex"
+        >
+          <FileText class="h-4 w-4" stroke-width="1.75" aria-hidden="true" focusable="false" />
+          <span class="2xl:hidden" aria-hidden="true">Brochure</span>
+          <span class="sr-only 2xl:not-sr-only">Brochure (PDF)</span>
+        </a>
+        <a href={contactHref} class="btn-primary">
+          <span>Request Engineering File</span>
+          <ArrowRight class="h-4 w-4" stroke-width="2" aria-hidden="true" focusable="false" />
+        </a>
+      </div>
+
+      <button
+        id="lseat-nav-toggle"
+        type="button"
+        class="xl:hidden inline-flex items-center justify-center h-12 w-12 rounded-md border border-electric-cyan/30 text-pure-white transition-colors duration-200 hover:border-electric-cyan hover:text-electric-cyan [&[aria-expanded=true]_.icon-open]:hidden [&[aria-expanded=true]_.icon-close]:block"
+        aria-expanded="false"
+        aria-controls="lseat-mobile-menu"
+        aria-label="Open main menu"
+      >
+        <Menu class="icon-open h-6 w-6" stroke-width="2" aria-hidden="true" focusable="false" />
+        <X class="icon-close hidden h-6 w-6" stroke-width="2" aria-hidden="true" focusable="false" />
+      </button>
+    </div>
+
+    <span id="retrofit" class="scroll-mt-24" aria-hidden="true"></span>
+  </div>
+</header>
+
+<!-- Scrim: aria-hidden, click closes the drawer, hit-testable only while open. -->
+<div
+  id="lseat-menu-scrim"
+  aria-hidden="true"
+  class="pointer-events-none fixed inset-0 z-[55] bg-deep-navy/70 opacity-0 backdrop-blur-sm transition-opacity duration-300 ease-out motion-reduce:transition-none xl:hidden"
+></div>
+
+<!--
+  Slide-over drawer. position: fixed + translateX transition, so the page behind it is
+  only covered, never reflowed. The script sets `inert` while closed, which keeps the
+  off-canvas panel out of the tab order and out of the accessibility tree.
+-->
+<div
+  id="lseat-mobile-menu"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Main menu"
+  inert
+  class="fixed inset-y-0 right-0 z-[60] flex w-[min(21rem,88vw)] max-w-full translate-x-full flex-col overflow-y-auto overscroll-contain border-l border-electric-cyan/20 bg-deep-navy/95 px-5 pb-8 pt-5 shadow-2xl transition-transform duration-300 ease-out motion-reduce:transition-none xl:hidden"
+>
+  <div class="flex items-center justify-between gap-4 pb-5">
+    <p class="text-caption text-pure-white/50">Menu</p>
+    <button
+      id="lseat-menu-close"
+      type="button"
+      class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-electric-cyan/30 text-pure-white transition-colors duration-200 hover:border-electric-cyan hover:text-electric-cyan"
+      aria-label="Close main menu"
+    >
+      <X class="h-6 w-6" stroke-width="2" aria-hidden="true" focusable="false" />
+    </button>
+  </div>
+
+  <nav class="flex flex-col" aria-label="Mobile navigation">
+    {
+      navLinks.map((link) => (
+        <a href={link.href} class="btn-ghost w-full justify-start text-body-base">
+          {link.label}
+        </a>
+      ))
+    }
+    <a
+      href="/LSEAT-Brochure-2025.pdf"
+      download="LSEAT-Brochure-2025.pdf"
+      type="application/pdf"
+      class="btn-ghost w-full justify-start text-body-base"
+    >
+      <FileText class="h-4 w-4" stroke-width="1.75" aria-hidden="true" focusable="false" />
+      <span>Brochure (PDF)</span>
+    </a>
+  </nav>
+
+  <div class="mt-4 [&_.btn-primary]:w-full [&_.btn-primary]:px-5">
+    <a href={contactHref} class="btn-primary w-full">
+      <span>Request Engineering File</span>
+      <ArrowRight class="h-4 w-4" stroke-width="2" aria-hidden="true" focusable="false" />
+    </a>
+  </div>
+</div>
+
+<script>
+  const initHeader = () => {
+    const toggle = document.getElementById('lseat-nav-toggle') as HTMLButtonElement | null;
+    const menu = document.getElementById('lseat-mobile-menu') as HTMLElement | null;
+    const closeBtn = document.getElementById('lseat-menu-close') as HTMLButtonElement | null;
+    const scrim = document.getElementById('lseat-menu-scrim') as HTMLElement | null;
+    const bar = document.getElementById('lseat-scroll-progress') as HTMLElement | null;
+
+    if (toggle && menu && scrim && toggle.dataset.initialized !== 'true') {
+      toggle.dataset.initialized = 'true';
+      menu.dataset.initialized = 'true';
+
+      const FOCUSABLE =
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+      const focusables = () =>
+        Array.from(menu.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+          (el) => el.offsetWidth > 0 || el.offsetHeight > 0
+        );
+
+      const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+
+      const setOpen = (open: boolean, restoreFocus = true) => {
+        if (open === isOpen()) return;
+
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.setAttribute('aria-label', open ? 'Close main menu' : 'Open main menu');
+
+        menu.classList.toggle('translate-x-full', !open);
+        scrim.classList.toggle('opacity-0', !open);
+        scrim.classList.toggle('pointer-events-none', !open);
+        // Measure the scrollbar gutter BEFORE locking scroll: reading clientWidth
+        // after the lock returns the post-lock value and would lose the gutter,
+        // shifting the whole page sideways when the drawer opens.
+        const gutter = open ? window.innerWidth - document.documentElement.clientWidth : 0;
+        document.body.classList.toggle('overflow-hidden', open);
+        document.body.style.paddingRight = gutter > 0 ? `${gutter}px` : '';
+
+        if (open) {
+          menu.removeAttribute('inert');
+          window.requestAnimationFrame(() => {
+            const items = focusables();
+            (items[0] ?? menu).focus();
+          });
+        } else {
+          // inert before restoring focus, never after.
+          menu.setAttribute('inert', '');
+          if (restoreFocus) toggle.focus();
+        }
+      };
+
+      toggle.addEventListener('click', () => {
+        setOpen(!isOpen());
+      });
+
+      closeBtn?.addEventListener('click', () => {
+        setOpen(false);
+      });
+
+      scrim.addEventListener('click', () => {
+        setOpen(false);
+      });
+
+      menu.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => setOpen(false));
+      });
+
+      document.addEventListener('keydown', (event) => {
+        const keyEvent = event as KeyboardEvent;
+        if (!isOpen()) return;
+
+        if (keyEvent.key === 'Escape') {
+          keyEvent.preventDefault();
+          setOpen(false);
+          return;
+        }
+
+        if (keyEvent.key !== 'Tab') return;
+
+        const items = focusables();
+        if (items.length === 0) {
+          keyEvent.preventDefault();
+          return;
+        }
+
+        const first = items[0];
+        const last = items[items.length - 1];
+        const active = document.activeElement as HTMLElement | null;
+
+        if (keyEvent.shiftKey) {
+          if (!active || active === first || !menu.contains(active)) {
+            keyEvent.preventDefault();
+            last.focus();
+          }
+        } else if (active === last || !active || !menu.contains(active)) {
+          keyEvent.preventDefault();
+          first.focus();
+        }
+      });
+
+      // The drawer is unreachable at the xl breakpoint, so never leave it open there.
+      const wide = window.matchMedia('(min-width: 1280px)');
+      const onBreakpoint = () => {
+        if (wide.matches && isOpen()) setOpen(false, false);
+      };
+      wide.addEventListener('change', onBreakpoint);
+
+      setOpen(false, false);
+    }
+
+    if (bar && bar.dataset.initialized !== 'true') {
+      bar.dataset.initialized = 'true';
+
+      let ticking = false;
+      const update = () => {
+        const doc = document.documentElement;
+        const scrollTop = window.scrollY || doc.scrollTop;
+        const scrollable = doc.scrollHeight - window.innerHeight;
+        const ratio = scrollable > 0 ? Math.min(Math.max(scrollTop / scrollable, 0), 1) : 0;
+        bar.style.width = (ratio * 100).toFixed(2) + '%';
+        ticking = false;
+      };
+      const onScroll = () => {
+        if (!ticking) {
+          ticking = true;
+          window.requestAnimationFrame(update);
+        }
+      };
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+      update();
+    }
+  };
+
+  initHeader();
+  document.addEventListener('astro:page-load', initHeader);
+</script>

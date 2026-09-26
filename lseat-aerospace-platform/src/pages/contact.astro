@@ -1,0 +1,151 @@
+---
+import { Mail, Phone, MapPin } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactForm from '../components/ContactForm.astro';
+
+const title = 'Contact Engineering | LSEAT Aerospace - Part 21J Dossier and EASA Form 1';
+const description =
+  'Contact the LSEAT Aerospace engineers: EASA Form 1 technical file, Part 21J documentation, dynamic 16G certification notes, MRO installation procedure and fleet pricing. Technical response within 24 h.';
+
+const PHONE_DISPLAY = '+32\u00A0473\u00A098\u00A079\u00A088';
+const PHONE_HREF = 'tel:+32473987988';
+
+const deliverables = [
+  {
+    ref: 'DOC-01',
+    label: 'EASA Form 1',
+    detail: 'Part release certificate, issued per batch or per serial number.',
+  },
+  {
+    ref: 'DOC-02',
+    label: 'Part 21J Engineering Package',
+    detail: 'Complete design and certification package, ready for DOA submission.',
+  },
+  {
+    ref: 'DOC-03',
+    label: 'Dynamic 16G Certification Notes',
+    detail: 'Dynamic test substantiation, safety commands and acceptance criteria.',
+  },
+  {
+    ref: 'DOC-04',
+    label: 'MRO Installation Procedure',
+    detail: 'Retrofit sequence, tooling, labour time and post-installation inspection.',
+  },
+  {
+    ref: 'DOC-05',
+    label: 'Quoted Fleet Pricing',
+    detail: 'Retrofit cost per seat, per aircraft, per type and per deployment plan.',
+  },
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="relative bg-deep-navy py-24 md:py-30">
+    <div class="section-container">
+      <div class="section-header">
+        <h1 class="section-title text-balance">Contact an LSEAT Aerospace engineer</h1>
+        <p class="section-subtitle text-balance">
+          Enquiry addressed directly to the cabin engineering and certification design office. No
+          intermediary, no reseller. Technical response within 24&nbsp;h.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-10 lg:grid-cols-5 lg:gap-12">
+        <div class="lg:col-span-3">
+          <div class="glassmorphism-lg">
+            <ContactForm />
+          </div>
+        </div>
+
+        <div class="lg:col-span-2">
+          <div class="glassmorphism-card h-full">
+            <h2 class="text-display-sm text-pure-white font-display">What you receive in reply</h2>
+            <p class="mt-3 text-body-sm text-pure-white/70">
+              Every qualified enquiry opens the sending of the full documentation package, in
+              technical English, as signed PDF files.
+            </p>
+
+            <ul class="mt-8 space-y-5" role="list">
+              {
+                deliverables.map((item) => (
+                  <li class="flex gap-4">
+                    <span class="mt-1 shrink-0 font-mono text-caption text-electric-cyan">
+                      {item.ref}
+                    </span>
+                    <span>
+                      <span class="block text-body-base font-semibold text-pure-white">
+                        {item.label}
+                      </span>
+                      <span class="mt-1 block text-body-sm text-pure-white/70">
+                        {item.detail}
+                      </span>
+                    </span>
+                  </li>
+                ))
+              }
+            </ul>
+
+            <div class="mt-8 border-t border-pure-white/10 pt-8">
+              <p class="text-caption text-pure-white/50">Direct channels</p>
+              <ul class="mt-3 space-y-3" role="list">
+                <li>
+                  <a
+                    href="mailto:contact@lseat.eu"
+                    class="inline-flex items-center gap-3 text-body-lg font-semibold text-electric-cyan transition-colors duration-200 hover:text-pure-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan"
+                  >
+                    <Mail size={20} stroke-width="2" aria-hidden="true" focusable="false" />
+                    contact@lseat.eu
+                  </a>
+                  <p class="mt-1 text-caption text-pure-white/50">B2B engineering enquiries</p>
+                </li>
+                <li>
+                  <a
+                    href="mailto:yh@lseat.eu"
+                    class="inline-flex items-center gap-3 text-body-lg font-semibold text-electric-cyan transition-colors duration-200 hover:text-pure-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan"
+                  >
+                    <Mail size={20} stroke-width="2" aria-hidden="true" focusable="false" />
+                    yh@lseat.eu
+                  </a>
+                  <p class="mt-1 text-caption text-pure-white/50">Direct contact</p>
+                </li>
+                <li>
+                  <a
+                    href={PHONE_HREF}
+                    class="inline-flex items-center gap-3 text-body-lg font-semibold text-electric-cyan transition-colors duration-200 hover:text-pure-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan"
+                  >
+                    <Phone size={20} stroke-width="2" aria-hidden="true" focusable="false" />
+                    {PHONE_DISPLAY}
+                  </a>
+                  <p class="mt-1 text-caption text-pure-white/50">Telephone</p>
+                </li>
+                <li>
+                  <p class="inline-flex items-start gap-3 text-body-base text-pure-white">
+                    <MapPin
+                      size={20}
+                      stroke-width="2"
+                      class="mt-0.5 shrink-0"
+                      aria-hidden="true"
+                      focusable="false"
+                    />
+                    <span>
+                      15/23 Avenue Arnaud Fraiteur<br />
+                      1050 Brussels<br />
+                      Belgium
+                    </span>
+                  </p>
+                  <p class="mt-1 text-caption text-pure-white/50">Registered office</p>
+                </li>
+              </ul>
+
+              <p class="mt-6 text-body-sm text-pure-white/70">
+                Information to provide: aircraft type, seat count, maintenance base and fleet
+                location. These four data points are enough for a quotation without further
+                exchange.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

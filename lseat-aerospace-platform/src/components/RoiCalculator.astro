@@ -1,0 +1,927 @@
+---
+/**
+ * RoiCalculator.astro
+ * Fleet financial model - 100% vanilla JS rental ROI calculator (no dependency, no CDN).
+ * Commercial basis: LSEAT is not sold, it is installed through a rental model with no upfront
+ * investment and free termination after six months. There is therefore no initial outlay in this
+ * model: the only cost side is the recurring monthly seat rental.
+ * The default assumptions and the chart geometry are computed in the frontmatter
+ * (correct SSR render without JavaScript), then recomputed client-side on every input.
+ * Icons: @lucide/astro.
+ */
+import { RotateCcw, ArrowRight } from '@lucide/astro';
+
+interface RoiInput {
+  id: string;
+  label: string;
+  hint: string;
+  min: number;
+  max: number;
+  step: number;
+  value: number;
+  unit: 'int' | 'eur' | 'pct' | 'coef';
+  ariaOne: string;
+  ariaMany: string;
+}
+
+interface RoiModel {
+  seatsRetrofit: number;
+  annualPax: number;
+  annualRevenue: number;
+  monthlyRental: number;
+  annualRental: number;
+  netAnnual: number;
+  netMonthly: number;
+  netPerSeatMonth: number;
+  breakEvenLoadFactor: number;
+  breakEvenPax: number;
+  maxExposure: number;
+  rental5: number;
+  revenue5: number;
+}
+
+type ModelValues = Record<string, number>;
+
+const YEARS = 5;
+const FREE_TERMINATION_MONTHS = 6;
+
+const inputs: RoiInput[] = [
+  { id: 'aircraft', label: 'Aircraft in fleet', hint: 'Aircraft with the kit installed and in service', min: 1, max: 100, step: 1, value: 12, unit: 'int', ariaOne: 'aircraft', ariaMany: 'aircraft' },
+  { id: 'seats', label: 'Retrofitted Economy seats per aircraft', hint: 'Excluded seats (business class, berths)', min: 20, max: 300, step: 1, value: 180, unit: 'int', ariaOne: 'seat', ariaMany: 'seats' },
+  { id: 'fare', label: 'Sleep-mode surcharge per passenger', hint: 'Net unit revenue per passenger per flight', min: 10, max: 100, step: 1, value: 45, unit: 'eur', ariaOne: 'euro', ariaMany: 'euros' },
+  { id: 'occupancy', label: 'Average load factor', hint: 'Annual load factor retained by the airline', min: 50, max: 100, step: 1, value: 82, unit: 'pct', ariaOne: 'percent', ariaMany: 'percent' },
+  { id: 'seasonality', label: 'Seasonality factor', hint: '1.00 = full year of operation', min: 0.8, max: 1.2, step: 0.05, value: 1, unit: 'coef', ariaOne: 'factor', ariaMany: 'factor' },
+  { id: 'monthlyFee', label: 'Monthly rental fee per seat', hint: 'User hypothesis: the actual LSEAT tariff is quoted on request', min: 8, max: 120, step: 1, value: 25, unit: 'eur', ariaOne: 'euro per seat per month', ariaMany: 'euros per seat per month' },
+];
+
+const outputMeta = [
+  { id: 'annual-revenue', label: 'Annual ancillary revenue', kind: 'currency', emphasis: true, hint: 'Sleep-mode surcharge, year 1' },
+  { id: 'annual-rental', label: 'Total annual rental cost', kind: 'currency', emphasis: false, hint: 'Recurring seat rent, year 1' },
+  { id: 'net-annual', label: 'Net annual benefit', kind: 'currency', emphasis: true, hint: 'Ancillary revenue minus rental cost' },
+  { id: 'net-per-seat-month', label: 'Net monthly benefit per retrofitted seat', kind: 'currency2', emphasis: true, hint: 'Net annual \u00F7 seats \u00F7 12' },
+  { id: 'break-even-load', label: 'Break-even load factor', kind: 'percent', emphasis: false, hint: 'Load factor that exactly covers the rent' },
+  { id: 'break-even-pax', label: 'Break-even passengers per year', kind: 'int', emphasis: false, hint: 'Passengers that exactly cover the rent' },
+  { id: 'max-exposure', label: 'Max exposure before free termination', kind: 'currency', emphasis: true, hint: '6\u00A0months of rent, then free exit' },
+];
+
+function compute(v: ModelValues): RoiModel {
+  const seatsRetrofit = v.aircraft * v.seats;
+  const annualPax = seatsRetrofit * (v.occupancy / 100) * 365 * v.seasonality;
+  const annualRevenue = annualPax * v.fare;
+  const monthlyRental = seatsRetrofit * v.monthlyFee;
+  const annualRental = monthlyRental * 12;
+  const netAnnual = annualRevenue - annualRental;
+  const revenueCapacity = seatsRetrofit * v.fare * 365 * v.seasonality;
+  return {
+    seatsRetrofit,
+    annualPax,
+    annualRevenue,
+    monthlyRental,
+    annualRental,
+    netAnnual,
+    netMonthly: netAnnual / 12,
+    netPerSeatMonth: seatsRetrofit > 0 ? netAnnual / seatsRetrofit / 12 : 0,
+    breakEvenLoadFactor: revenueCapacity > 0 ? (annualRental / revenueCapacity) * 100 : 0,
+    breakEvenPax: v.fare > 0 ? annualRental / v.fare : 0,
+    maxExposure: monthlyRental * FREE_TERMINATION_MONTHS,
+    rental5: annualRental * YEARS,
+    revenue5: annualRevenue * YEARS,
+  };
+}
+
+const defaults = inputs.reduce<ModelValues>((acc, i) => {
+  acc[i.id] = i.value;
+  return acc;
+}, {});
+
+const initial = compute(defaults);
+
+// Chart geometry (shared with the client script).
+const CH = { w: 720, h: 300, x0: 70, x1: 704, baseline: 236, plotH: 168 };
+const groupW = (CH.x1 - CH.x0) / YEARS;
+const barW = 32;
+const barGap = 12;
+const innerW = barW * 2 + barGap;
+const scaleStyle = (ratio: number) => 'transform: scaleY(' + ratio + ');';
+
+const initialCumRevenue = Array.from({ length: YEARS }, (_, i) => initial.annualRevenue * (i + 1));
+const initialCumRental = Array.from({ length: YEARS }, (_, i) => initial.annualRental * (i + 1));
+const initialMax = Math.max(initial.revenue5, initial.rental5, 1) * 1.12;
+
+const eurFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+const eurCentsFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const decFmt = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const intFmt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+
+/* Axis ticks only: the y-axis gutter is 70 user units wide inside a 720-unit viewBox, so the
+   full EUR string (12 glyphs, 7.7em) cannot be legible at mobile scale without spilling out
+   of the chart. The ticks are abbreviated; every exact figure stays in the output tiles, the
+   chart note and the aria-label. */
+const axisFmt = (value: number): string => {
+  const abs = Math.abs(value);
+  const sign = value < 0 ? '-' : '';
+  if (abs >= 1e6) return `${sign}\u20AC${intFmt.format(Math.round(abs / 1e6))}M`;
+  if (abs >= 1e3) return `${sign}\u20AC${intFmt.format(Math.round(abs / 1e3))}k`;
+  return `${sign}\u20AC${intFmt.format(abs)}`;
+};
+
+const pctFmt = new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+// Default values of the output tiles (same formatting rules as the client script).
+const initialOutputs: Record<string, string> = {
+  'annual-revenue': eurFmt.format(initial.annualRevenue),
+  'annual-rental': eurFmt.format(initial.annualRental),
+  'net-annual': eurFmt.format(initial.netAnnual),
+  'net-per-seat-month': eurCentsFmt.format(initial.netPerSeatMonth),
+  'break-even-load': pctFmt.format(initial.breakEvenLoadFactor / 100),
+  'break-even-pax': intFmt.format(initial.breakEvenPax),
+  'max-exposure': eurFmt.format(initial.maxExposure),
+};
+
+const fmtInput = (value: number, unit: RoiInput['unit']): string => {
+  if (unit === 'eur') return eurFmt.format(value);
+  if (unit === 'pct') return `${intFmt.format(value)}\u00A0%`;
+  if (unit === 'coef') return `${decFmt.format(value)} \u00D7`;
+  return intFmt.format(value);
+};
+
+const initialStatus = initial.netAnnual > 0 ? 'ok' : initial.netAnnual < 0 ? 'warn' : 'even';
+const initialStatusText =
+  initialStatus === 'ok' ? 'Break-even from month 1' : initialStatus === 'warn' ? 'Net negative' : 'Net break-even';
+
+const initialAria = inputs
+  .map((i) => `${i.label} : ${fmtInput(defaults[i.id], i.unit).replace(/\u00a0/g, ' ')}`)
+  .join('. ');
+---
+<section id="roi" class="scroll-mt-24 relative py-24 md:py-32" aria-labelledby="roi-title">
+  <div class="absolute inset-0 bg-radial-glow pointer-events-none" aria-hidden="true"></div>
+
+  <div class="section-container relative">
+    <header class="section-header">
+      <span class="section-badge">FLEET FINANCIAL MODEL</span>
+      <h2 id="roi-title" class="section-title text-balance">
+        Interactive <span class="text-electric-cyan">Fleet ROI</span> Simulator
+      </h2>
+      <p class="section-subtitle text-balance">
+        A model built for Revenue, Cabin and Procurement directors. LSEAT is not sold: it is
+        installed through a flexible rental model, with zero upfront investment and no hardware for
+        the airline to own. Adjust your fleet, your retrofitted Economy seat inventory and your
+        pricing policy: the ancillary revenue, the rental cost, the net benefit and the break-even
+        load factor are recomputed in real time. Every displayed value derives exclusively from the
+        assumptions you enter.
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
+      <!-- Assumptions -->
+      <div class="lg:col-span-5">
+        <div class="glassmorphism-card h-full">
+          <div class="mb-8 flex items-center justify-between gap-4">
+            <h3 class="text-display-sm font-semibold text-pure-white">Fleet assumptions</h3>
+            <button type="button" id="roi-reset" class="btn-ghost">
+              <RotateCcw class="h-4 w-4" stroke-width="1.75" aria-hidden="true" focusable="false" />
+              Reset
+            </button>
+          </div>
+
+          <div class="space-y-8">
+            {
+              inputs.map((inp) => (
+                <div>
+                  <div class="mb-3 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <label
+                      for={`roi-${inp.id}`}
+                      class="label-field mb-0 min-h-12 flex items-center text-body-sm font-medium text-pure-white/90"
+                    >
+                      {inp.label}
+                    </label>
+                    <output
+                      for={`roi-${inp.id}`}
+                      id={`roi-readout-${inp.id}`}
+                      aria-live="off"
+                      class="font-mono text-body-base font-semibold text-electric-cyan tabular-nums"
+                    >
+                      {fmtInput(inp.value, inp.unit)}
+                    </output>
+                  </div>
+
+                  <input
+                    type="range"
+                    class="roi-range"
+                    id={`roi-${inp.id}`}
+                    name={inp.id}
+                    min={inp.min}
+                    max={inp.max}
+                    step={inp.step}
+                    value={inp.value}
+                    data-unit={inp.unit}
+                    data-aria-one={inp.ariaOne}
+                    data-aria-many={inp.ariaMany}
+                    aria-describedby={`roi-hint-${inp.id}`}
+                    aria-valuetext={fmtInput(inp.value, inp.unit).replace(/\u00a0/g, ' ')}
+                  />
+                  <p id={`roi-hint-${inp.id}`} class="mt-2.5 text-caption text-pure-white/50">
+                    {inp.hint}
+                  </p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="lg:col-span-7">
+        <div class="flex h-full flex-col gap-6">
+          <div
+            id="roi-status"
+            class="rounded-lg border border-pure-white/10 bg-slate-dark/60 px-5 py-4"
+            data-state="pending"
+          >
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p class="text-caption font-semibold tracking-widest text-pure-white/60">Rental model status</p>
+                <p id="roi-net-note" class="mt-1 text-body-sm text-pure-white/70">
+                  {`Maximum exposure before free termination: ${eurFmt.format(initial.maxExposure)} (${FREE_TERMINATION_MONTHS}\u00A0months of rent).`}
+                </p>
+              </div>
+              <span
+                id="roi-net-badge"
+                class:list={[
+                  'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-body-sm font-semibold',
+                  initialStatus === 'ok'
+                    ? 'border-electric-cyan/45 bg-electric-cyan/10 text-electric-cyan'
+                    : initialStatus === 'even'
+                      ? 'border-pure-white/25 bg-pure-white/5 text-pure-white/80'
+                      : 'border-amber-400/40 bg-amber-400/10 text-amber-300',
+                ]}
+              >
+                <span
+                  id="roi-net-dot"
+                  class:list={[
+                    'h-2 w-2 rounded-full',
+                    initialStatus === 'ok'
+                      ? 'bg-electric-cyan shadow-glow-cyan'
+                      : initialStatus === 'even'
+                        ? 'bg-pure-white/60'
+                        : 'bg-amber-400',
+                  ]}
+                  aria-hidden="true"
+                ></span>
+                <span id="roi-net-badge-text">{initialStatusText}</span>
+              </span>
+            </div>
+
+            <ul class="mt-4 flex flex-wrap items-center gap-3" role="list">
+              <li
+                class="inline-flex items-center gap-2 rounded-full border border-pure-white/15 bg-pure-white/5 px-3.5 py-1.5 text-caption text-pure-white/75"
+                role="listitem"
+              >
+                {'Rental model \u2014 no upfront investment'}
+              </li>
+              <li
+                class="inline-flex items-center gap-2 rounded-full border border-pure-white/15 bg-pure-white/5 px-3.5 py-1.5 text-caption text-pure-white/75"
+                role="listitem"
+              >
+                {'Free termination after 6 months'}
+              </li>
+            </ul>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {
+              outputMeta.map((out) => (
+                <div class:list={["glassmorphism rounded-lg p-5", out.emphasis ? 'border-electric-cyan/25' : '']}>
+                  <p class="text-caption font-semibold tracking-widest text-pure-white/60">{out.label}</p>
+                  <p
+                    id={`roi-out-${out.id}`}
+                    data-kind={out.kind}
+                    class:list={[
+                      'mt-2 font-mono text-display-sm font-bold tabular-nums',
+                      out.emphasis ? 'text-electric-cyan' : 'text-pure-white',
+                    ]}
+                  >
+                    {initialOutputs[out.id]}
+                  </p>
+                  <p class="mt-1.5 text-caption text-pure-white/45">{out.hint}</p>
+                </div>
+              ))
+            }
+          </div>
+          <!-- Chart -->
+          <div class="glassmorphism-lg rounded-xl p-5 md:p-6">
+            <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <h3 class="text-body-lg font-semibold text-pure-white">Cumulative ancillary revenue vs rental cost</h3>
+              <ul class="flex flex-wrap items-center gap-4" role="list">
+                <li class="flex items-center gap-2 text-caption text-pure-white/70" role="listitem">
+                  <span class="h-2.5 w-2.5 rounded-sm bg-electric-cyan" aria-hidden="true"></span> Cumulative ancillary revenue
+                </li>
+                <li class="flex items-center gap-2 text-caption text-pure-white/70" role="listitem">
+                  <span class="h-2.5 w-2.5 rounded-sm border border-slate-400/60 bg-titanium-gray" aria-hidden="true"></span> Cumulative rental cost
+                </li>
+              </ul>
+            </div>
+
+            <svg
+              id="roi-chart"
+              viewBox={`0 0 ${CH.w} ${CH.h}`}
+              class="h-auto w-full"
+              role="img"
+              aria-label={`Comparative chart over ${YEARS} years: cumulative ancillary revenue of ${eurFmt.format(initial.revenue5)} against a cumulative rental cost of ${eurFmt.format(initial.rental5)}.`}
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <g aria-hidden="true">
+                {[0, 0.25, 0.5, 0.75, 1].map((f) => {
+                  const y = CH.baseline - CH.plotH * f;
+                  return (
+                    <>
+                      <line
+                        x1={CH.x0}
+                        x2={CH.x1}
+                        y1={y}
+                        y2={y}
+                        stroke="rgba(148,163,184,0.18)"
+                        stroke-width="1"
+                        stroke-dasharray={f === 0 ? '0' : '3 5'}
+                      />
+                      <text
+                        id={`roi-axis-${f}`}
+                        x={CH.x0 - 10}
+                        y={y + 4}
+                        text-anchor="end"
+                        class="roi-axis-label"
+                      >
+                        {axisFmt(initialMax * f)}
+                      </text>
+                    </>
+                  );
+                })}
+              </g>
+
+              {
+                Array.from({ length: YEARS }, (_, i) => {
+                  const gx = CH.x0 + i * groupW;
+                  const startX = gx + (groupW - innerW) / 2;
+                  const revX = startX;
+                  const rentalX = startX + barW + barGap;
+                  return (
+                    <g>
+                      <rect
+                        id={`roi-bar-rev-${i + 1}`}
+                        class="roi-bar roi-bar-revenue"
+                        x={revX}
+                        y={CH.baseline - CH.plotH}
+                        width={barW}
+                        height={CH.plotH}
+                        vector-effect="non-scaling-stroke"
+                        style={scaleStyle(initialCumRevenue[i] / initialMax)}
+                      />
+                      <rect
+                        id={`roi-bar-rental-${i + 1}`}
+                        class="roi-bar roi-bar-rental"
+                        x={rentalX}
+                        y={CH.baseline - CH.plotH}
+                        width={barW}
+                        height={CH.plotH}
+                        vector-effect="non-scaling-stroke"
+                        style={scaleStyle(initialCumRental[i] / initialMax)}
+                      />
+                      <text x={gx + groupW / 2} y={CH.baseline + 22} text-anchor="middle" class="roi-axis-label">
+                        {`Year ${i + 1}`}
+                      </text>
+                    </g>
+                  );
+                })
+              }
+            </svg>
+
+            <p id="roi-chart-note" class="mt-4 text-body-sm text-pure-white/70">
+              {`Over 5 years: ${eurFmt.format(initial.revenue5)} in ancillary revenue against ${eurFmt.format(initial.rental5)} of cumulative rental cost \u2014 net margin ${eurFmt.format(initial.revenue5 - initial.rental5)}.`}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="sr-only" role="status" aria-live="polite" id="roi-live">{initialAria}</p>
+
+    <div class="mt-12 glassmorphism rounded-xl p-6 md:p-8">
+      <p class="text-body-sm text-pure-white/70 text-balance">
+        <span class="font-semibold text-pure-white">Indicative simulation.</span> Based
+        on the assumptions entered above. LSEAT is offered through a rental model with no upfront
+        investment and free termination after six months; the actual rental tariff is quoted on
+        request. This tool does not replace a commercial offer nor the Part 21J documentation
+        package. The monthly rental fee and the passenger surcharge are user hypotheses, not
+        certified values.
+      </p>
+    </div>
+
+    <div class="mt-10 flex flex-col items-center gap-4 text-center">
+      <a href="#contact" class="btn-primary">
+        Request a Quoted Fleet Pricing
+        <ArrowRight class="h-5 w-5" stroke-width="1.75" aria-hidden="true" focusable="false" />
+      </a>
+      <p class="max-w-xl text-caption text-pure-white/50 text-balance">
+        Quoted response within 5 business days, backed by the EASA Part 21J engineering package.
+      </p>
+    </div>
+  </div>
+</section>
+
+<script type="application/json" id="roi-config" set:html={JSON.stringify(inputs)}></script>
+<style is:global>
+  .roi-range {
+    /* Touch geometry: the element is a 48px-tall target, the visible track stays an 8px
+       line. The line is the element background (background-size 100% 8px, centered in the
+       48px box) and both native track pseudo-elements are left full-height and
+       transparent, so Blink and Gecko keep centring the thumb on the content box (y = 24px)
+       - exactly the centre of the 8px line. The thumb centre therefore stays on the value
+       position and dragging is unaffected.
+       Horizontal travel: usable width = 100% - thumb width, so the 28px thumb keeps
+       (14px, width-14px) as the value range; the 6px wider thumb shortens the travel by
+       3px per end, the centre mapping is unchanged. */
+    --roi-track-size: 8px;
+    --roi-hit-size: 48px;
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    height: var(--roi-hit-size);
+    min-height: var(--roi-hit-size);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background-color: transparent;
+    background-image: linear-gradient(
+      to right,
+      #0284c7 0%,
+      #00d2fe var(--roi-fill, 50%),
+      rgba(30, 41, 59, 0.95) var(--roi-fill, 50%),
+      rgba(30, 41, 59, 0.95) 100%
+    );
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% var(--roi-track-size);
+    cursor: pointer;
+    outline: none;
+  }
+
+  .roi-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: #00d2fe;
+    border: 3px solid #0f172a;
+    box-shadow: 0 0 0 1px rgba(0, 210, 254, 0.65), 0 0 14px -2px rgba(0, 210, 254, 0.65);
+    transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 180ms ease-out;
+  }
+
+  .roi-range::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: #00d2fe;
+    border: 3px solid #0f172a;
+    box-shadow: 0 0 0 1px rgba(0, 210, 254, 0.65), 0 0 14px -2px rgba(0, 210, 254, 0.65);
+    transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 180ms ease-out;
+  }
+
+  .roi-range::-moz-range-track {
+    background: transparent;
+    border: none;
+  }
+
+  .roi-range::-moz-range-progress {
+    background: transparent;
+    border: none;
+  }
+
+  .roi-range:hover::-webkit-slider-thumb {
+    transform: scale(1.16);
+  }
+
+  .roi-range:hover::-moz-range-thumb {
+    transform: scale(1.16);
+  }
+
+  .roi-range:active::-webkit-slider-thumb,
+  .roi-range.is-active::-webkit-slider-thumb {
+    transform: scale(1.34);
+    box-shadow: 0 0 0 1px rgba(0, 210, 254, 1), 0 0 0 6px rgba(0, 210, 254, 0.22), 0 0 30px 0 rgba(0, 210, 254, 0.95);
+  }
+
+  .roi-range:active::-moz-range-thumb,
+  .roi-range.is-active::-moz-range-thumb {
+    transform: scale(1.34);
+    box-shadow: 0 0 0 1px rgba(0, 210, 254, 1), 0 0 0 6px rgba(0, 210, 254, 0.22), 0 0 30px 0 rgba(0, 210, 254, 0.95);
+  }
+
+  .roi-range:focus-visible {
+    outline: none;
+  }
+
+  .roi-range:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px rgba(0, 210, 254, 0.95), 0 0 22px -2px rgba(0, 210, 254, 0.9);
+  }
+
+  .roi-range:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px rgba(0, 210, 254, 0.95), 0 0 22px -2px rgba(0, 210, 254, 0.9);
+  }
+
+  .roi-axis-label {
+    fill: rgba(255, 255, 255, 0.5);
+    font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  /* The SVG is scaled by renderWidth / 720, and font-size inside a scaled SVG is in user
+     units, so the visual size is fontSize * scale. The tiers below keep the visual size
+     >= 9px at every width:
+       <=479px  scale 0.397-0.564  -> 23px = 9.1-13.0px
+       480-639  scale 0.564-0.786  -> 17px = 9.6-13.4px
+       640-767  scale 0.786-0.963  -> 12px = 9.4-11.6px
+       768-1023 scale 0.930-1.253  -> 10px = 9.3-12.5px
+       1024-1279 scale 0.685-0.893 -> 14px = 9.6-12.5px
+       >=1280   scale 0.893         -> 11px = 9.8px
+  */
+  @media (max-width: 479px) {
+    .roi-axis-label {
+      font-size: 23px;
+    }
+
+    /* The 5-glyph tick is ~70 user units wide and the gutter is 60, so at this tier the
+       leading glyph reaches ~4px past the viewBox edge: it spills into the card padding
+       instead of being clipped. No other chart content is outside the viewBox. */
+    #roi-chart {
+      overflow: visible;
+    }
+  }
+
+  @media (min-width: 480px) and (max-width: 639px) {
+    .roi-axis-label {
+      font-size: 17px;
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 767px) {
+    .roi-axis-label {
+      font-size: 12px;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .roi-axis-label {
+      font-size: 10px;
+    }
+  }
+
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .roi-axis-label {
+      font-size: 14px;
+    }
+  }
+
+  .roi-bar {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transition: transform 620ms cubic-bezier(0.16, 1, 0.3, 1), fill 300ms ease-out;
+  }
+
+  .roi-bar-revenue {
+    fill: #00d2fe;
+  }
+
+  .roi-bar-revenue.is-deficit {
+    fill: #f59e0b;
+  }
+
+  .roi-bar-rental {
+    fill: #1e293b;
+    stroke: rgba(148, 163, 184, 0.55);
+    stroke-width: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .roi-range::-webkit-slider-thumb,
+    .roi-range::-moz-range-thumb,
+    .roi-bar {
+      transition: none !important;
+    }
+  }
+</style>
+<script>
+  interface RoiCfg {
+    id: string;
+    min: number;
+    max: number;
+    step: number;
+    value: number;
+    unit: 'int' | 'eur' | 'pct' | 'coef';
+    ariaOne: string;
+    ariaMany: string;
+  }
+
+  const YEARS = 5;
+  const FREE_TERMINATION_MONTHS = 6;
+  const root = document.getElementById('roi');
+  const cfgNode = document.getElementById('roi-config');
+
+  if (root && cfgNode) {
+    const cfgs: RoiCfg[] = JSON.parse(cfgNode.textContent || '[]');
+    const ranges = cfgs
+      .map((c) => document.getElementById(`roi-${c.id}`) as HTMLInputElement | null)
+      .filter((el): el is HTMLInputElement => el !== null);
+
+    const live = document.getElementById('roi-live');
+    const chart = document.getElementById('roi-chart');
+    const chartNote = document.getElementById('roi-chart-note');
+    const statusBox = document.getElementById('roi-status');
+    const badge = document.getElementById('roi-net-badge');
+    const badgeText = document.getElementById('roi-net-badge-text');
+    const badgeDot = document.getElementById('roi-net-dot');
+    const netNote = document.getElementById('roi-net-note');
+    const resetBtn = document.getElementById('roi-reset') as HTMLButtonElement | null;
+
+    const eurFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    const eurCentsFmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const decFmt = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const intFmt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+    const axisFmt = (value: number): string => {
+      const abs = Math.abs(value);
+      const sign = value < 0 ? '-' : '';
+      if (abs >= 1e6) return `${sign}\u20AC${intFmt.format(Math.round(abs / 1e6))}M`;
+      if (abs >= 1e3) return `${sign}\u20AC${intFmt.format(Math.round(abs / 1e3))}k`;
+      return `${sign}\u20AC${intFmt.format(abs)}`;
+    };
+    const pctFmt = new Intl.NumberFormat('en-US', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const reduceMotion = () => motionQuery.matches;
+
+    const current = new Map<string, number>();
+    const frames = new Map<string, number>();
+    let liveTimer = 0;
+
+    const nbsp = (s: string) => s.replace(/\u00a0/g, ' ');
+
+    function fmtInput(value: number, unit: RoiCfg['unit']): string {
+      if (unit === 'eur') return eurFmt.format(value);
+      if (unit === 'pct') return `${intFmt.format(value)}\u00A0%`;
+      if (unit === 'coef') return `${decFmt.format(value)} \u00D7`;
+      return intFmt.format(value);
+    }
+
+    function readValues(): Record<string, number> {
+      const v: Record<string, number> = {};
+      cfgs.forEach((c) => {
+        const el = document.getElementById(`roi-${c.id}`) as HTMLInputElement | null;
+        v[c.id] = el ? Number(el.value) : c.value;
+      });
+      return v;
+    }
+
+    function compute(v: Record<string, number>) {
+      const seatsRetrofit = v.aircraft * v.seats;
+      const annualPax = seatsRetrofit * (v.occupancy / 100) * 365 * v.seasonality;
+      const annualRevenue = annualPax * v.fare;
+      const monthlyRental = seatsRetrofit * v.monthlyFee;
+      const annualRental = monthlyRental * 12;
+      const netAnnual = annualRevenue - annualRental;
+      const revenueCapacity = seatsRetrofit * v.fare * 365 * v.seasonality;
+      return {
+        seatsRetrofit,
+        annualPax,
+        annualRevenue,
+        monthlyRental,
+        annualRental,
+        netAnnual,
+        netMonthly: netAnnual / 12,
+        netPerSeatMonth: seatsRetrofit > 0 ? netAnnual / seatsRetrofit / 12 : 0,
+        breakEvenLoadFactor: revenueCapacity > 0 ? (annualRental / revenueCapacity) * 100 : 0,
+        breakEvenPax: v.fare > 0 ? annualRental / v.fare : 0,
+        maxExposure: monthlyRental * FREE_TERMINATION_MONTHS,
+        revenue5: annualRevenue * YEARS,
+        rental5: annualRental * YEARS,
+      };
+    }
+
+    function paint(el: HTMLElement, value: number) {
+      const kind = el.getAttribute('data-kind');
+      if (kind === 'currency') el.textContent = eurFmt.format(value);
+      else if (kind === 'currency2') el.textContent = eurCentsFmt.format(value);
+      else if (kind === 'percent') el.textContent = pctFmt.format(value / 100);
+      else el.textContent = intFmt.format(value);
+    }
+
+    function animateTo(el: HTMLElement, target: number) {
+      const key = el.id;
+      const from = current.has(key) ? (current.get(key) as number) : target;
+      current.set(key, target);
+
+      if (from === target || reduceMotion()) {
+        const existing = frames.get(key);
+        if (existing) cancelAnimationFrame(existing);
+        frames.delete(key);
+        paint(el, target);
+        return;
+      }
+
+      const started = performance.now();
+      const duration = 620;
+      const prev = frames.get(key);
+      if (prev) cancelAnimationFrame(prev);
+
+      const step = (now: number) => {
+        const t = Math.min((now - started) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const value = from + (target - from) * eased;
+        current.set(key, value);
+        paint(el, value);
+        if (t < 1) {
+          frames.set(key, requestAnimationFrame(step));
+        } else {
+          frames.delete(key);
+          current.set(key, target);
+          paint(el, target);
+        }
+      };
+      frames.set(key, requestAnimationFrame(step));
+    }
+
+    function updateRangeFill(el: HTMLInputElement) {
+      const min = Number(el.min);
+      const max = Number(el.max);
+      const v = Number(el.value);
+      const ratio = max > min ? ((v - min) / (max - min)) * 100 : 0;
+      el.style.setProperty('--roi-fill', `${Math.max(0, Math.min(100, ratio))}%`);
+    }
+
+    function updateStatus(m: ReturnType<typeof compute>) {
+      if (!badge || !badgeText || !badgeDot || !statusBox || !netNote) return;
+
+      const cls = [
+        'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-body-sm font-semibold transition-colors duration-300',
+      ];
+      const even = Math.abs(m.netAnnual) < 0.5;
+
+      if (m.netAnnual > 0 && !even) {
+        badge.className = `${cls.join(' ')} border-electric-cyan/45 bg-electric-cyan/10 text-electric-cyan`;
+        badgeDot.className = 'h-2 w-2 rounded-full bg-electric-cyan shadow-glow-cyan';
+        badgeText.textContent = 'Break-even from month 1';
+        statusBox.setAttribute('data-state', 'ok');
+        netNote.textContent =
+          'The monthly rental fee is covered by the ancillary revenue from the first month of ' +
+          'operation. No upfront outlay, and free termination after 6\u00A0months.';
+        return;
+      }
+
+      if (even) {
+        badge.className = `${cls.join(' ')} border-pure-white/25 bg-pure-white/5 text-pure-white/80`;
+        badgeDot.className = 'h-2 w-2 rounded-full bg-pure-white/60';
+        badgeText.textContent = 'Net break-even';
+        statusBox.setAttribute('data-state', 'even');
+        netNote.textContent =
+          'On these assumptions the ancillary revenue exactly offsets the rental cost: the ' +
+          'deployment is at break-even.';
+        return;
+      }
+
+      badge.className = `${cls.join(' ')} border-amber-400/40 bg-amber-400/10 text-amber-300`;
+      badgeDot.className = 'h-2 w-2 rounded-full bg-amber-400';
+      badgeText.textContent = 'Net negative';
+      statusBox.setAttribute('data-state', 'warn');
+      netNote.textContent =
+        'On these assumptions the assumed monthly rental fee exceeds the ancillary revenue. The ' +
+        'fee is a user hypothesis \u2014 the actual LSEAT tariff is quoted on request.';
+    }
+
+    function updateChart(annualRevenue: number, annualRental: number) {
+      if (!chart || !chartNote) return;
+
+      const revenue5 = annualRevenue * YEARS;
+      const rental5 = annualRental * YEARS;
+      const max = Math.max(revenue5, rental5, 1) * 1.12;
+      const deficit = annualRevenue < annualRental;
+
+      for (let y = 1; y <= YEARS; y += 1) {
+        const cumRev = annualRevenue * y;
+        const cumRental = annualRental * y;
+        const revBar = document.getElementById(`roi-bar-rev-${y}`);
+        const rentalBar = document.getElementById(`roi-bar-rental-${y}`);
+
+        const revRatio = Math.max(0, Math.min(1, cumRev / max));
+        const rentalRatio = Math.max(0, Math.min(1, cumRental / max));
+
+        if (revBar) {
+          revBar.style.transform = 'scaleY(' + revRatio.toFixed(4) + ')';
+          revBar.classList.toggle('is-deficit', cumRev < cumRental);
+        }
+        if (rentalBar) {
+          rentalBar.style.transform = 'scaleY(' + rentalRatio.toFixed(4) + ')';
+        }
+      }
+
+      [0, 0.25, 0.5, 0.75, 1].forEach((f) => {
+        const t = document.getElementById(`roi-axis-${f}`);
+        if (t) t.textContent = axisFmt(max * f);
+      });
+
+      const margin = revenue5 - rental5;
+      chart.setAttribute(
+        'aria-label',
+        `Comparative chart over ${YEARS} years: cumulative ancillary revenue of ${nbsp(eurFmt.format(revenue5))} against a cumulative rental cost of ${nbsp(eurFmt.format(rental5))}. Net margin ${nbsp(eurFmt.format(margin))}.`,
+      );
+
+      if (deficit) {
+        chartNote.innerHTML =
+          `<span class="font-semibold text-amber-300">Deficit.</span> The annual ancillary revenue (${nbsp(eurFmt.format(annualRevenue))}) ` +
+          `is below the annual rental cost (${nbsp(eurFmt.format(annualRental))}). Over ${YEARS} years: ${nbsp(eurFmt.format(revenue5))} in ancillary revenue ` +
+          `against ${nbsp(eurFmt.format(rental5))} of rental cost, i.e. <span class="font-semibold text-amber-300">${nbsp(eurFmt.format(margin))}</span> ` +
+          `of cumulative deficit. The assumed rental fee is a user hypothesis, not a quoted tariff.`;
+      } else {
+        chartNote.innerHTML =
+          `${YEARS}-year total: ${nbsp(eurFmt.format(revenue5))} in ancillary revenue against ${nbsp(eurFmt.format(rental5))} of cumulative rental cost \u2014 ` +
+          `net margin <span class="font-semibold text-electric-cyan">${nbsp(eurFmt.format(margin))}</span>.`;
+      }
+    }
+
+    function render(announce: boolean) {
+      const values = readValues();
+
+      cfgs.forEach((cfg) => {
+        const el = document.getElementById(`roi-${cfg.id}`) as HTMLInputElement | null;
+        if (!el) return;
+        const v = values[cfg.id];
+        const display = fmtInput(v, cfg.unit);
+        const readout = document.getElementById(`roi-readout-${cfg.id}`);
+        if (readout) readout.textContent = display;
+        const unitWord = v > 1 ? cfg.ariaMany : cfg.ariaOne;
+        el.setAttribute('aria-valuetext', `${nbsp(display)} ${unitWord}`);
+        updateRangeFill(el);
+      });
+
+      const m = compute(values);
+
+      const targets: Array<[string, number]> = [
+        ['roi-out-annual-revenue', m.annualRevenue],
+        ['roi-out-annual-rental', m.annualRental],
+        ['roi-out-net-annual', m.netAnnual],
+        ['roi-out-net-per-seat-month', m.netPerSeatMonth],
+        ['roi-out-break-even-load', m.breakEvenLoadFactor],
+        ['roi-out-break-even-pax', m.breakEvenPax],
+        ['roi-out-max-exposure', m.maxExposure],
+      ];
+      targets.forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) animateTo(el, value);
+      });
+
+      updateStatus(m);
+      updateChart(m.annualRevenue, m.annualRental);
+
+      if (announce && live) {
+        window.clearTimeout(liveTimer);
+        liveTimer = window.setTimeout(() => {
+          live.textContent = [
+            `Fleet of ${intFmt.format(values.aircraft)} aircraft, ${intFmt.format(m.seatsRetrofit)} retrofitted seats.`,
+            `Annual ancillary revenue: ${nbsp(eurFmt.format(m.annualRevenue))}.`,
+            `Annual rental cost: ${nbsp(eurFmt.format(m.annualRental))}.`,
+            `Net annual benefit: ${nbsp(eurFmt.format(m.netAnnual))}.`,
+            `Net monthly benefit per retrofitted seat: ${nbsp(eurCentsFmt.format(m.netPerSeatMonth))}.`,
+            `Break-even load factor: ${nbsp(pctFmt.format(m.breakEvenLoadFactor / 100))}.`,
+            `Break-even passengers per year: ${nbsp(intFmt.format(m.breakEvenPax))}.`,
+            `Maximum exposure before free termination: ${nbsp(eurFmt.format(m.maxExposure))}.`,
+          ].join(' ');
+        }, 600);
+      }
+    }
+
+    ranges.forEach((el) => {
+      el.addEventListener('input', () => {
+        el.classList.add('is-active');
+        render(true);
+      });
+      el.addEventListener('change', () => el.classList.remove('is-active'));
+      el.addEventListener('pointerup', () => el.classList.remove('is-active'));
+      updateRangeFill(el);
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        cfgs.forEach((cfg) => {
+          const el = document.getElementById(`roi-${cfg.id}`) as HTMLInputElement | null;
+          if (el) el.value = String(cfg.value);
+        });
+        render(true);
+        const first = ranges[0];
+        if (first) first.focus();
+      });
+    }
+
+    render(false);
+  }
+</script>

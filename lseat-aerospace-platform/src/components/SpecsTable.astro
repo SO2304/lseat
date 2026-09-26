@@ -1,0 +1,213 @@
+---
+/**
+ * SpecsTable.astro
+ * Engineering dossier - Technical specifications & normative references.
+ * Icons: @lucide/astro (stroke 1.75).
+ */
+import { ShieldCheck, FileCheck, Factory, FileText, Scale, Wrench } from '@lucide/astro';
+
+type SpecCategory = 'DELIVERABLES' | 'PRODUCTION' | 'MASS' | 'MAINTENANCE' | 'CERTIFICATION';
+
+interface SpecRow {
+  category: SpecCategory;
+  parameter: string;
+  value: string;
+  reference: string;
+}
+
+interface CategoryMeta {
+  icon: 'file-check' | 'factory' | 'scale' | 'wrench' | 'shield-check';
+  accent: string;
+  hover: string;
+}
+
+const categoryIcons: Record<CategoryMeta['icon'], typeof ShieldCheck> = {
+  'file-check': FileCheck,
+  factory: Factory,
+  scale: Scale,
+  wrench: Wrench,
+  'shield-check': ShieldCheck,
+};
+
+const categoryMeta: Record<SpecCategory, CategoryMeta> = {
+  DELIVERABLES: { icon: 'file-check', accent: 'text-electric-cyan', hover: 'group-hover:border-electric-cyan/50' },
+  PRODUCTION: { icon: 'factory', accent: 'text-aero-blue', hover: 'group-hover:border-aero-blue/50' },
+  MASS: { icon: 'scale', accent: 'text-pure-white/80', hover: 'group-hover:border-pure-white/30' },
+  MAINTENANCE: { icon: 'wrench', accent: 'text-electric-cyan', hover: 'group-hover:border-electric-cyan/50' },
+  CERTIFICATION: { icon: 'shield-check', accent: 'text-aero-blue', hover: 'group-hover:border-aero-blue/50' },
+};
+
+const certifications = [
+  'EASA Part 21J',
+  'FAA Part 21',
+  'EASA CS-25.562',
+  'FAR-25.562',
+  'TSO-C127',
+  '16G Dynamic Crash Test',
+];
+
+const specs: SpecRow[] = [
+  { category: 'DELIVERABLES', parameter: 'Certification release', value: 'EASA Form 1 + Part 21J engineering package', reference: 'EASA Part 21J' },
+  { category: 'DELIVERABLES', parameter: 'Kinematic architecture', value: '2 composite frames inserted under the original seat pan', reference: 'LSEAT patent' },
+  { category: 'PRODUCTION', parameter: 'Manufacturing', value: 'Certified subcontract production', reference: 'EASA Part 21G' },
+  { category: 'PRODUCTION', parameter: 'Moving sub-parts', value: '3 (no motor, no electronics)', reference: 'Part 21J dossier' },
+  { category: 'MASS', parameter: 'Integrated kit mass (3-seat block)', value: '<\u00A01,650\u00A0g', reference: 'TSO tolerance' },
+  { category: 'MASS', parameter: 'Load on seat track legs', value: '<\u00A05\u00A0kg / 2 legs', reference: 'TSO tolerance' },
+  { category: 'MAINTENANCE', parameter: 'MRO installation time', value: '<\u00A015\u00A0min / seat, without removing seat track legs', reference: 'A-Check procedure' },
+  { category: 'MAINTENANCE', parameter: 'Direct maintenance cost reduction', value: '-75\u00A0%', reference: 'LSEAT manufacturer data' },
+  { category: 'MAINTENANCE', parameter: 'Electrical components', value: '0', reference: '0 W' },
+  { category: 'CERTIFICATION', parameter: 'Dynamic crash test', value: '16G CS-25 / FAR-25', reference: 'CS-25.562 / FAR-25.562' },
+  { category: 'CERTIFICATION', parameter: 'Unoccupied seat return', value: 'Spring-return to upright', reference: 'CS-25.562' },
+  { category: 'CERTIFICATION', parameter: 'Aircraft On Ground', value: '0 h', reference: 'MRO procedure' },
+];
+---
+
+<section id="compliance" class="scroll-mt-24 relative py-24 md:py-32" aria-labelledby="compliance-title">
+  <span id="specifications" class="scroll-mt-24" aria-hidden="true"></span>
+  <div class="absolute inset-0 bg-grid-pattern bg-grid-64 pointer-events-none opacity-60" aria-hidden="true"></div>
+
+  <div class="section-container relative">
+    <header class="section-header">
+      <span class="section-badge">Certification dossier</span>
+      <h2 id="compliance-title" class="section-title text-balance">
+        Technical Specifications <span class="text-electric-cyan">&amp;</span> EASA Form 1
+      </h2>
+      <p class="section-subtitle text-balance">
+        Every figure below is covered by the EASA Part 21J engineering package: engineered architecture,
+        Part 21G subcontracted production, mass margins and compliance with the CS-25.562 / FAR-25.562 cabin
+        safety requirements. The full dossier is released on request.
+      </p>
+    </header>
+
+    <div class="glassmorphism-card mb-12 md:mb-16">
+      <div class="flex flex-col gap-6 md:flex-row md:items-center md:gap-8">
+        <div class="flex items-center gap-3 md:min-w-[240px]">
+          <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-aero-blue/15 border border-aero-blue/30 text-aero-blue" aria-hidden="true">
+            <ShieldCheck class="h-5 w-5" stroke-width="1.75" aria-hidden="true" focusable="false" />
+          </span>
+          <h3 class="text-caption font-semibold tracking-widest text-pure-white/80">Applicable references</h3>
+        </div>
+
+        <ul class="flex flex-wrap gap-2.5 md:gap-3" role="list">
+          {certifications.map((cert) => (
+            <li class="badge-cert" role="listitem">{cert}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="glassmorphism-lg relative rounded-xl overflow-hidden shadow-glass-lg">
+      <div class="relative">
+        <div class="overflow-x-auto">
+          <table class="specs-table w-full min-w-[720px] border-collapse text-left">
+            <caption class="sr-only">
+              Contractual LSEAT technical specifications and associated normative references
+            </caption>
+            <thead>
+              <tr class="border-b border-electric-cyan/20 bg-titanium-gray/40">
+                <th scope="col" class="sticky left-0 z-30 bg-[#151e31] px-5 py-4 text-caption font-semibold tracking-widest text-pure-white/80">Category</th>
+                <th scope="col" class="px-5 py-4 text-caption font-semibold tracking-widest text-pure-white/80">Parameter</th>
+                <th scope="col" class="px-5 py-4 text-caption font-semibold tracking-widest text-pure-white/80">Value</th>
+                <th scope="col" class="px-5 py-4 text-caption font-semibold tracking-widest text-pure-white/80">Normative reference</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-pure-white/10">
+              {specs.map((row) => {
+                const meta = categoryMeta[row.category];
+                const CategoryIcon = categoryIcons[meta.icon];
+                return (
+                  <tr class="group transition-colors duration-200 hover:bg-electric-cyan/5">
+                    <th scope="row" class="sticky left-0 z-20 bg-[#0f172a] px-5 py-4 align-top font-normal group-hover:bg-[#0e2035]">
+                      <span class="inline-flex items-center gap-2.5 whitespace-nowrap">
+                        <span class:list={["inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-pure-white/10 bg-slate-dark/70 transition-colors duration-200", meta.accent, meta.hover]} aria-hidden="true">
+                          <CategoryIcon class="h-4 w-4" stroke-width="1.75" aria-hidden="true" focusable="false" />
+                        </span>
+                        <span class="text-caption font-semibold tracking-widest text-pure-white/70">{row.category}</span>
+                      </span>
+                    </th>
+                    <td class="px-5 py-4 align-top text-body-base text-pure-white/90">{row.parameter}</td>
+                    <td class="px-5 py-4 align-top text-body-base font-semibold text-electric-cyan">{row.value}</td>
+                    <td class="px-5 py-4 align-top">
+                      <span class="badge-tech whitespace-nowrap">{row.reference}</span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <div
+          class="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-slate-dark md:hidden"
+          aria-hidden="true"
+        >
+        </div>
+      </div>
+
+      <p class="flex items-center gap-2 border-t border-pure-white/10 px-5 py-3 text-caption text-pure-white/50 md:hidden">
+        <span aria-hidden="true">&rarr;</span>
+        Swipe the table sideways: the category column stays pinned.
+      </p>
+    </div>
+
+    <p class="mt-6 max-w-3xl text-body-sm text-pure-white/70 text-balance">
+      Figures are LSEAT manufacturer engineering data, released with the EASA Form 1 documentation on
+      request. The LSEAT 2025 brochure is a marketing publication and is not a technical datasheet.
+    </p>
+
+    <div class="mt-6 flex flex-col gap-4 rounded-xl border border-pure-white/10 bg-slate-dark/40 p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+      <div class="flex items-start gap-3">
+        <span
+          class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-aero-blue/30 bg-aero-blue/15 text-aero-blue"
+          aria-hidden="true"
+        >
+          <FileText class="h-5 w-5" stroke-width="1.75" aria-hidden="true" focusable="false" />
+        </span>
+        <div>
+          <a
+            href="/LSEAT-Brochure-2025.pdf"
+            download="LSEAT-Brochure-2025.pdf"
+            type="application/pdf"
+            class="inline-flex items-center gap-2 text-body-base font-semibold text-electric-cyan underline decoration-electric-cyan/40 underline-offset-4 transition-colors duration-200 hover:text-pure-white hover:decoration-pure-white"
+          >
+            <span>Download the 2025 Brochure (PDF, 1.5 MB)</span>
+          </a>
+          <p class="mt-2 max-w-2xl text-body-sm text-pure-white/60 text-balance">
+            Marketing overview of the retrofit kit, published for fleet operators and MRO buyers. The
+            Part 21J engineering dossier, the EASA Form 1 and the certification figures listed above are
+            released on request to qualified operators, MROs and certification authorities.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Sticky first column. The table keeps border-collapse: collapse (Chrome, Edge, Safari and
+     Firefox all support position:sticky on th with collapsed borders; only the cell BORDER
+     is unreliable, so the right-edge separator is drawn with box-shadow, which is not part of
+     the collapsed-border resolution). The backgrounds are opaque: a translucent sticky cell
+     would let the scrolled columns bleed through it.
+       thead cell  #151e31 = bg-titanium-gray/40 flattened over the .glassmorphism-lg surface
+       body cell   #0f172a = bg-slate-dark, the flattened card surface
+       body hover  #0e2035 = bg-electric-cyan/5 flattened over #0f172a
+     The inset shadows re-draw, under the sticky cell, the two horizontal rules the cell
+     background would otherwise cover: the header border-b and the tbody divide-y. */
+  .specs-table thead th:first-child {
+    box-shadow:
+      inset 0 -1px 0 0 rgba(0, 210, 254, 0.2),
+      1px 0 0 0 rgba(148, 163, 184, 0.35),
+      10px 0 16px -10px rgba(2, 132, 199, 0.6);
+  }
+
+  .specs-table tbody th[scope='row'] {
+    box-shadow: 1px 0 0 0 rgba(148, 163, 184, 0.22);
+  }
+
+  .specs-table tbody tr + tr th[scope='row'] {
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+      1px 0 0 0 rgba(148, 163, 184, 0.22);
+  }
+</style>

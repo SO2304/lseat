@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-deep-navy: #0B192C;
+    --color-slate-dark: #0F172A;
+    --color-aero-blue: #0284C7;
+    --color-electric-cyan: #00D2FE;
+    --color-titanium-gray: #1E293B;
+    --color-pure-white: #FFFFFF;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-deep-navy text-pure-white font-sans antialiased;
+    background-image: var(--tw-gradient-from), var(--tw-gradient-to);
+  }
+
+  ::selection {
+    @apply bg-electric-cyan/30 text-pure-white;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-deep-navy;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-titanium-gray rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-aero-blue;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-electric-cyan ring-offset-2 ring-offset-deep-navy;
+  }
+}
+
+@layer components {
+  .glassmorphism {
+    @apply bg-slate-dark/80 backdrop-blur-glass border border-electric-cyan/18;
+  }
+
+  .glassmorphism-lg {
+    @apply bg-slate-dark/85 backdrop-blur-glass-lg border border-electric-cyan/22;
+  }
+
+  .glassmorphism-card {
+    @apply glassmorphism shadow-glass rounded-xl p-6 md:p-8 transition-all duration-400 hover:shadow-glass-lg hover:border-electric-cyan/30;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-ghost {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-4 bg-aero-blue text-deep-navy font-semibold text-body-base rounded-lg
+           shadow-glow-blue transition-all duration-300 min-h-12
+           hover:bg-electric-cyan hover:shadow-glow-cyan hover:scale-[1.02] active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-deep-navy
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-glow-blue;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-4 bg-transparent text-electric-cyan font-semibold text-body-base rounded-lg
+           border border-electric-cyan/40 backdrop-blur-glass
+           transition-all duration-300 min-h-12
+           hover:bg-electric-cyan/10 hover:border-electric-cyan hover:shadow-glow-cyan hover:scale-[1.02] active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-deep-navy
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2 text-pure-white/70 font-medium text-body-sm rounded-md
+           transition-all duration-200 min-h-12
+           hover:text-pure-white hover:bg-pure-white/5
+           active:text-pure-white active:bg-pure-white/5 active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-deep-navy;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3.5 bg-slate-dark/60 border border-titanium-gray/50 text-pure-white text-body-base rounded-lg
+           placeholder:text-pure-white/30
+           transition-all duration-200
+           hover:border-titanium-gray
+           focus:border-electric-cyan focus:ring-2 focus:ring-electric-cyan/20 focus:bg-slate-dark/80
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .label-field {
+    @apply block mb-0 text-body-sm font-medium text-pure-white/90 py-2 -mt-2;
+  }
+
+  .badge-tech {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 bg-electric-cyan/10 text-electric-cyan text-caption font-semibold
+           border border-electric-cyan/30 rounded-full;
+  }
+
+  .badge-cert {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 bg-aero-blue/15 text-aero-blue text-caption font-medium
+           border border-aero-blue/30 rounded;
+  }
+
+  .kpi-card {
+    @apply glassmorphism-card relative overflow-hidden;
+  }
+
+  .kpi-card::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-tr from-electric-cyan/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500;
+  }
+
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-header {
+    @apply text-center max-w-3xl mx-auto mb-16 md:mb-20;
+  }
+
+  .section-badge {
+    @apply badge-tech mb-6 animate-fade-in;
+  }
+
+  .section-title {
+    @apply text-display-lg text-pure-white font-display tracking-tight animate-slide-up;
+  }
+
+  .section-subtitle {
+    @apply mt-6 text-body-lg text-pure-white/70 animate-slide-up animation-delay-200;
+  }
+
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+  .animation-delay-400 { animation-delay: 400ms; }
+  .animation-delay-500 { animation-delay: 500ms; }
+
+  .toast {
+    @apply fixed bottom-6 left-4 right-4 z-50 glassmorphism-lg shadow-glass-lg rounded-xl p-4 md:p-6 min-w-0
+           max-w-[calc(100vw-2rem)] sm:left-auto sm:right-6 sm:min-w-[320px] sm:max-w-md
+           animate-slide-up flex items-start gap-3;
+  }
+
+  .toast-success { @apply border-electric-cyan/40; }
+  .toast-error { @apply border-red-500/40; }
+  .toast-loading { @apply border-aero-blue/40; }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .bg-grid-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h1v64H0V0zm63 0h1v64H63V0zM0 0h64v1H0V0zm0 63h64v1H0V63z' fill='%2300D2FE' fill-opacity='0.03'/%3E%3C/svg%3E");
+  }
+}

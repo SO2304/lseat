@@ -1,0 +1,623 @@
+---
+/**
+ * Kinematics.astro — Visual simulator of the patented kinematics.
+ * The seat schematic is a hand-built SVG; the 3 card icons are @lucide/astro.
+ * Driven by vanilla JS: no dependency, no CDN.
+ */
+import { Layers, Sparkles, ZapOff } from '@lucide/astro';
+
+interface Position {
+  id: string;
+  code: string;
+  name: string;
+  subtitle: string;
+  angle: number;
+  travel: number;
+  note: string;
+  flags: string[];
+}
+
+const positions: Position[] = [
+  {
+    id: "sitting",
+    code: "01",
+    name: "16G Upright Sitting Mode",
+    subtitle: "Upright seated position",
+    angle: 0,
+    travel: 0,
+    note: "16G CS-25.562 retention verified",
+    flags: ["16G RETENTION ACTIVE", "HEADREST IN FLIGHT POSITION"],
+  },
+  {
+    id: "ife",
+    code: "02",
+    name: "IFE Watching Mode",
+    subtitle: "Screen viewing position",
+    angle: 12,
+    travel: 45,
+    note: "IFE clear, no screen occlusion",
+    flags: ["IFE CLEAR", "SEAT PAN ADVANCED 45\u00A0mm"],
+  },
+  {
+    id: "relax",
+    code: "03",
+    name: "Relax Reading Mode",
+    subtitle: "Intermediate position",
+    angle: 25,
+    travel: 30,
+    note: "Reading angle, lumbar support confirmed",
+    flags: ["LUMBAR SUPPORT", "SEAT PAN ADVANCED 30\u00A0mm"],
+  },
+  {
+    id: "sleep",
+    code: "04",
+    name: "Sleep Mode (40° Recline)",
+    subtitle: "40° recline",
+    angle: 40,
+    travel: 20,
+    note: "40° recline with zero intrusion on rear seat pitch",
+    flags: ["REAR PITCH PRESERVED", "SPRING RETURN"],
+  },
+];
+
+const pillars: Array<{ title: string; body: string; icon: typeof Layers }> = [
+  {
+    title: "2 composite frames",
+    body: "Two pre-printed carbon frames are inserted under the original seat pan. No rework to the seat structure, no drilling, no seat pan removal.",
+    icon: Layers,
+  },
+  {
+    title: "3 moving sub-parts, 0 motors",
+    body: "Front frame, rear frame, return cam. Three moving parts, purely passive transmission, spring return to the sitting position.",
+    icon: Sparkles,
+  },
+  {
+    title: "0 W, 0 electronics",
+    body: "No power supply, no sensor, no aircraft wiring. 100% mechanical operation, on the ground and in flight, with no EMC impact.",
+    icon: ZapOff,
+  },
+];
+---
+<section id="kinematics" class="relative scroll-mt-24 bg-deep-navy py-24 md:py-32">
+  <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+    <div class="absolute inset-0 bg-grid-pattern bg-grid-64 opacity-50"></div>
+  </div>
+
+  <div class="section-container relative">
+    <header class="section-header">
+      <span class="section-badge">PATENTED COUPLED MOTION</span>
+      <h2 class="section-title">Patented Kinematics &amp; Coupled Glide</h2>
+      <p class="section-subtitle text-balance">
+        Two composite frames are inserted under the original seat pan. The backrest / seat pan motion is
+        mechanically coupled: no electric motor, only 3 moving sub-parts, 16G CS-25.562 retention maintained
+        in all four positions.
+      </p>
+    </header>
+
+    <div
+      class="glassmorphism-lg rounded-2xl p-5 md:p-8"
+      data-kin-sim
+      data-kin-hinge-x="400"
+      data-kin-hinge-y="350"
+      data-kin-pan-front="596"
+      data-kin-scale="1.6"
+      data-kin-pan-couple="0.16"
+      data-kin-positions={JSON.stringify(positions)}
+    >
+      <h3 class="sr-only">Passenger position simulator</h3>
+
+      <fieldset>
+        <legend class="sr-only">Passenger position selection</legend>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {
+            positions.map((position, index) => (
+              <div class="relative">
+                <input
+                  type="radio"
+                  name="kin-position"
+                  id={`kin-pos-${position.id}`}
+                  value={String(index)}
+                  class="peer sr-only"
+                  checked={index === 0}
+                  data-kin-radio
+                />
+                <label
+                  for={`kin-pos-${position.id}`}
+                  class="flex h-full cursor-pointer flex-col gap-1 rounded-xl border border-electric-cyan/20 bg-slate-dark/60 p-4 transition-all duration-300 hover:border-electric-cyan/45 hover:bg-slate-dark/80 peer-checked:border-electric-cyan/70 peer-checked:bg-electric-cyan/10 peer-checked:shadow-glow-cyan peer-focus-visible:ring-2 peer-focus-visible:ring-electric-cyan"
+                >
+                  <span class="font-mono text-caption text-electric-cyan/70">{position.code}</span>
+                  <span class="text-body-base font-semibold text-pure-white">{position.name}</span>
+                  <span class="text-body-sm text-pure-white/60">{position.subtitle}</span>
+                </label>
+              </div>
+            ))
+          }
+        </div>
+      </fieldset>
+      <div class="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div class="glassmorphism rounded-xl p-3 md:p-5">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 960 540"
+            preserveAspectRatio="xMidYMid meet"
+            class="h-auto w-full"
+            role="img"
+            data-kin-stage
+            aria-label="Side cutaway view of an Economy seat in the upright seated position: backrest at 0 degrees, zero seat pan travel, 16G retention."
+          >
+            <title>Seat kinematics — schematic side view</title>
+            <desc>Schematic, not to scale. The backrest, the seat pan and the passenger silhouette are driven by the selected position.</desc>
+
+            <defs>
+              <linearGradient id="kin-floor" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0284C7" stop-opacity="0.10"></stop>
+                <stop offset="100%" stop-color="#0B192C" stop-opacity="0"></stop>
+              </linearGradient>
+              <linearGradient id="kin-structure" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#1E293B"></stop>
+                <stop offset="100%" stop-color="#0F172A"></stop>
+              </linearGradient>
+              <linearGradient id="kin-cushion" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#0284C7" stop-opacity="0.55"></stop>
+                <stop offset="100%" stop-color="#0284C7" stop-opacity="0.18"></stop>
+              </linearGradient>
+              <linearGradient id="kin-body" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#00D2FE" stop-opacity="0.38"></stop>
+                <stop offset="100%" stop-color="#0284C7" stop-opacity="0.26"></stop>
+              </linearGradient>
+              <marker id="kin-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 1 L 9 5 L 0 9 z" fill="#00D2FE"></path>
+              </marker>
+            </defs>
+
+            <text x="24" y="34" class="fill-current font-mono text-[13px] uppercase tracking-[0.2em] text-pure-white/40 hidden sm:inline">Side cutaway — schematic, not to scale</text>
+            <text x="936" y="34" text-anchor="end" class="fill-current font-mono text-[13px] uppercase tracking-[0.2em] text-pure-white/40 hidden sm:inline">Reading direction: cabin forward →</text>
+
+            <rect x="0" y="442" width="960" height="98" fill="url(#kin-floor)"></rect>
+            <line x1="0" y1="442" x2="960" y2="442" stroke="#00D2FE" stroke-opacity="0.22" stroke-width="1"></line>
+
+            <rect x="140" y="430" width="780" height="12" rx="3" fill="url(#kin-structure)" stroke="#00D2FE" stroke-opacity="0.25"></rect>
+            <g stroke="#00D2FE" stroke-opacity="0.30" stroke-width="2">
+              <line x1="190" y1="430" x2="190" y2="442"></line>
+              <line x1="280" y1="430" x2="280" y2="442"></line>
+              <line x1="370" y1="430" x2="370" y2="442"></line>
+              <line x1="460" y1="430" x2="460" y2="442"></line>
+              <line x1="550" y1="430" x2="550" y2="442"></line>
+              <line x1="640" y1="430" x2="640" y2="442"></line>
+              <line x1="730" y1="430" x2="730" y2="442"></line>
+              <line x1="820" y1="430" x2="820" y2="442"></line>
+            </g>
+
+            <g data-kin-ife opacity="0.3">
+              <rect x="744" y="336" width="12" height="106" fill="url(#kin-structure)" stroke="#00D2FE" stroke-opacity="0.3"></rect>
+              <rect x="688" y="248" width="124" height="88" rx="8" fill="url(#kin-structure)" stroke="#00D2FE" stroke-opacity="0.45"></rect>
+              <rect x="698" y="258" width="104" height="68" rx="4" fill="#0284C7" fill-opacity="0.28"></rect>
+              <text x="750" y="346" text-anchor="middle" class="fill-current font-mono text-[13px] uppercase tracking-[0.18em] text-pure-white/40 hidden sm:inline">IFE</text>
+            </g>
+
+            <g data-kin-rear>
+              <line x1="176" y1="60" x2="176" y2="442" stroke="#00D2FE" stroke-opacity="0.40" stroke-width="1" stroke-dasharray="7 7"></line>
+              <text x="186" y="428" class="fill-current font-mono text-[13px] uppercase tracking-[0.16em] text-pure-white/45 hidden sm:inline">Rear envelope</text>
+            </g>
+            <g data-kin-clearance>
+              <line x1="176" y1="62" x2="176" y2="74" stroke="#00D2FE" stroke-opacity="0.7" stroke-width="1.5"></line>
+              <line data-kin-clear-line x1="176" y1="68" x2="400" y2="68" stroke="#00D2FE" stroke-opacity="0.7" stroke-width="1.5" marker-start="url(#kin-arrow)" marker-end="url(#kin-arrow)"></line>
+              <line data-kin-clear-tick x1="400" y1="62" x2="400" y2="74" stroke="#00D2FE" stroke-opacity="0.7" stroke-width="1.5"></line>
+              <circle data-kin-clear-dot cx="400" cy="68" r="3.5" fill="#00D2FE"></circle>
+              <text x="176" y="88" class="fill-current font-mono text-[13px] uppercase tracking-[0.16em] text-pure-white/55 hidden sm:inline">Rear clearance — full</text>
+            </g>
+
+            <g data-kin-tipguide opacity="0.5">
+              <line x1="370" y1="112" x2="370" y2="60" stroke="#00D2FE" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="4 6"></line>
+            </g>
+
+            <g data-kin-travel opacity="0">
+              <line x1="596" y1="308" x2="596" y2="332" stroke="#00D2FE" stroke-opacity="0.35" stroke-width="1" stroke-dasharray="3 4"></line>
+              <line data-kin-travel-line x1="596" y1="322" x2="596" y2="322" stroke="#00D2FE" stroke-opacity="0.8" stroke-width="1.5" marker-start="url(#kin-arrow)" marker-end="url(#kin-arrow)"></line>
+              <line data-kin-travel-tick x1="596" y1="308" x2="596" y2="332" stroke="#00D2FE" stroke-opacity="0.8" stroke-width="1.5"></line>
+              <text data-kin-travel-text x="604" y="316" class="fill-current font-mono text-[13px] uppercase tracking-[0.14em] text-electric-cyan hidden sm:inline">Δ 0 mm</text>
+            </g>
+
+            <g data-kin-frame>
+              <rect x="360" y="406" width="224" height="18" rx="4" fill="url(#kin-structure)" stroke="#00D2FE" stroke-opacity="0.35"></rect>
+              <line x1="566" y1="376" x2="566" y2="406" stroke="#00D2FE" stroke-opacity="0.35" stroke-width="2"></line>
+              <line x1="404" y1="376" x2="386" y2="406" stroke="#00D2FE" stroke-opacity="0.35" stroke-width="2"></line>
+            </g>
+
+            <g data-kin-pan>
+              <rect x="452" y="300" width="124" height="14" rx="6" fill="url(#kin-structure)" stroke="#00D2FE" stroke-opacity="0.30"></rect>
+              <line x1="436" y1="292" x2="534" y2="288" stroke="url(#kin-body)" stroke-width="16" stroke-linecap="round"></line>
+
+              <line x1="412" y1="352" x2="556" y2="360" stroke="url(#kin-body)" stroke-width="32" stroke-linecap="round"></line>
+              <line x1="556" y1="360" x2="582" y2="420" stroke="url(#kin-body)" stroke-width="24" stroke-linecap="round"></line>
+              <line x1="582" y1="420" x2="616" y2="424" stroke="url(#kin-body)" stroke-width="18" stroke-linecap="round"></line>
+
+              <rect x="398" y="346" width="200" height="30" rx="8" fill="url(#kin-structure)" stroke="#00D2FE" stroke-opacity="0.45"></rect>
+              <rect x="404" y="340" width="188" height="14" rx="7" fill="url(#kin-cushion)"></rect>
+              <line x1="596" y1="346" x2="596" y2="376" stroke="#00D2FE" stroke-opacity="0.55" stroke-width="2"></line>
+            </g>
+
+            <g data-kin-upper>
+              <rect x="372" y="142" width="56" height="208" rx="14" fill="url(#kin-structure)" stroke="#00D2FE" stroke-opacity="0.45"></rect>
+              <rect x="382" y="150" width="36" height="192" rx="10" fill="url(#kin-cushion)"></rect>
+              <rect x="370" y="112" width="60" height="48" rx="14" fill="url(#kin-structure)" stroke="#00D2FE" stroke-opacity="0.45"></rect>
+              <rect x="378" y="120" width="44" height="14" rx="7" fill="url(#kin-cushion)"></rect>
+
+              <line x1="400" y1="350" x2="400" y2="222" stroke="url(#kin-body)" stroke-width="40" stroke-linecap="round"></line>
+              <circle cx="400" cy="186" r="24" fill="url(#kin-body)" stroke="#00D2FE" stroke-opacity="0.45"></circle>
+            </g>
+
+            <g data-kin-arc>
+              <line x1="400" y1="220" x2="400" y2="350" stroke="#00D2FE" stroke-opacity="0.35" stroke-width="1" stroke-dasharray="4 5"></line>
+              <path data-kin-arc-path d="" fill="none" stroke="#00D2FE" stroke-opacity="0.75" stroke-width="2"></path>
+              <line data-kin-arc-ray x1="400" y1="350" x2="400" y2="220" stroke="#00D2FE" stroke-opacity="0.45" stroke-width="1"></line>
+              <text data-kin-arc-text x="354" y="214" text-anchor="middle" class="kin-arc-label fill-current font-mono font-semibold text-electric-cyan">0°</text>
+            </g>
+          </svg>
+          <div class="glassmorphism rounded-xl p-5 md:p-6">
+            <div class="flex items-center justify-between gap-3">
+              <span class="text-caption text-pure-white/50">Readout</span>
+              <span class="badge-tech" data-kin-angle-badge>0°</span>
+            </div>
+
+            <p class="mt-4 text-body-base font-semibold text-pure-white" data-kin-name>16G Upright Sitting Mode</p>
+            <p class="text-body-sm text-pure-white/60" data-kin-subtitle>Upright seated position</p>
+
+            <dl class="mt-5 space-y-3 text-body-sm">
+              <div class="flex items-baseline justify-between gap-3 border-b border-pure-white/10 pb-2">
+                <dt class="text-pure-white/55">Backrest recline</dt>
+                <dd class="font-mono tabular-nums text-pure-white" data-kin-angle>0°</dd>
+              </div>
+              <div class="flex items-baseline justify-between gap-3 border-b border-pure-white/10 pb-2">
+                <dt class="text-pure-white/55">Seat pan travel</dt>
+                <dd class="font-mono tabular-nums text-pure-white" data-kin-travel-val>0&nbsp;mm</dd>
+              </div>
+              <div class="flex items-baseline justify-between gap-3">
+                <dt class="text-pure-white/55">Retention</dt>
+                <dd class="font-mono tabular-nums text-pure-white">16G CS-25.562</dd>
+              </div>
+            </dl>
+
+            <p class="mt-5 text-body-sm text-pure-white/70" data-kin-note>16G CS-25.562 retention verified</p>
+
+            <ul class="mt-4 flex flex-wrap gap-2" data-kin-flags>
+              <li class="badge-cert">16G RETENTION ACTIVE</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="sr-only" aria-live="polite" data-kin-live></p>
+
+      </div>
+
+      <p class="mt-4 text-caption text-pure-white/40">
+        Seat pan travel amplified for clarity. Rear footprint measured against the certified seat-pitch envelope of the preceding row.
+      </p>
+
+      <div class="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
+        {
+          pillars.map((pillar) => {
+            const PillarIcon = pillar.icon;
+            return (
+            <article class="glassmorphism-card">
+              <span
+                class="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-electric-cyan/25 bg-electric-cyan/10 text-electric-cyan [&>svg]:h-5 [&>svg]:w-5"
+              >
+                <PillarIcon stroke-width="1.75" aria-hidden="true" focusable="false" />
+              </span>
+              <h4 class="mt-4 text-body-base font-semibold text-pure-white">{pillar.title}</h4>
+              <p class="mt-2 text-body-sm text-pure-white/70">{pillar.body}</p>
+            </article>
+            );
+          })
+        }
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+  [data-kin-frame],
+  [data-kin-pan],
+  [data-kin-upper],
+  [data-kin-tipguide] {
+    transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  [data-kin-travel],
+  [data-kin-clearance],
+  [data-kin-arc],
+  [data-kin-ife] {
+    transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-kin-frame],
+    [data-kin-pan],
+    [data-kin-upper],
+    [data-kin-tipguide],
+    [data-kin-travel],
+    [data-kin-clearance],
+    [data-kin-arc],
+    [data-kin-ife] {
+      transition: none;
+    }
+  }
+
+  /* The live angle label is the one annotation that cannot be hidden on a phone, so it is
+     sized in user units like every other label in this SVG and stepped by media query.
+     The schematic is width-limited (h-auto w-full on a 960-unit viewBox), so the render
+     scale is svgWidth / 960 and the visual size is fontSize * scale. The tiers keep it
+     between 9.1 and 14.3 CSS px at every width:
+       <=479px   svg 260-379   scale 0.2708-0.3948 -> 36u =  9.8-14.2px
+       480-639   svg 380-523   scale 0.3958-0.5448 -> 24u =  9.5-13.1px
+       640-767   svg 524-611   scale 0.5458-0.6365 -> 18u =  9.8-11.5px
+       768-1023  svg 612-867   scale 0.6375-0.9031 -> 15u =  9.6-13.5px
+       1024-1279 svg 512-767   scale 0.5333-0.7990 -> 17u =  9.1-13.6px
+       >=1280    svg 760       scale 0.7917       -> 13u = 10.3px
+     The label keeps its runtime x/y from paint(), so the arc geometry is untouched; at the
+     largest tier the three glyphs are 65 user units wide, still clear of the 130-unit arc
+     and of the backrest column at x=370. */
+  .kin-arc-label {
+    font-size: 13px;
+  }
+
+  @media (max-width: 479px) {
+    .kin-arc-label {
+      font-size: 36px;
+    }
+  }
+
+  @media (min-width: 480px) and (max-width: 639px) {
+    .kin-arc-label {
+      font-size: 24px;
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 767px) {
+    .kin-arc-label {
+      font-size: 18px;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .kin-arc-label {
+      font-size: 15px;
+    }
+  }
+
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .kin-arc-label {
+      font-size: 17px;
+    }
+  }
+</style>
+<script>
+  interface SimPosition {
+    id: string;
+    code: string;
+    name: string;
+    subtitle: string;
+    angle: number;
+    travel: number;
+    note: string;
+    flags: string[];
+  }
+
+  const NBSP = '\u00A0';
+
+  const sim = document.querySelector('[data-kin-sim]');
+
+  if (sim) {
+    const num = (key: string, fallback: number): number => {
+      const raw = sim.getAttribute(key);
+      const value = raw === null ? NaN : Number(raw);
+      return Number.isFinite(value) ? value : fallback;
+    };
+
+    const HX = num('data-kin-hinge-x', 400);
+    const HY = num('data-kin-hinge-y', 350);
+    const PAN_FRONT = num('data-kin-pan-front', 596);
+    const SCALE = num('data-kin-scale', 1.6);
+    const COUPLE = num('data-kin-pan-couple', 0.16);
+    const ARC_R = 130;
+    const TIP_X = 370;
+    const TIP_Y = 112;
+    const DURATION = 600;
+
+    const positions = JSON.parse(sim.getAttribute('data-kin-positions') || '[]') as SimPosition[];
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const radios = Array.from(sim.querySelectorAll<HTMLInputElement>('[data-kin-radio]'));
+    const frame = sim.querySelector('[data-kin-frame]');
+    const pan = sim.querySelector('[data-kin-pan]');
+    const upper = sim.querySelector('[data-kin-upper]');
+    const tipGuide = sim.querySelector('[data-kin-tipguide]');
+    const arcPath = sim.querySelector('[data-kin-arc-path]');
+    const arcRay = sim.querySelector('[data-kin-arc-ray]');
+    const arcText = sim.querySelector('[data-kin-arc-text]');
+    const clearLine = sim.querySelector('[data-kin-clear-line]');
+    const clearTick = sim.querySelector('[data-kin-clear-tick]');
+    const clearDot = sim.querySelector('[data-kin-clear-dot]');
+    const clearance = sim.querySelector('[data-kin-clearance]');
+    const travelGroup = sim.querySelector('[data-kin-travel]');
+    const travelLine = sim.querySelector('[data-kin-travel-line]');
+    const travelTick = sim.querySelector('[data-kin-travel-tick]');
+    const travelText = sim.querySelector('[data-kin-travel-text]');
+    const ife = sim.querySelector('[data-kin-ife]');
+    const stage = sim.querySelector('[data-kin-stage]');
+    const outAngle = sim.querySelector('[data-kin-angle]');
+    const outTravel = sim.querySelector('[data-kin-travel-val]');
+    const outBadge = sim.querySelector('[data-kin-angle-badge]');
+    const outName = sim.querySelector('[data-kin-name]');
+    const outSubtitle = sim.querySelector('[data-kin-subtitle]');
+    const outNote = sim.querySelector('[data-kin-note]');
+    const outFlags = sim.querySelector('[data-kin-flags]');
+    const live = sim.querySelector('[data-kin-live]');
+
+    const rad = (deg: number): number => (deg * Math.PI) / 180;
+    const round = (value: number): string => String(Math.round(value));
+
+    const ease = (() => {
+      const x1 = 0.16;
+      const y1 = 1;
+      const x2 = 0.3;
+      const y2 = 1;
+      const ax = 1 - 3 * x2 + 3 * x1;
+      const bx = 3 * x2 - 6 * x1;
+      const cx = 3 * x1;
+      const ay = 1 - 3 * y2 + 3 * y1;
+      const by = 3 * y2 - 6 * y1;
+      const cy = 3 * y1;
+      const curve = (t: number, a: number, b: number, c: number): number => ((a * t + b) * t + c) * t;
+      const slope = (t: number, a: number, b: number, c: number): number => 3 * a * t * t + 2 * b * t + c;
+      return (x: number): number => {
+        if (x <= 0) return 0;
+        if (x >= 1) return 1;
+        let t = x;
+        for (let i = 0; i < 8; i += 1) {
+          const d = slope(t, ax, bx, cx);
+          if (d === 0) break;
+          t -= (curve(t, ax, bx, cx) - x) / d;
+        }
+        if (t < 0) t = 0;
+        if (t > 1) t = 1;
+        return curve(t, ay, by, cy);
+      };
+    })();
+
+    const tipPoint = (angle: number, dx: number) => {
+      const vx = TIP_X - HX;
+      const vy = TIP_Y - HY;
+      const c = Math.cos(rad(angle));
+      const s = Math.sin(rad(angle));
+      return {
+        x: HX + vx * c + vy * s + dx,
+        y: HY - vx * s + vy * c,
+      };
+    };
+
+    const paint = (angle: number, travel: number): void => {
+      const dx = travel * SCALE;
+      const phi = angle * COUPLE;
+      const upperTransform = 'translate(' + dx.toFixed(2) + ' 0) rotate(' + (-angle).toFixed(3) + ' ' + HX + ' ' + HY + ')';
+
+      if (frame) frame.setAttribute('transform', 'translate(' + dx.toFixed(2) + ' 0)');
+      if (pan) pan.setAttribute('transform', 'translate(' + dx.toFixed(2) + ' 0) rotate(' + phi.toFixed(3) + ' ' + HX + ' ' + HY + ')');
+      if (upper) upper.setAttribute('transform', upperTransform);
+      if (tipGuide) tipGuide.setAttribute('transform', upperTransform);
+
+      const a = rad(angle);
+      const ex = HX - ARC_R * Math.sin(a);
+      const ey = HY - ARC_R * Math.cos(a);
+
+      if (arcPath) {
+        arcPath.setAttribute(
+          'd',
+          angle < 0.2 ? '' : 'M ' + HX + ' ' + (HY - ARC_R) + ' A ' + ARC_R + ' ' + ARC_R + ' 0 0 0 ' + ex.toFixed(2) + ' ' + ey.toFixed(2)
+        );
+      }
+      if (arcRay) {
+        arcRay.setAttribute('x2', ex.toFixed(2));
+        arcRay.setAttribute('y2', ey.toFixed(2));
+      }
+      if (arcText) {
+        arcText.setAttribute('x', (HX - ARC_R * Math.sin(a / 2) - 46).toFixed(2));
+        arcText.setAttribute('y', (HY - ARC_R * Math.cos(a / 2) - 6).toFixed(2));
+        arcText.textContent = round(angle) + '°';
+      }
+
+      const tip = tipPoint(angle, dx);
+      if (clearLine) clearLine.setAttribute('x2', tip.x.toFixed(2));
+      if (clearTick) {
+        clearTick.setAttribute('x1', tip.x.toFixed(2));
+        clearTick.setAttribute('x2', tip.x.toFixed(2));
+      }
+      if (clearDot) clearDot.setAttribute('cx', tip.x.toFixed(2));
+
+      if (travelGroup) travelGroup.setAttribute('opacity', travel > 0.5 ? '1' : '0');
+      if (travelLine) {
+        travelLine.setAttribute('x1', String(PAN_FRONT));
+        travelLine.setAttribute('x2', (PAN_FRONT + dx).toFixed(2));
+      }
+      if (travelTick) {
+        travelTick.setAttribute('x1', (PAN_FRONT + dx).toFixed(2));
+        travelTick.setAttribute('x2', (PAN_FRONT + dx).toFixed(2));
+      }
+      if (travelText) travelText.textContent = 'Δ ' + round(travel) + ' mm';
+    };
+
+    let rafId = 0;
+    let current = 0;
+
+    const apply = (index: number, animate: boolean): void => {
+      const position = positions[index];
+      if (!position) return;
+
+      const fromAngle = positions[current] ? positions[current].angle : position.angle;
+      const fromTravel = positions[current] ? positions[current].travel : position.travel;
+      const toAngle = position.angle;
+      const toTravel = position.travel;
+      current = index;
+
+      if (outAngle) outAngle.textContent = round(toAngle) + '°';
+      if (outTravel) outTravel.textContent = round(toTravel) + NBSP + 'mm';
+      if (outBadge) outBadge.textContent = round(toAngle) + '°';
+      if (outName) outName.textContent = position.name;
+      if (outSubtitle) outSubtitle.textContent = position.subtitle;
+      if (outNote) outNote.textContent = position.note;
+      if (outFlags) {
+        outFlags.textContent = '';
+        position.flags.forEach((flag: string) => {
+          const item = document.createElement('li');
+          item.className = 'badge-cert';
+          item.textContent = flag;
+          outFlags.appendChild(item);
+        });
+      }
+      if (ife) ife.setAttribute('opacity', position.id === 'ife' ? '1' : '0.3');
+      if (clearance) clearance.setAttribute('opacity', position.id === 'sleep' ? '1' : '0.5');
+      if (stage) {
+        stage.setAttribute(
+          'aria-label',
+          "Side cutaway view of an Economy seat: " + position.name +
+            ", backrest reclined " + round(toAngle) + ' degrees, seat pan travel of ' + round(toTravel) +
+            " millimetres forward. " + position.note + '.'
+        );
+      }
+      if (live) {
+        live.textContent =
+          position.name + ' — ' + position.subtitle + '. Backrest recline ' + round(toAngle) +
+          ' degrees, seat pan travel ' + round(toTravel) + ' millimetres. ' + position.note + '.';
+      }
+
+      if (rafId) cancelAnimationFrame(rafId);
+
+      if (!animate || reduced) {
+        paint(toAngle, toTravel);
+        rafId = 0;
+        return;
+      }
+
+      const start = performance.now();
+      const step = (now: number): void => {
+        const progress = Math.min(1, (now - start) / DURATION);
+        const e = ease(progress);
+        paint(fromAngle + (toAngle - fromAngle) * e, fromTravel + (toTravel - fromTravel) * e);
+        if (progress < 1) {
+          rafId = requestAnimationFrame(step);
+        } else {
+          rafId = 0;
+        }
+      };
+      rafId = requestAnimationFrame(step);
+    };
+
+    radios.forEach((radio) => {
+      radio.addEventListener('change', () => {
+        if (radio.checked) apply(Number(radio.value), true);
+      });
+    });
+
+    apply(0, false);
+  }
+</script>

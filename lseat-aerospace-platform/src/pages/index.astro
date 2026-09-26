@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Kinematics from '../components/Kinematics.astro';
+import KinematicViewer3D from '../components/KinematicViewer3D.astro';
+import SpecsTable from '../components/SpecsTable.astro';
+import RoiCalculator from '../components/RoiCalculator.astro';
+import ContactForm from '../components/ContactForm.astro';
+
+const title = 'LSEAT Aerospace | 16G Economy Conversion Kit - EASA Part 21J';
+const description =
+  "Sleep-mode ergonomic passenger seat conversion kit 40°, <\u00A01,650\u00A0g for 3 seats, 0 W, MRO retrofit <\u00A015\u00A0min. Designed for compliance with EASA CS-25 / FAA FAR-25, Part 21J package and EASA Form 1.";
+---
+
+<BaseLayout title={title} description={description}>
+  <Hero />
+  <Kinematics />
+  <KinematicViewer3D />
+  <SpecsTable />
+  <RoiCalculator />
+  <ContactForm />
+</BaseLayout>

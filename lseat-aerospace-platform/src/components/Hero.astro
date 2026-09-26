@@ -1,0 +1,315 @@
+---
+/**
+ * Hero.astro — LSEAT Aerospace opening section.
+ * Icons: @lucide/astro. Animated counters in vanilla JS
+ * (IntersectionObserver + requestAnimationFrame).
+ */
+import { Weight, Clock, Plane, ShieldCheck, FileText } from '@lucide/astro';
+
+const NBSP_CHAR = '\u00A0';
+
+const kpiIcons: Record<string, typeof Weight> = {
+  weight: Weight,
+  clock: Clock,
+  plane: Plane,
+  shield: ShieldCheck,
+};
+
+interface Kpi {
+  id: string;
+  icon: string;
+  label: string;
+  prefix: string;
+  target: number;
+  suffix: string;
+  decimals: number;
+  detail: string;
+}
+
+const kpis: Kpi[] = [
+  {
+    id: "mass",
+    icon: "weight",
+    label: "Integrated Kit Mass",
+    prefix: "<",
+    target: 1650,
+    suffix: "\u00A0g",
+    decimals: 0,
+    detail: "For a 3-seat block. TSO tolerance <\u00A05\u00A0kg on 2 seat track legs.",
+  },
+  {
+    id: "mro",
+    icon: "clock",
+    label: "MRO Retrofit Time",
+    prefix: "<",
+    target: 15,
+    suffix: "\u00A0min",
+    decimals: 0,
+    detail: "Direct installation without removing seat track legs.",
+  },
+  {
+    id: "aog",
+    icon: "plane",
+    label: "Aircraft On Ground",
+    prefix: "",
+    target: 0,
+    suffix: "\u00A0h",
+    decimals: 0,
+    detail: "Zero forced airframe downtime.",
+  },
+  {
+    id: "crash",
+    icon: "shield",
+    label: "Dynamic Crash Test",
+    prefix: "",
+    target: 16,
+    suffix: "G CS-25 / FAR-25",
+    decimals: 0,
+    detail: "Automatic spring-return holds an unoccupied seat upright.",
+  },
+];
+
+const credibility = [
+  { label: "EASA Part 21J", variant: "badge-cert" },
+  { label: "FAA Part 21", variant: "badge-cert" },
+  { label: "3 moving sub-parts", variant: "badge-tech" },
+  { label: "0 motors", variant: "badge-tech" },
+];
+---
+<section
+  id="hero"
+  class="relative isolate overflow-hidden bg-deep-navy text-pure-white"
+  aria-labelledby="hero-title"
+>
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="absolute inset-0 bg-grid-pattern bg-grid-64 opacity-70"></div>
+    <div class="absolute inset-0 bg-radial-glow"></div>
+    <div
+      class="absolute left-1/2 top-[-10%] h-[520px] w-[820px] -translate-x-1/2 rounded-full opacity-60"
+      style="background: radial-gradient(ellipse at center, rgba(0,210,254,0.14) 0%, rgba(2,132,199,0.06) 45%, transparent 72%);"
+    >
+    </div>
+  </div>
+
+  <div class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[280px]" aria-hidden="true">
+    <svg
+      class="h-full w-full"
+      viewBox="0 0 1440 280"
+      preserveAspectRatio="none"
+      focusable="false"
+      role="presentation"
+    >
+      <defs>
+        <linearGradient id="lseat-horizon" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#00D2FE" stop-opacity="0"></stop>
+          <stop offset="22%" stop-color="#00D2FE" stop-opacity="0.22"></stop>
+          <stop offset="50%" stop-color="#00D2FE" stop-opacity="0.5"></stop>
+          <stop offset="78%" stop-color="#00D2FE" stop-opacity="0.22"></stop>
+          <stop offset="100%" stop-color="#00D2FE" stop-opacity="0"></stop>
+        </linearGradient>
+        <linearGradient id="lseat-haze" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0284C7" stop-opacity="0"></stop>
+          <stop offset="100%" stop-color="#0284C7" stop-opacity="0.12"></stop>
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="1440" height="280" fill="url(#lseat-haze)"></rect>
+      <path d="M0 208 C 260 186, 420 170, 720 162 C 1020 170, 1180 186, 1440 208" fill="none" stroke="url(#lseat-horizon)" stroke-width="1"></path>
+      <path d="M0 224 C 300 206, 460 194, 720 188 C 980 194, 1140 206, 1440 224" fill="none" stroke="url(#lseat-horizon)" stroke-width="1" stroke-opacity="0.45"></path>
+      <path d="M0 244 C 340 230, 500 222, 720 218 C 940 222, 1100 230, 1440 244" fill="none" stroke="url(#lseat-horizon)" stroke-width="1" stroke-opacity="0.22"></path>
+    </svg>
+  </div>
+
+  <div class="section-container relative py-20 md:py-28 lg:py-32">
+    <div class="mx-auto max-w-4xl text-center">
+      <span class="section-badge">PATENTED INNOVATION — DESIGNED TO EASA CS-25 &amp; FAA FAR-25</span>
+
+      <h1 id="hero-title" class="text-display-xl text-balance mt-6 font-display text-pure-white">
+        Upgrade Economy Comfort Without Sacrificing Seat Density.
+      </h1>
+
+      <p class="text-body-lg text-balance mt-6 text-pure-white/70">
+        Ultra-lightweight (&lt;&nbsp;1,650&nbsp;g / 3 seats) non-electric retrofit kit enabling 40° sleep mode.
+        Zero AOG time, installed in &lt;&nbsp;15 minutes per seat.
+      </p>
+
+      <div class="mt-10 flex flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center">
+        <a href="#contact" class="btn-primary">Request the EASA Form 1 Dossier</a>
+        <a href="#roi" class="btn-secondary">Run Fleet ROI Simulator</a>
+      </div>
+
+      <p class="mt-6">
+        <a
+          href="/LSEAT-Brochure-2025.pdf"
+          download="LSEAT-Brochure-2025.pdf"
+          type="application/pdf"
+          class="inline-flex items-center gap-2 text-body-sm text-pure-white/70 underline decoration-pure-white/30 underline-offset-4 transition-colors duration-200 hover:text-pure-white hover:decoration-pure-white"
+        >
+          <FileText class="h-4 w-4 shrink-0" stroke-width="1.75" aria-hidden="true" focusable="false" />
+          <span>Download 2025 Technical Brochure</span>
+        </a>
+      </p>
+
+      <ul class="mt-8 flex flex-wrap items-center justify-center gap-3" aria-label="Certification references and mechanical architecture">
+        {
+          credibility.map((item) => (
+            <li>
+              <span class={item.variant}>{item.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="mt-16 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4" data-kpi-grid>
+      {
+        kpis.map((kpi, index) => {
+          const KpiIcon = kpiIcons[kpi.icon];
+          return (
+          <article
+            class="kpi-card group flex flex-col gap-4"
+            data-kpi-card
+            data-index={String(index)}
+            style={`transition-delay: ${index * 90}ms`}
+          >
+            <div class="relative flex items-center gap-3">
+              <span
+                class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-electric-cyan/25 bg-electric-cyan/10 text-electric-cyan [&>svg]:h-5 [&>svg]:w-5"
+              >
+                <KpiIcon stroke-width="1.75" aria-hidden="true" focusable="false" />
+              </span>
+              <h2 class="text-caption font-semibold leading-snug text-pure-white/60">{kpi.label}</h2>
+            </div>
+
+            <p
+              class="relative font-mono text-display-sm font-semibold tabular-nums text-pure-white"
+              data-kpi-value
+              data-target={String(kpi.target)}
+              data-prefix={kpi.prefix}
+              data-suffix={kpi.suffix}
+              data-decimals={String(kpi.decimals)}
+            >
+              {kpi.prefix ? kpi.prefix + NBSP_CHAR : ''}{kpi.target.toLocaleString('en-US')}{kpi.suffix}
+            </p>
+
+            <p class="relative mt-auto text-body-sm text-pure-white/60">{kpi.detail}</p>
+          </article>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+<style>
+  [data-kpi-card] {
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+      opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  [data-kpi-card][data-revealed='true'] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-kpi-card] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const NBSP = '\u00A0';
+
+  const formatEn = (value: number, decimals: number): string => {
+    const fixed = value.toFixed(decimals);
+    const parts = fixed.split('.');
+    const grouped = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return parts[1] ? grouped + '.' + parts[1] : grouped;
+  };
+
+  interface KpiEntry {
+    card: HTMLElement;
+    target: HTMLElement;
+  }
+
+  const grid = document.querySelector('[data-kpi-grid]');
+
+  if (grid) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-kpi-card]'));
+    const entries = cards
+      .map((card): KpiEntry | null => {
+        const target = card.querySelector<HTMLElement>('[data-kpi-value]');
+        return target ? { card: card, target: target } : null;
+      })
+      .filter((entry): entry is KpiEntry => entry !== null);
+
+    const paint = (
+      target: HTMLElement,
+      prefix: string,
+      suffix: string,
+      decimals: number,
+      value: number
+    ): void => {
+      const gap = prefix ? NBSP : '';
+      target.textContent = prefix + gap + formatEn(value, decimals) + suffix;
+    };
+
+    const animate = (entry: KpiEntry): void => {
+      const target = entry.target;
+      const prefix = target.getAttribute('data-prefix') || '';
+      const suffix = target.getAttribute('data-suffix') || '';
+      const decimals = Number(target.getAttribute('data-decimals') || '0');
+      const goal = Number(target.getAttribute('data-target') || '0');
+      if (reduced) {
+        paint(target, prefix, suffix, decimals, goal);
+        return;
+      }
+
+      const duration = 1400;
+      const start = performance.now();
+
+      const step = (now: number): void => {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+        paint(target, prefix, suffix, decimals, goal * eased);
+        if (t < 1) requestAnimationFrame(step);
+      };
+
+      requestAnimationFrame(step);
+    };
+
+    const runAll = (): void => {
+      entries.forEach((entry) => {
+        entry.card.setAttribute('data-revealed', 'true');
+        animate(entry);
+      });
+    };
+
+    if (!('IntersectionObserver' in window)) {
+      runAll();
+    } else {
+      const observer = new IntersectionObserver(
+        (observed) => {
+          observed.forEach((item) => {
+            if (!item.isIntersecting) return;
+            const card = item.target;
+            card.setAttribute('data-revealed', 'true');
+            const hit = entries.find((entry) => entry.card === card);
+            if (hit) animate(hit);
+            observer.unobserve(card);
+          });
+        },
+        { threshold: 0.25, rootMargin: '0px 0px -8% 0px' }
+      );
+
+      cards.forEach((card) => observer.observe(card));
+    }
+  }
+</script>

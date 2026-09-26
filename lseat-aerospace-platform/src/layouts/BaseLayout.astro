@@ -1,0 +1,230 @@
+---
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import '../styles/global.css';
+import jakartaSansVariableWoff2 from '@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2?url';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+export interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+}
+
+const { title, description, ogImage = '/og-image.png' } = Astro.props;
+
+const base = Astro.site ?? new URL('https://lseat.eu/');
+const siteUrl = new URL('/', base).toString();
+const canonicalUrl = new URL(Astro.url.pathname, base).toString();
+const ogImageUrl = new URL(ogImage, base).toString();
+
+const organization = {
+  '@type': 'Organization',
+  '@id': `${siteUrl}#organization`,
+  name: 'LSEAT Aerospace',
+  url: siteUrl,
+  email: 'contact@lseat.eu',
+  description:
+    "Manufacturer of ergonomic sleep-mode passenger seat conversion kits for commercial aircraft cabins. EASA Part 21J and FAA Part 21 certification packages.",
+  inLanguage: 'en-US',
+  knowsAbout: [
+    'EASA Part 21J',
+    'FAA Part 21',
+    'CS-25',
+    'FAR-25',
+    'EASA Form 1',
+    'Passenger cabin',
+    'MRO retrofit',
+  ],
+};
+
+const website = {
+  '@type': 'WebSite',
+  '@id': `${siteUrl}#website`,
+  url: siteUrl,
+  name: 'LSEAT Aerospace',
+  inLanguage: 'en-US',
+  publisher: { '@id': `${siteUrl}#organization` },
+};
+
+const product = {
+  '@type': 'Product',
+  '@id': `${siteUrl}#product`,
+  name: 'LSEAT 16G Economy Conversion Kit',
+  description:
+    'Sleep-mode ergonomic passenger seat conversion kit 40°, less than\u00A01,650\u00A0g for 3 seats, 0 W, MRO retrofit in less than\u00A015\u00A0min per seat. Designed for compliance with EASA CS-25 / FAA FAR-25, Part 21J package and EASA Form 1.',
+  category: 'Aerospace - cabin interior furnishing / aircraft retrofit',
+  inLanguage: 'en-US',
+  brand: { '@type': 'Brand', name: 'LSEAT Aerospace' },
+  manufacturer: { '@id': `${siteUrl}#organization` },
+};
+
+const jakartaSansAliasCss = [
+  '@font-face{',
+  "font-family:'Plus Jakarta Sans';",
+  'font-style:normal;',
+  'font-display:swap;',
+  'font-weight:200 800;',
+  "src:url(" + jakartaSansVariableWoff2 + ") format('woff2-variations');",
+  '}',
+].join('');
+
+const jakartaSansFallbackCss = [
+  '@font-face{',
+  "font-family:'Plus Jakarta Sans Fallback';",
+  'font-style:normal;',
+  'font-weight:200 800;',
+  "src:local('Helvetica Neue'),local('Arial'),local('Liberation Sans');",
+  'size-adjust:103.36%;',
+  'ascent-override:100.42%;',
+  'descent-override:21.48%;',
+  'line-gap-override:0%;',
+  '}',
+  'html .font-sans,',
+  'html .font-display{font-family:' + "'Plus Jakarta Sans','Plus Jakarta Sans Fallback',Inter,system-ui,sans-serif;" + '}',
+].join('');
+
+const fontCss = jakartaSansAliasCss + jakartaSansFallbackCss;
+
+/* Preload the hoisted chunks a page's own entry script statically imports, so the browser
+   fetches them in parallel with the entry instead of discovering them one round trip
+   later. The entry script itself is never preloaded: it is already a <script src>, and
+   duplicating it is pure waste. */
+const sharedChunkPreloads = (() => {
+  if (!import.meta.env.PROD) return [];
+  try {
+    const distDir = join(process.cwd(), 'dist');
+    const assetsDir = join(distDir, '_astro');
+    const chunks = readdirSync(assetsDir).filter((file) => /^hoisted\.[\w-]+\.js$/.test(file));
+
+    /* Static import graph of the hoisted chunks, read from the emitted files. */
+    const staticImports = new Map<string, string[]>();
+    for (const chunk of chunks) {
+      const source = readFileSync(join(assetsDir, chunk), 'utf8');
+      const targets: string[] = [];
+      for (const match of source.matchAll(/(?:^|;)\s*import\s*["']\.\/([^"']+)["']/g)) {
+        const target = match[1];
+        if (target && chunks.includes(target) && !targets.includes(target)) targets.push(target);
+      }
+      staticImports.set(chunk, targets);
+    }
+
+    /* Which chunk is THIS page's own entry script? Astro renders one page at a time and
+       writes each HTML file before it starts the next one, so every page generated before
+       this one is already on disk, and each of those files names its entry chunk in its
+       own <script src>. Reading it from there - instead of hardcoding a content hash -
+       is what keeps this resolution hash-independent. This page is the only one whose
+       HTML does not exist yet, so its entry is the single chunk no other page claims.
+       When that is not provable (several candidates, e.g. a parallel build) nothing is
+       preloaded: a missing preload costs one round trip, a wrong one would re-fetch the
+       entry script that the <script src> already requests. */
+    const claimed = new Set<string>();
+    const htmlFiles: string[] = [];
+    const collectHtml = (dir: string): void => {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const full = join(dir, entry.name);
+        if (entry.isDirectory()) collectHtml(full);
+        else if (entry.name.endsWith('.html')) htmlFiles.push(full);
+      }
+    };
+    collectHtml(distDir);
+    for (const file of htmlFiles) {
+      for (const match of readFileSync(file, 'utf8').matchAll(/<script[^>]*\ssrc="(\/[^"]+\.js)"/g)) {
+        if (match[1]) claimed.add(match[1]);
+      }
+    }
+
+    const unclaimed = chunks.filter((chunk) => !claimed.has('/_astro/' + chunk));
+    if (unclaimed.length !== 1) return [];
+    const ownEntry = unclaimed[0];
+
+    const preloads: string[] = [];
+    const seen = new Set<string>([ownEntry]);
+    const queue = [...(staticImports.get(ownEntry) ?? [])];
+    while (queue.length > 0) {
+      const next = queue.shift() as string;
+      if (seen.has(next)) continue;
+      seen.add(next);
+      preloads.push('/_astro/' + next);
+      queue.push(...(staticImports.get(next) ?? []));
+    }
+    return preloads;
+  } catch {
+    return [];
+  }
+})();
+
+const structuredData = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [organization, website, product],
+});
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="LSEAT Aerospace" />
+    <meta
+      name="keywords"
+      content="16G economy conversion kit, sleep-mode passenger seat, aerospace, cabin interior furnishing, EASA Part 21J, FAA Part 21, CS-25, FAR-25, EASA Form 1, MRO retrofit, LSEAT Aerospace"
+    />
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#0B192C" />
+    <meta name="color-scheme" content="dark" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      crossorigin
+      href={jakartaSansVariableWoff2}
+    />
+    {sharedChunkPreloads.map((href) => <link rel="modulepreload" href={href} />)}
+    <style set:html={fontCss} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="LSEAT Aerospace" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="LSEAT Aerospace - 16G economy conversion kit" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content="LSEAT Aerospace - 16G economy conversion kit" />
+
+    <script type="application/ld+json" set:html={structuredData} />
+  </head>
+
+  <body class="min-h-screen bg-deep-navy font-sans text-pure-white antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-electric-cyan focus:px-4 focus:py-2 focus:text-body-sm focus:font-semibold focus:text-deep-navy"
+    >
+      Skip to main content
+    </a>
+
+    <Header />
+
+    <main id="main" class="relative">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>

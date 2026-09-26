@@ -1,0 +1,184 @@
+---
+// LSEAT Aerospace - site footer.
+// The logo is a raster-free SVG asset (public/logo.svg) shown on the official white
+// plate from the brochure artwork, identical treatment to the header.
+//
+// Touch targets: every interactive element here is at least 48px tall. Where that
+// would disturb the vertical rhythm, the extra height is cancelled with a negative
+// bottom margin, so the rendered text positions stay exactly where they were.
+import { Mail, MapPin, Phone } from '@lucide/astro';
+
+const year = new Date().getFullYear();
+
+const isHome = Astro.url.pathname.replace(/\/+$/, '') === '';
+
+const solutionLinks = [
+  { label: 'Kinematics & CAD', hash: '#kinematics' },
+  { label: 'Specifications', hash: '#specifications' },
+  { label: 'ROI Simulator', hash: '#roi' },
+].map((link) => ({ label: link.label, href: isHome ? link.hash : `/${link.hash}` }));
+
+const engineeringLinks = [
+  { label: 'MRO Retrofit Procedures', hash: '#retrofit' },
+  { label: 'Request EASA Form 1', hash: '#contact' },
+  {
+    label: 'Request Engineering File',
+    href: 'mailto:contact@lseat.eu?subject=Request%20Engineering%20File',
+  },
+].map((link) => ({
+  label: link.label,
+  href: 'href' in link ? link.href : isHome ? link.hash : `/${link.hash}`,
+}));
+
+const legalItems = ['Legal Notice', 'Privacy Policy', 'Terms of Rental'];
+---
+
+<footer class="glassmorphism border-t-2 border-t-electric-cyan/25 bg-deep-navy" role="contentinfo">
+  <div class="section-container py-16 md:py-20">
+    <div class="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+      <div>
+        <!-- min-h-12 tap target on the anchor; the white plate stays nested inside it
+             so the plate and the 28px logo keep their original rendered size. -->
+        <a
+          href="/"
+          class="inline-flex min-h-12 items-center rounded-lg"
+          aria-label="LSEAT Aerospace - back to home"
+        >
+          <span
+            class="inline-flex items-center rounded-lg bg-white px-2.5 py-1.5 shadow-sm ring-1 ring-black/10"
+          >
+            <img
+              src="/logo.svg"
+              alt="LSEAT Aerospace"
+              width="112"
+              height="28"
+              class="h-7 w-auto"
+              loading="eager"
+              decoding="sync"
+            />
+          </span>
+        </a>
+
+        <p class="mt-6 max-w-xs text-body-sm text-pure-white/70">
+          Design and manufacture of ergonomic sleep-mode passenger seat conversion kits for
+          commercial aircraft cabins. EASA Part 21J and FAA Part 21 certification packages.
+        </p>
+        <p class="mt-3 max-w-xs text-body-sm text-pure-white/70">
+          Applicable to cabin conversion, MRO retrofit and series production.
+        </p>
+
+        <div class="mt-6 flex flex-wrap gap-2">
+          <span class="badge-cert">EASA Part 21J</span>
+          <span class="badge-cert">FAA Part 21</span>
+        </div>
+      </div>
+
+      <nav aria-labelledby="footer-solution">
+        <h2 id="footer-solution" class="text-caption text-pure-white/50">Solution</h2>
+        <ul class="mt-5 space-y-2">
+          {
+            solutionLinks.map((link) => (
+              <li>
+                <a href={link.href} class="btn-ghost px-0 text-pure-white/70 hover:bg-transparent">
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav aria-labelledby="footer-engineering">
+        <h2 id="footer-engineering" class="text-caption text-pure-white/50">Engineering</h2>
+        <ul class="mt-5 space-y-2">
+          {
+            engineeringLinks.map((link) => (
+              <li>
+                <a href={link.href} class="btn-ghost px-0 text-pure-white/70 hover:bg-transparent">
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <section aria-labelledby="footer-contact">
+        <h2 id="footer-contact" class="text-caption text-pure-white/50">Contact</h2>
+        <address class="mt-5 not-italic">
+          <p class="flex items-start gap-2 text-body-sm text-pure-white/70">
+            <MapPin class="mt-0.5 h-4 w-4 shrink-0" stroke-width="2" aria-hidden="true" focusable="false" />
+            <span>
+              15/23 Avenue Arnaud Fraiteur<br />
+              1050 Brussels<br />
+              Belgium
+            </span>
+          </p>
+
+          <p class="mt-4 text-body-sm font-medium text-pure-white">LSEAT Aerospace</p>
+          <p class="mt-1 text-body-sm text-pure-white/50">
+            LSEAT ENGINEERING SRL &middot; Registered in Belgium
+          </p>
+          <a
+            href="https://lseat.eu"
+            class="mt-1 -my-3 flex min-h-12 items-center text-body-sm text-pure-white/70 transition-colors duration-200 hover:text-electric-cyan"
+          >
+            https://lseat.eu
+          </a>
+
+          <a
+            href="mailto:contact@lseat.eu"
+            class="-mb-5 flex min-h-12 items-center gap-2 text-body-sm font-semibold text-electric-cyan transition-colors duration-200 hover:text-pure-white"
+          >
+            <Mail class="h-4 w-4 shrink-0" stroke-width="2" aria-hidden="true" focusable="false" />
+            contact@lseat.eu
+          </a>
+          <a
+            href="mailto:yh@lseat.eu"
+            class="-mb-5 flex min-h-12 items-center gap-2 text-body-sm font-semibold text-electric-cyan transition-colors duration-200 hover:text-pure-white"
+          >
+            <Mail class="h-4 w-4 shrink-0" stroke-width="2" aria-hidden="true" focusable="false" />
+            yh@lseat.eu
+          </a>
+          <a
+            href="tel:+32473987988"
+            class="-mb-5 flex min-h-12 items-center gap-2 text-body-sm font-semibold text-electric-cyan transition-colors duration-200 hover:text-pure-white"
+          >
+            <Phone class="h-4 w-4 shrink-0" stroke-width="2" aria-hidden="true" focusable="false" />
+            +32&nbsp;473&nbsp;98&nbsp;79&nbsp;88
+          </a>
+        </address>
+
+        <p class="mt-6 text-body-sm text-pure-white/70">
+          B2B platform reserved for aircraft operators, MRO organizations, manufacturers and
+          certification auditors. Technical response within 24&nbsp;h.
+        </p>
+      </section>
+    </div>
+
+    <div class="mt-14 flex flex-col gap-6 border-t border-pure-white/10 pt-8 lg:flex-row lg:items-center lg:justify-between">
+      <p class="text-body-sm text-pure-white/50">
+        &copy; {year} LSEAT Aerospace. All rights reserved. Specifications subject to revision
+        without notice.
+      </p>
+
+      <div>
+        <p class="text-caption text-pure-white/50">Documents available on request</p>
+        <ul class="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2" aria-label="Legal documents">
+          {
+            legalItems.map((item) => (
+              <li>
+                <span
+                  aria-disabled="true"
+                  class="text-body-sm text-pure-white/50 transition-colors duration-200"
+                >
+                  {item}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>

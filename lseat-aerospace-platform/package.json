@@ -1,0 +1,44 @@
+{
+  "name": "lseat-aerospace-platform",
+  "version": "1.0.0",
+  "description": "B2B platform for LSEAT Aerospace solutions, focusing on high conversion and secure web experience.",
+  "main": "src/pages/index.astro",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "og": "node scripts/generate-og.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^2.0.2",
+    "@astrojs/tailwind": "^5.0.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@lucide/astro": "^1.48.0",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
+    "astro": "^4.0.0",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "sharp": "^0.35.4",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "sitemap": "7.1.2",
+    "esbuild": "0.25.10",
+    "sharp": "$sharp"
+  },
+  "keywords": [
+    "aerospace",
+    "B2B",
+    "web",
+    "platform"
+  ],
+  "author": "LSEAT Aerospace",
+  "license": "MIT"
+}
