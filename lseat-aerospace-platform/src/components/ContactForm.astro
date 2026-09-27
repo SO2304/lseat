@@ -1,29 +1,46 @@
 ---
 /**
- * ContactForm.astro - the 2020 contact block, rebuilt.
+ * ContactForm.astro - the live /contact page, rebuilt.
  *
- * The 2020 capture carried a minimal form: one required `Email*` field and a
- * `Send` button, with `yh@lseat.eu` and `+32 473 987 988` beneath it and the
- * company line `LSEAT Cy`. That is what is rendered here. The v5.0 form's ten
- * fields, its category selects, its fleet and aircraft-count inputs, its GDPR and
- * newsletter consent copy, its business-address filter, its success panel and its
- * toast strings were all written for the previous platform and none of that copy
- * is in the legacy source, so all of it is gone.
+ * The origin form is "Send us an Email" with a Name field, an Email* field and a
+ * Send button. This form matches that: two fields, one required marker, one
+ * button, and the origin's own labels. None of the previous platform's
+ * machinery is here and none of its copy survives - no enquiry categories, no
+ * organisation, fleet, aircraft or job-title fields, no freemail block and its
+ * override, no GDPR or newsletter checkboxes, no placeholders, no success panel,
+ * no toasts.
  *
  * The submission pipeline is unchanged: the same Web3Forms endpoint, the same
- * PUBLIC_WEB3FORMS_KEY, the same honeypot field name. What is removed is the copy,
- * not the plumbing.
+ * PUBLIC_WEB3FORMS_KEY, the same hidden botcheck honeypot field name. What is
+ * gone is the copy and the surplus fields, not the plumbing.
+ *
+ * THE ORIGIN'S GOOGLE reCAPTCHA NOTICE IS NOT REPRODUCED. The origin prints
+ * "This site is protected by reCAPTCHA and the Google Privacy Policy and Terms
+ * of Service apply." That sentence is accurate on the origin and would not be
+ * accurate here, because reCAPTCHA is not enabled on this deployment. Publishing
+ * an anti-spam protection claim that is not in force would be an unsourced
+ * claim, which is the one thing this build refuses to do. Web3Forms can enable
+ * reCAPTCHA v3 from its own dashboard with the same access key; if the owner
+ * turns it on, the notice can be restored.
+ *
+ * The origin's "Office hours / Today / By Appointment / Get directions" block is
+ * GoDaddy business-hours chrome rather than editorial content, and "Get
+ * directions" would need a maps destination that is not published anywhere, so
+ * it is not reproduced.
  */
-import { MapPin } from '@lucide/astro';
+import { MapPin, Mail, Phone } from '@lucide/astro';
 import {
-  formFieldLabel,
+  contactTitle,
+  contactLead,
+  formNameLabel,
+  formEmailLabel,
   formRequiredMark,
   formSubmitLabel,
+  companyName,
   directEmail,
-  generalEmail,
   phoneDisplay,
   phoneDigits,
-  companyLine,
+  addressLines,
 } from '../legacy';
 
 const web3formsKey: string = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
@@ -32,7 +49,7 @@ const ENDPOINT = 'https://api.web3forms.com/submit';
 
 <section
   id="contact"
-  class="technical-panel relative scroll-mt-24 bg-deep-navy py-20 md:py-28"
+  class="relative scroll-mt-24 bg-slate-dark py-20 md:py-28"
   aria-labelledby="contact-title"
 >
   <div class="absolute inset-0 bg-grid-pattern bg-grid-64 pointer-events-none opacity-60" aria-hidden="true"></div>
@@ -43,12 +60,13 @@ const ENDPOINT = 'https://api.web3forms.com/submit';
         id="contact-title"
         class="section-title font-mono text-[clamp(1.75rem,4.5vw,2.75rem)] font-bold uppercase tracking-tight"
       >
-        Contact
+        {contactTitle}
       </h2>
+      <p class="mt-5 font-mono text-body-base text-electric-cyan sm:text-body-lg">{contactLead}</p>
     </header>
 
-    <div class="technical-split mt-12 md:mt-16">
-      <div class="technical-cell">
+    <div class="contact-grid mt-12 md:mt-16">
+      <div class="contact-cell">
         <form
           id="lseat-contact-form"
           method="POST"
@@ -64,13 +82,26 @@ const ENDPOINT = 'https://api.web3forms.com/submit';
                name Web3Forms already expects, so the existing dashboard setting
                keeps working unchanged. -->
           <div class="hidden" aria-hidden="true">
-            <label for="lseat-botcheck">Do not fill this field</label>
+            <label for="lseat-botcheck">botcheck</label>
             <input type="text" id="lseat-botcheck" name="botcheck" tabindex="-1" autocomplete="off" />
           </div>
 
           <div>
-            <label class="label-field min-h-12 flex items-center font-mono" for="lseat-email">
-              {formFieldLabel}<span class="text-electric-cyan" aria-hidden="true">{formRequiredMark}</span>
+            <label class="label-field flex min-h-12 items-center font-mono" for="lseat-name">
+              {formNameLabel}
+            </label>
+            <input
+              type="text"
+              id="lseat-name"
+              name="name"
+              class="input-field font-mono"
+              autocomplete="name"
+            />
+          </div>
+
+          <div>
+            <label class="label-field flex min-h-12 items-center font-mono" for="lseat-email">
+              {formEmailLabel}<span class="text-electric-cyan" aria-hidden="true">{formRequiredMark}</span>
             </label>
             <input
               type="email"
@@ -88,32 +119,31 @@ const ENDPOINT = 'https://api.web3forms.com/submit';
         </form>
       </div>
 
-      <div id="lseat-contact-details" class="technical-cell flex flex-col gap-5" tabindex="-1">
+      <div id="lseat-contact-details" class="contact-cell flex flex-col gap-5" tabindex="-1">
+        <p class="font-mono text-body-base font-semibold text-pure-white">{companyName}</p>
+
         <address class="flex items-start gap-3 not-italic">
           <MapPin class="mt-1 h-4 w-4 shrink-0 text-electric-cyan" stroke-width="1.75" aria-hidden="true" focusable="false" />
-          <span class="text-body-base text-pure-white/90">
-            15/23 Avenue Arnaud Fraiteur<br />
-            1050 Brussels<br />
-            Belgium
+          <span class="verbatim text-body-base text-pure-white/90">
+            {addressLines.join('\n')}
           </span>
         </address>
 
         <a
-          href={'mailto:' + directEmail}
-          class="contact-line font-mono tabular-nums text-body-base text-electric-cyan"
-        >{directEmail}</a>
-
-        <a
-          href={'mailto:' + generalEmail}
-          class="contact-line font-mono tabular-nums text-body-base text-electric-cyan"
-        >{generalEmail}</a>
-
-        <a
           href={'tel:' + phoneDigits}
           class="contact-line font-mono tabular-nums text-body-base text-electric-cyan"
-        >{phoneDisplay}</a>
+        >
+          <Phone class="h-4 w-4 shrink-0" stroke-width="1.75" aria-hidden="true" focusable="false" />
+          {phoneDisplay}
+        </a>
 
-        <p class="font-mono text-caption uppercase text-pure-white/55">{companyLine}</p>
+        <a
+          href={'mailto:' + directEmail}
+          class="contact-line font-mono tabular-nums text-body-base text-electric-cyan"
+        >
+          <Mail class="h-4 w-4 shrink-0" stroke-width="1.75" aria-hidden="true" focusable="false" />
+          {directEmail}
+        </a>
       </div>
     </div>
   </div>
@@ -157,9 +187,9 @@ const ENDPOINT = 'https://api.web3forms.com/submit';
       })
         .then((response) => {
           if (!response.ok) return;
-          /* No success copy exists in the legacy source, so the form steps aside
-             and the direct contact channels - which the visitor has just read -
-             become the terminal state of the interaction. */
+          /* No success copy exists on the origin, so the form steps aside and
+             the direct contact channels become the terminal state of the
+             interaction. */
           form.hidden = true;
           if (details instanceof HTMLElement) details.focus();
         })
@@ -178,7 +208,7 @@ const ENDPOINT = 'https://api.web3forms.com/submit';
 </script>
 
 <style>
-  .technical-split {
+  .contact-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1px;
@@ -189,30 +219,31 @@ const ENDPOINT = 'https://api.web3forms.com/submit';
   }
 
   @media (min-width: 900px) {
-    .technical-split {
+    .contact-grid {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
   }
 
-  .technical-cell {
-    background-color: #0b192c;
+  .contact-cell {
+    background-color: #0f172a;
     padding: 1.5rem;
   }
 
+  .contact-cell:first-child {
+    box-shadow: inset 2px 2px 0 0 rgba(0, 210, 254, 0.5);
+  }
+
   @media (min-width: 768px) {
-    .technical-cell {
+    .contact-cell {
       padding: 2rem;
     }
   }
 
-  .technical-cell:first-child {
-    box-shadow: inset 2px 2px 0 0 rgba(0, 210, 254, 0.5);
-  }
-
-  /* 48px minimum touch target, negative margin keeps the text on the grid. */
+  /* 48px minimum touch target on every contact link. */
   .contact-line {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    gap: 0.625rem;
     min-height: 3rem;
     width: fit-content;
     text-decoration: underline;

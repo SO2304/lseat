@@ -1,20 +1,68 @@
 ---
+/**
+ * index.astro - the single page.
+ *
+ * Section order follows the origin's own navigation: Home, Passenger Benefits,
+ * Airline benefits, Compliances, NEWS, Contact. Every section renders text
+ * transcribed verbatim from https://lseat.eu and declared in src/legacy.ts.
+ */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
-import Concept from '../components/Concept.astro';
-import Benefits from '../components/Benefits.astro';
+import OriginGroups from '../components/OriginGroups.astro';
 import TechnicalAspects from '../components/TechnicalAspects.astro';
+import News from '../components/News.astro';
 import ContactForm from '../components/ContactForm.astro';
-import { tagline, conceptBody } from '../legacy';
+import {
+  homeHeadline,
+  passengerBenefits,
+  airlineBenefits,
+  technicalLead,
+} from '../legacy';
 
-const title = `LSEAT - ${tagline}`;
-const description = `${tagline}. ${conceptBody}`;
+const title = `LSEAT - ${homeHeadline}`;
+const description = `${homeHeadline}. ${technicalLead}`;
 ---
 
 <BaseLayout title={title} description={description}>
   <Hero />
-  <Concept />
-  <Benefits />
+
+  <!--
+    Legacy source typos retained deliberately. The statements in this section are
+    transcribed from the live origin at /passenger-benefits exactly as found. The
+    defects in the source that are reproduced below, and not corrected, are:
+    "elected.by" for "elected by", and the runs of consecutive spaces in "Between
+    sitting and sleep mode,  "IFE watching" and "relax reading"  dedicated
+    positions". The four mode names - sitting, "IFE watching", "relax reading" and
+    sleep mode - are sourced and are kept here inside the sentence that names
+    them. No angle and no travel value accompanies them, because the origin states
+    none anywhere.
+  -->
+  <OriginGroups
+    id="passenger-benefits"
+    eyebrow="Passenger Benefits"
+    title="Passenger benefits"
+    groups={passengerBenefits}
+    surface="deep-navy"
+  />
+
+  <!--
+    Legacy source typos retained deliberately. The statements in this section are
+    transcribed from the live origin at /airline-benefits exactly as found. The
+    defects in the source that are reproduced below, and not corrected, are:
+    "Econonomy" for "Economy", "does nost change" for "does not change",
+    "Hnet profit" for "Net profit", "density pre cabin", "fee payed back",
+    "adapt  demand" and "No maitenance". The runs of consecutive spaces in "Zero
+    investment is  required.", "Hnet profit comes  with the next one's.",
+    "passenger  density pre cabin" and "adapt  demand" are reproduced too.
+  -->
+  <OriginGroups
+    id="airline-benefits"
+    title="Airline benefits"
+    groups={airlineBenefits}
+    surface="slate-dark"
+  />
+
   <TechnicalAspects />
+  <News />
   <ContactForm />
 </BaseLayout>

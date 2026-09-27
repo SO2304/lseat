@@ -4,40 +4,45 @@
  *
  * The logo is the owner-supplied brand artwork (public/logo-lseat.png), identical
  * treatment to the header: same asset, same white plate, same 28px render height.
- * Intrinsic ratio 1278/886 = 1.442438, so 28 * 1.442438 = 40.39 -> width="40".
  *
- * The navigation block is the COMPLETE nine-label 2020 navigation, transcribed in
- * the exact order of the capture: Home, Concept, Benefits, Market, Team,
- * Partnerships, Investors, News/Media, Contact. Four of those labels resolve to a
- * section of this single page and are rendered as links. The other five - Market,
- * Team, Partnerships, Investors and News/Media - have no recoverable content in any
- * of the three legacy sources, so they are rendered as inert text rather than as
- * links that go nowhere. Inventing content for them is not permitted.
+ * The copyright line is the origin's own, reproduced character for character,
+ * sign included: "Copyright (c) 2024 Lseat - All Rights Reserved." The year is
+ * the origin's year and is not updated to the current one, because the line is a
+ * transcription rather than a generated notice.
  *
- * Touch targets: every interactive element here is at least 48px tall. Where that
- * would disturb the vertical rhythm, the extra height is cancelled with a negative
- * bottom margin, so the rendered text positions stay exactly where they were.
+ * The navigation block is the origin's own six labels, in the origin's order, and
+ * every one of them resolves to a real section of this single page. The contact
+ * block is the /contact page's own content.
+ *
+ * NOT REPRODUCED, and reported rather than silently dropped:
+ *   - the origin's three social links. On the origin they are icon-only images
+ *     with no text, so reproducing them here would mean inventing an accessible
+ *     label. No destination is published on this site instead.
+ *   - the cookie banner ("This website uses cookies.", "Decline", "Accept") and
+ *     the "Powered by" line. Both are GoDaddy platform chrome, not editorial
+ *     content, and this site sets no cookies.
+ *
+ * Touch targets: every interactive element here is at least 48px tall.
  */
 import { Mail, MapPin, Phone } from '@lucide/astro';
-import { legacyNav, sectionNav, generalEmail, directEmail, phoneDisplay, phoneDigits, companyLine } from '../legacy';
-
-const year = new Date().getFullYear();
-
-const linked = new Set(sectionNav.map((link) => link.label));
-const isLinked = (label: string): boolean => linked.has(label);
+import {
+  siteNav,
+  companyName,
+  directEmail,
+  phoneDisplay,
+  phoneDigits,
+  addressLines,
+  copyright,
+} from '../legacy';
 ---
 
 <footer class="glassmorphism border-t-2 border-t-electric-cyan/25 bg-deep-navy" role="contentinfo">
   <div class="section-container py-14 md:py-16">
     <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
-      <div class="lg:col-span-4">
+      <div class="lg:col-span-5">
         <!-- min-h-12 tap target on the anchor; the white plate stays nested inside it
              so the plate and the 28px logo keep their original rendered size. -->
-        <a
-          href="#hero"
-          class="inline-flex min-h-12 items-center rounded-lg"
-          aria-label="Home"
-        >
+        <a href="#hero" class="inline-flex min-h-12 items-center rounded-lg" aria-label="Home">
           <span
             class="inline-flex items-center rounded-lg bg-white px-2.5 py-1.5 shadow-sm ring-1 ring-black/10"
           >
@@ -56,20 +61,11 @@ const isLinked = (label: string): boolean => linked.has(label);
         <nav aria-label="Main navigation" class="mt-8">
           <ul class="footer-nav" role="list">
             {
-              legacyNav.map((label) => (
+              siteNav.map((link) => (
                 <li>
-                  {isLinked(label) ? (
-                    <a
-                      href={sectionNav.find((link) => link.label === label)?.href ?? '#hero'}
-                      class="footer-nav-link font-mono"
-                    >
-                      {label}
-                    </a>
-                  ) : (
-                    <span class="footer-nav-item font-mono" aria-disabled="true">
-                      {label}
-                    </span>
-                  )}
+                  <a href={link.href} class="footer-nav-link font-mono">
+                    {link.label}
+                  </a>
                 </li>
               ))
             }
@@ -77,39 +73,21 @@ const isLinked = (label: string): boolean => linked.has(label);
         </nav>
       </div>
 
-      <section class="lg:col-span-8">
+      <div class="lg:col-span-7">
         <address class="not-italic">
-          <ul class="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2" role="list">
-            <li class="flex items-start gap-3 text-body-sm text-pure-white/80">
-              <MapPin class="mt-0.5 h-4 w-4 shrink-0 text-electric-cyan" stroke-width="1.75" aria-hidden="true" focusable="false" />
-              <span>
-                15/23 Avenue Arnaud Fraiteur<br />
-                1050 Brussels<br />
-                Belgium
+          <p class="font-mono text-body-base font-semibold text-pure-white/90">{companyName}</p>
+
+          <ul class="mt-4 grid grid-cols-1 gap-x-8 gap-y-1 sm:grid-cols-2" role="list">
+            <li class="flex items-start gap-3 text-body-sm text-pure-white/75">
+              <MapPin class="mt-1 h-4 w-4 shrink-0 text-electric-cyan" stroke-width="1.75" aria-hidden="true" focusable="false" />
+              <span class="verbatim">
+                {addressLines.join('\n')}
               </span>
             </li>
             <li>
               <a
-                href={'mailto:' + directEmail}
-                class="footer-line font-mono tabular-nums text-body-sm text-pure-white/80"
-              >
-                <Mail class="h-4 w-4 shrink-0 text-electric-cyan" stroke-width="1.75" aria-hidden="true" focusable="false" />
-                {directEmail}
-              </a>
-            </li>
-            <li>
-              <a
-                href={'mailto:' + generalEmail}
-                class="footer-line font-mono tabular-nums text-body-sm text-pure-white/80"
-              >
-                <Mail class="h-4 w-4 shrink-0 text-electric-cyan" stroke-width="1.75" aria-hidden="true" focusable="false" />
-                {generalEmail}
-              </a>
-            </li>
-            <li>
-              <a
                 href={'tel:' + phoneDigits}
-                class="footer-line font-mono tabular-nums text-body-sm text-pure-white/80"
+                class="footer-line font-mono tabular-nums text-body-sm text-pure-white/75"
               >
                 <Phone class="h-4 w-4 shrink-0 text-electric-cyan" stroke-width="1.75" aria-hidden="true" focusable="false" />
                 {phoneDisplay}
@@ -117,24 +95,20 @@ const isLinked = (label: string): boolean => linked.has(label);
             </li>
             <li>
               <a
-                href="https://lseat.eu"
-                class="footer-line font-mono tabular-nums text-body-sm text-pure-white/80"
+                href={'mailto:' + directEmail}
+                class="footer-line font-mono tabular-nums text-body-sm text-pure-white/75"
               >
-                https://lseat.eu
+                <Mail class="h-4 w-4 shrink-0 text-electric-cyan" stroke-width="1.75" aria-hidden="true" focusable="false" />
+                {directEmail}
               </a>
-            </li>
-            <li class="flex items-center font-mono text-body-sm text-pure-white/55">
-              {companyLine}
             </li>
           </ul>
         </address>
-      </section>
+      </div>
     </div>
 
     <div class="mt-12 border-t border-pure-white/10 pt-6">
-      <p class="font-mono text-caption uppercase text-pure-white/45">
-        &copy; {year} LSEAT
-      </p>
+      <p class="verbatim font-mono text-caption uppercase text-pure-white/45">{copyright}</p>
     </div>
   </div>
 </footer>
@@ -153,7 +127,6 @@ const isLinked = (label: string): boolean => linked.has(label);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  .footer-nav-item,
   .footer-nav-link {
     display: inline-flex;
     align-items: center;
@@ -161,14 +134,6 @@ const isLinked = (label: string): boolean => linked.has(label);
     padding: 0.25rem 0.75rem;
     font-size: 0.8125rem;
     letter-spacing: 0.02em;
-  }
-
-  .footer-nav-item {
-    color: rgba(255, 255, 255, 0.38);
-  }
-
-
-  .footer-nav-link {
     color: rgba(255, 255, 255, 0.85);
     transition: color 200ms ease, background-color 200ms ease;
   }
@@ -183,7 +148,7 @@ const isLinked = (label: string): boolean => linked.has(label);
     align-items: center;
     gap: 0.625rem;
     min-height: 3rem;
-    margin-bottom: -0.75rem;
+    width: fit-content;
     text-decoration: underline;
     text-decoration-color: rgba(0, 210, 254, 0.3);
     text-underline-offset: 0.3rem;

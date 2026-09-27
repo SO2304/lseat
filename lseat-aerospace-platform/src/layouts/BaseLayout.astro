@@ -5,7 +5,7 @@ import '../styles/global.css';
 import jakartaSansVariableWoff2 from '@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { generalEmail, tagline, conceptBody } from '../legacy';
+import { directEmail, homeHeadline, technicalLead, retrofitStatement } from '../legacy';
 
 export interface Props {
   title: string;
@@ -20,16 +20,18 @@ const siteUrl = new URL('/', base).toString();
 const canonicalUrl = new URL(Astro.url.pathname, base).toString();
 const ogImageUrl = new URL(ogImage, base).toString();
 
-/* Structured data carries only legacy wording: the product name and one brochure
-   statement. No specification figure, certification reference or product claim is
-   asserted here, because none of that survives in the recovered sources. */
+/* Structured data carries only origin wording: the product name and two published
+   statements, one from /compliances and one from /airline-benefits' subject matter.
+   Nothing is asserted here beyond what the origin itself publishes: no angle, no
+   travel value, no kit height and no certificate type beyond the FORM 1 and
+   PART 21 J the origin itself names. */
 const organization = {
   '@type': 'Organization',
   '@id': `${siteUrl}#organization`,
   name: 'LSEAT',
   url: siteUrl,
-  email: generalEmail,
-  description: conceptBody,
+  email: directEmail,
+  description: retrofitStatement,
   inLanguage: 'en',
 };
 
@@ -38,6 +40,7 @@ const website = {
   '@id': `${siteUrl}#website`,
   url: siteUrl,
   name: 'LSEAT',
+  description: technicalLead,
   inLanguage: 'en',
   publisher: { '@id': `${siteUrl}#organization` },
 };
@@ -156,7 +159,7 @@ const structuredData = JSON.stringify({
     <meta name="author" content="LSEAT" />
     <meta
       name="keywords"
-      content="LSEAT, LSEAT Cy, economy seat, sleep mode, TSO, STC, PART 21 J, PART 21G, FAA, EASA"
+      content="LSEAT, LSEAT Engineering Srl, Economy seat, sleep mode, IFE watching, relax reading, TSO, PART 21 J, PART 21G, FAA, EASA"
     />
     <link rel="canonical" href={canonicalUrl} />
     <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -184,12 +187,12 @@ const structuredData = JSON.stringify({
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:alt" content={tagline} />
+    <meta property="og:image:alt" content={homeHeadline} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
-    <meta name="twitter:image:alt" content={tagline} />
+    <meta name="twitter:image:alt" content={homeHeadline} />
 
     <script type="application/ld+json" set:html={structuredData} />
   </head>

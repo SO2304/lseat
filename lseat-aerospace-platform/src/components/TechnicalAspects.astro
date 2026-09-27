@@ -1,86 +1,90 @@
 ---
 /**
- * TechnicalAspects.astro - the (B) capture, reproduced verbatim.
+ * TechnicalAspects.astro - the live /compliances page, transcribed verbatim.
  *
- * This section is a strict transcription of the archived LSEAT compliance page,
- * captured 20 July 2025. Nothing is reworded, re-ordered beyond the three original
- * group headings, summarised or corrected.
+ * Rendered copy: technicalTitle, technicalLead and technicalGroups, exactly as
+ * the origin publishes them.
  *
- * RETAINED SOURCE TYPOS - the following defects are present in the archived text
- * and are reproduced on purpose, at the call sites marked below:
- *   "compmnents"      (source spelling, in the PART 21G production sentence)
- *   "staying within"  (source grammar, in the kit size sentence)
- *   "subcontracters ." (space before the final full stop)
+ * RETAINED SOURCE TYPOS AND DEFECTS, all from the live origin:
+ *   "compmnents"           /compliances, PART 21G production sentence
+ *   "subcontracters ."     /compliances, space before the final full stop
+ *   "on any aircraft"      /compliances, "adaptable to most seat types on any aircraft"
+ *   double space           "Vertical back cushion motion is  synchronised."
+ *   double space           "Installation time takes less than 15  minutes per seat"
+ *   double space           "It inserts without  seat or cabin modification"
+ *
+ * There is NO Supplemental Type Certificate on the origin: it reads "LSEAT is
+ * supplied with a FORM 1 and PART 21 J engineering work." and no certificate of
+ * that kind is named. There is NO kit height either: it reads "Kit size stays within
+ * tolerances of seat TSO", and states no measurement of any kind.
+ * Neither is reproduced here, and no angle or travel value appears on the origin
+ * at all, so none is stated.
  */
 import { technicalTitle, technicalLead, technicalGroups } from '../legacy';
-
 ---
 
 <section
-  id="technical-aspects"
-  class="technical-panel relative scroll-mt-24 bg-slate-dark py-20 md:py-28"
-  aria-labelledby="technical-aspects-title"
+  id="compliances"
+  class="relative scroll-mt-24 bg-slate-dark py-20 md:py-28"
+  aria-labelledby="compliances-title"
 >
   <div class="absolute inset-0 bg-grid-pattern bg-grid-64 pointer-events-none opacity-60" aria-hidden="true"></div>
 
   <div class="section-container relative">
     <header>
+      <span class="section-badge">Compliances</span>
       <h2
-        id="technical-aspects-title"
-        class="section-title text-balance font-mono text-[clamp(1.75rem,4.5vw,2.75rem)] font-bold uppercase tracking-tight"
+        id="compliances-title"
+        class="section-title font-mono text-[clamp(1.75rem,4.5vw,2.75rem)] font-bold uppercase tracking-tight"
       >
         {technicalTitle}
       </h2>
-      <p class="mt-5 max-w-3xl font-mono text-body-base text-electric-cyan text-balance sm:text-body-lg">
+      <p class="verbatim mt-5 max-w-3xl font-mono text-body-base text-electric-cyan sm:text-body-lg">
         {technicalLead}
       </p>
     </header>
 
-    <dl class="technical-rows mt-12 md:mt-16">
+    <div class="technical-grid mt-12 md:mt-16">
       {
         technicalGroups.map((group) => (
-          <div class="technical-row">
-            <dt class="technical-row-head font-mono text-caption uppercase tracking-widest text-pure-white/60">
+          <div class="technical-cell">
+            <h3 class="technical-cell-head font-mono text-caption uppercase tracking-widest text-pure-white/60">
               {group.heading}
-            </dt>
-            <dd class="technical-row-body">
-              <ul class="flex flex-col gap-4" role="list">
-                {group.statements.map((statement) => (
-                  <li class="flex gap-4">
-                    <span class="technical-tick" aria-hidden="true" />
-                    <p class="text-body-base text-pure-white/90 text-balance sm:text-body-lg">
-                      {statement}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </dd>
+            </h3>
+            <ul class="flex flex-col gap-4" role="list">
+              {group.statements.map((statement) => (
+                <li class="flex gap-4">
+                  <span class="technical-tick" aria-hidden="true" />
+                  <p class="verbatim text-body-base text-pure-white/90">{statement}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         ))
       }
-    </dl>
+    </div>
 
     <!--
-      Legacy source typos retained deliberately. The three statements below are
-      transcribed from the 2025-07-20 capture of the LSEAT compliance page, exactly as
-      found, and each carries a defect that is present in the archived original:
-
-        "to staying within tolerances of seat TSO"          - source grammar
-        "Production and compmnents are in hands of"          - source spelling
-        "PART 21G subcontracters ."                          - space before the stop
-
-      The owner instructed a strict verbatim mirror, so none of them is corrected
-      here. Note that astro's compressHTML strips HTML comments from the emitted
-      document, so this note lives in the source, not in the shipped HTML.
+      Legacy source typos retained deliberately. The statements above are
+      transcribed from the live origin at /compliances exactly as found, and each
+      carries a defect that is present in the published text: "compmnents" for
+      the misspelt "components", the space before the full stop in
+      "subcontracters .", "on any aircraft" in the retrofit sentence, and the
+      double spaces in "motion is  synchronised", "less than 15  minutes" and
+      "without  seat or cabin modification". The owner instructed an exact
+      mirror, so none of them is corrected here. Note that the live origin carries
+      no Supplemental Type Certificate and no kit-height figure at all, so
+      neither is stated.
     -->
   </div>
 </section>
 
 <style>
-  /* Data-dense register: a two-column definition list separated by 1px rules,
-     collapsing to a single column below 900px. */
-  .technical-rows {
+  /* Same hairline-framed cell register as the benefit sections, over the darker
+     surface: 1px dividers drawn with gap + background. */
+  .technical-grid {
     display: grid;
+    grid-template-columns: 1fr;
     gap: 1px;
     background-color: rgba(0, 210, 254, 0.18);
     border: 1px solid rgba(0, 210, 254, 0.18);
@@ -88,40 +92,33 @@ import { technicalTitle, technicalLead, technicalGroups } from '../legacy';
     overflow: hidden;
   }
 
-  .technical-row {
-    display: grid;
-    grid-template-columns: 1fr;
+  @media (min-width: 1024px) {
+    .technical-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .technical-cell {
     background-color: #0f172a;
+    padding: 1.5rem;
   }
 
-  @media (min-width: 900px) {
-    .technical-row {
-      grid-template-columns: 15rem minmax(0, 1fr);
+  .technical-cell:first-child {
+    box-shadow: inset 2px 2px 0 0 rgba(0, 210, 254, 0.5);
+  }
+
+  @media (min-width: 768px) {
+    .technical-cell {
+      padding: 2rem;
     }
   }
 
-  .technical-row-head {
-    padding: 1.25rem 1.5rem;
-    background-color: rgba(30, 41, 59, 0.45);
+  .technical-cell-head {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  @media (min-width: 900px) {
-    .technical-row-head {
-      padding: 1.75rem 2rem;
-    }
-  }
-
-  .technical-row-body {
-    padding: 1.25rem 1.5rem;
-  }
-
-  @media (min-width: 900px) {
-    .technical-row-body {
-      padding: 1.75rem 2rem;
-    }
-  }
-
-  /* 1px cyan tick in place of a bullet: restrained, technical, no glyph. */
   .technical-tick {
     flex: 0 0 auto;
     width: 0.75rem;

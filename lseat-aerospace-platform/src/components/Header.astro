@@ -12,21 +12,28 @@
  * w-auto derives the painted width from that same intrinsic ratio, so the mark is
  * never scaled on one axis only and is not stretched.
  *
- * Every nav label is a legacy string taken from src/legacy.ts, and every label in
- * the row resolves to a real section of this single page. The full nine-label
- * 2020 navigation is transcribed in full, in order, in the footer.
+ * The navigation is the origin's own, transcribed with its original and rather
+ * inconsistent capitalisation: "Passenger Benefits" with a capital B, "Airline
+ * benefits" with a lower-case b, "Compliances", "NEWS" in full caps, "Contact".
+ * "Contact" is carried as the header's primary button rather than as a sixth
+ * text link, so no label is duplicated and the bar keeps one clear action. All
+ * six labels resolve to real sections of this single page.
  *
- * Mobile menu: an off-canvas slide-over drawer. The panel and its scrim are rendered
- * as siblings AFTER </header> on purpose: the header carries .glassmorphism, which
- * applies backdrop-filter, and an ancestor with backdrop-filter/transform/filter
- * becomes the containing block for position: fixed descendants. Keeping the drawer
- * outside <header> guarantees the panel is positioned against the viewport and that
- * opening it never reflows the page.
+ * The origin's "More" item is GoDy's duplicate-menu control for the collapsed
+ * mobile layout. It carries no destination of its own and is not reproduced.
+ *
+ * Mobile menu: an off-canvas slide-over drawer. The panel and its scrim are
+ * rendered as siblings AFTER </header> on purpose: the header carries
+ * .glassmorphism, which applies backdrop-filter, and an ancestor with
+ * backdrop-filter/transform/filter becomes the containing block for position:
+ * fixed descendants. Keeping the drawer outside <header> guarantees the panel is
+ * positioned against the viewport and that opening it never reflows the page.
  */
-import { ArrowRight, Menu, X } from '@lucide/astro';
-import { sectionNav, technicalTitle } from '../legacy';
+import { Menu, X } from '@lucide/astro';
+import { siteNav } from '../legacy';
 
-const cta = { label: technicalTitle, href: '#technical-aspects' };
+const contactItem = siteNav.find((item) => item.label === 'Contact') ?? siteNav[siteNav.length - 1];
+const textItems = siteNav.filter((item) => item.href !== contactItem.href);
 ---
 
 <header class="sticky top-0 z-50 glassmorphism border-b border-electric-cyan/18">
@@ -43,11 +50,7 @@ const cta = { label: technicalTitle, href: '#technical-aspects' };
       <!-- Tap target: the anchor carries min-h-12 (48px) and the visible white plate
            is nested inside it, so the 48px hit area does not enlarge the plate or the
            28px logo image. -->
-      <a
-        href="#hero"
-        class="inline-flex min-h-12 items-center rounded-lg"
-        aria-label="Home"
-      >
+      <a href="#hero" class="inline-flex min-h-12 items-center rounded-lg" aria-label="Home">
         <span
           class="inline-flex items-center rounded-lg bg-white px-2.5 py-1.5 shadow-sm ring-1 ring-black/10 xl:px-2"
         >
@@ -63,9 +66,9 @@ const cta = { label: technicalTitle, href: '#technical-aspects' };
         </span>
       </a>
 
-      <nav class="hidden xl:flex items-center gap-2" aria-label="Main navigation">
+      <nav class="hidden xl:flex items-center gap-1" aria-label="Main navigation">
         {
-          sectionNav.map((link) => (
+          textItems.map((link) => (
             <a href={link.href} class="btn-ghost whitespace-nowrap xl:px-2">
               {link.label}
             </a>
@@ -76,10 +79,7 @@ const cta = { label: technicalTitle, href: '#technical-aspects' };
       <div
         class="hidden shrink-0 items-center gap-2 xl:flex [&_.btn-primary]:whitespace-nowrap [&_.btn-primary]:px-5 [&_.btn-primary]:py-2.5 [&_.btn-primary]:text-body-sm"
       >
-        <a href={cta.href} class="btn-primary">
-          <span>{cta.label}</span>
-          <ArrowRight class="h-4 w-4" stroke-width="2" aria-hidden="true" focusable="false" />
-        </a>
+        <a href={contactItem.href} class="btn-primary">{contactItem.label}</a>
       </div>
 
       <button
@@ -149,14 +149,14 @@ const cta = { label: technicalTitle, href: '#technical-aspects' };
 
   <nav class="flex flex-col" aria-label="Mobile navigation">
     {
-      sectionNav.map((link) => (
+      textItems.map((link) => (
         <a href={link.href} class="btn-ghost w-full justify-start text-body-base">
           {link.label}
         </a>
       ))
     }
-    <a href={cta.href} class="btn-ghost w-full justify-start text-body-base">
-      {cta.label}
+    <a href={contactItem.href} class="btn-ghost w-full justify-start text-body-base">
+      {contactItem.label}
     </a>
   </nav>
 </div>

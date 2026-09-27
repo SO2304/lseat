@@ -1,25 +1,28 @@
 ---
 /**
- * Hero.astro - the opening section of the verbatim legacy mirror.
+ * Hero.astro - the opening section.
  *
- * Every string rendered here comes from src/legacy.ts and nowhere else:
- *   - the h1 is the 2020 tagline
- *   - the contact line is the 2020 contact line
- *   - the two calls to action are legacy navigation labels that resolve to real
+ * Rendered copy, all from the live origin:
+ *   - the h1 is the origin home page headline, runs of consecutive spaces included
+ *   - the two calls to action are origin navigation labels that resolve to real
  *     sections of this page
- *   - the four figures in the strip are lifted verbatim out of the 2025 capture
- *     of /compliances
+ *   - the four figures are lifted verbatim out of the live /compliances page
+ *   - the "See Flyer" link is the origin label for the 2025 brochure, which this
+ *     site does host
  *
- * The hero background video and its deferral logic are unchanged from v5.0: the
- * element carries preload="none" and no <source> children, so the resource
- * selection algorithm has nothing to fetch, and a synchronous inline script
- * strips autoplay/loop for prefers-reduced-motion, save-data and 2g/slow-2g
- * before any playback can begin. The deferred attach itself is the only
- * application script this component ships.
+ * The hero background video and its deferral logic are unchanged: the element
+ * carries preload="none" and no <source> children, so the resource selection
+ * algorithm has nothing to fetch, and a synchronous inline script strips
+ * autoplay and loop for prefers-reduced-motion, save-data and 2g/slow-2g before
+ * any playback can begin.
  */
-import { heroFigures, tagline, directEmail, phoneDisplay, phoneDigits } from '../legacy';
+import { homeHeadline, homeLink, heroFigures, brochureHref, brochureDownload, downloadLabel, siteNav } from '../legacy';
 
-const kickerFigures = heroFigures;
+const cta = [
+  { label: 'Compliances', href: '#compliances' },
+  { label: 'Contact', href: '#contact' },
+] as const;
+const primary = siteNav.find((item) => item.label === cta[0].label) ?? siteNav[0];
 ---
 
 <section
@@ -112,27 +115,28 @@ const kickerFigures = heroFigures;
 
       <h1
         id="hero-title"
-        class="mt-5 font-display text-pure-white text-balance text-[clamp(2.25rem,7vw,4.5rem)] font-extrabold leading-[1.04] tracking-tight"
+        class="verbatim mt-5 font-display text-pure-white text-balance text-[clamp(2rem,6.2vw,4rem)] font-extrabold leading-[1.05] tracking-tight"
       >
-        {tagline}
+        {homeHeadline}
       </h1>
 
-      <p class="mt-5 text-body-base text-pure-white/75 sm:text-body-lg">
-        <a
-          href={'mailto:' + directEmail}
-          class="hero-contact-link font-mono tabular-nums transition-colors duration-200 hover:text-electric-cyan"
-        >{directEmail}</a>
-        <span class="mx-3 text-pure-white/30" aria-hidden="true">/</span>
-        <a
-          href={'tel:' + phoneDigits}
-          class="hero-contact-link font-mono tabular-nums transition-colors duration-200 hover:text-electric-cyan"
-        >{phoneDisplay}</a>
-      </p>
-
       <div class="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
-        <a href="#contact" class="btn-primary">Contact</a>
-        <a href="#technical-aspects" class="btn-secondary">Technical aspects</a>
+        <a href={primary.href} class="btn-primary">{primary.label}</a>
+        <a href={cta[1].href} class="btn-secondary">{cta[1].label}</a>
       </div>
+
+      <p class="mt-7 font-mono text-body-sm">
+        <a
+          href={brochureHref}
+          download={brochureDownload}
+          type="application/pdf"
+          class="inline-flex min-h-12 items-center gap-2 text-electric-cyan underline decoration-electric-cyan/40 underline-offset-4 transition-colors duration-200 hover:text-pure-white hover:decoration-pure-white"
+        >
+          <span>{homeLink}</span>
+          <span class="text-pure-white/45" aria-hidden="true">/</span>
+          <span class="text-pure-white/70">{downloadLabel}</span>
+        </a>
+      </p>
     </div>
 
     <ul
@@ -140,7 +144,7 @@ const kickerFigures = heroFigures;
       aria-label="Technical aspects"
     >
       {
-        kickerFigures.map((figure) => (
+        heroFigures.map((figure) => (
           <li class="flex flex-col gap-2 bg-slate-dark/90 px-4 py-4 sm:px-5 sm:py-5">
             <span class="text-caption text-pure-white/55">{figure.label}</span>
             <span class="font-mono text-body-lg font-semibold tabular-nums text-electric-cyan sm:text-display-sm">
@@ -188,8 +192,10 @@ const kickerFigures = heroFigures;
     }
   }
 
-  /* Hard technical rule: a short cyan tick above the wordmark, the only purely
-     decorative element in the section. */
+  /* The .badge-cert chip plus a short trailing hairline. .badge-cert keeps its
+     #FFFFFF text: that is the colour measured at 9.28:1 against the brightest
+     composited chip pixel over every frame of the hero clip. Do not change it
+     to a sky tone, which measures 4.33:1 and fails. */
   .hero-rule {
     display: flex;
     align-items: center;
@@ -204,20 +210,7 @@ const kickerFigures = heroFigures;
     background-color: rgba(0, 210, 254, 0.55);
   }
 
-  .hero-contact-link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 3rem;
-    text-decoration: underline;
-    text-decoration-color: rgba(255, 255, 255, 0.28);
-    text-underline-offset: 0.3rem;
-  }
-
-  .hero-contact-link:hover {
-    text-decoration-color: currentColor;
-  }
-
-  /* Staggered CSS-only entrance. No observer, no counter, no script: the four
+  /* Staggered CSS-only entrance: no observer, no counter, no script. The four
      figures are phrases, not numbers, so nothing here needs to count. */
   @media (prefers-reduced-motion: no-preference) {
     .hero-figures > li {

@@ -1,60 +1,73 @@
 # LSEAT
 
-A strict verbatim mirror of the legacy LSEAT site, with a modernised technical
-design. The site carries **only** text recovered from three archived sources.
+A strict verbatim mirror of the LIVE origin site at <https://lseat.eu>, with a
+modernised technical design. The site carries **only** text read from the origin.
 
 ## Content provenance
 
-Every editorial string rendered by the application is declared in
-`src/legacy.ts` and rendered from there. Nothing on the site is written, reworded,
-condensed or embellished. If a string is not in the three sources below, it is not
-on the site.
+Every editorial string is declared in `src/legacy.ts` and rendered from there.
+Nothing is written, reworded, condensed or embellished. If a string is not on the
+origin, it is not on this site.
 
-| Source | Capture | What survives |
-| --- | --- | --- |
-| Homepage | Wayback, 2020-09-21 | Tagline, the nine-item navigation, the contact line, `yh@lseat.eu`, `+32 473 987 988`, an `Email*` / `Send` form, the line `LSEAT Cy` |
-| `/compliances` | Wayback, 2025-07-20 | The only substantive technical text: `Technical aspects`, `Kit content`, `Compliance`, `Technical issues` and their statements |
-| Brochure | 2025 | The headline and marketing statements listed in `src/legacy.ts` |
+| Origin page | Transcribed content |
+| --- | --- |
+| `/` | The headline, the `See Flyer` brochure link, and the navigation |
+| `/passenger-benefits` | Head, three sub-headings and their bullets |
+| `/airline-benefits` | Head, three sub-headings and their bullets |
+| `/compliances` | `Technical aspects`, the lead, and `Kit content` / `Compliance` / `Technical issues` |
+| `/news` | Four entries; two are hosted here, two are not |
+| `/contact` | `LSEAT - Contact`, `Send us an Email`, the form fields, the company details |
+| Footer | `Copyright (c) 2024 Lseat - All Rights Reserved.` |
 
-### Deliberately retained source typos
+Pages were read on 2026-09-27. Re-reading the origin is the only way to refresh
+this content.
 
-The 2025-07-20 capture carries three defects. They are reproduced character for
-character because the owner instructed a verbatim mirror, and a short HTML comment
-at the call site in `src/components/TechnicalAspects.astro` records the fact:
+### What the origin does not state, and is therefore absent
 
-- `compmnents` (source spelling)
-- `staying within` in "to staying within tolerances" (source grammar)
-- the space before the final full stop in `subcontracters .`
+- **No Supplemental Type Certificate.** The origin reads `LSEAT is supplied with
+  a FORM 1 and PART 21 J engineering work.` No certificate of that kind is named.
+- **No kit height.** The origin reads `Kit size stays within tolerances of seat
+  TSO` and states no measurement of any kind.
+- **No angles and no travel values.** The origin publishes neither. The four mode
+  names it *does* publish on `/passenger-benefits` - sitting, `"IFE watching"`,
+  `"relax reading"` and sleep mode - are kept, inside the sentence that names
+  them, with no number attached.
 
-### Deliberately removed
+### Retained source typos and defects
 
-The v5.0 site carried a large amount of copy that appears in none of the three
-sources. All of it is gone, including the four-position kinematic table and every
-angle and travel value, the twelve-row technical specification table, the archive
-permalinks and the manufacturer-data attribution apparatus, the `-75 %` maintenance
-cost claim, the standalone `0 W` / `0 motors` / `3 moving sub-parts` claims, the
-converted `0.5 in (12.7 mm)` figure, both YouTube embeds and their captions, the
-restored-records photo grid with its eight photographs, and the brochure and
-Inflight download cards.
+The origin text carries defects that are reproduced character for character,
+including runs of consecutive spaces, because the owner instructed an exact
+mirror and instructed that malformed content is not dropped: `compnents`,
+`subcontracters .`, `elected.by`, `Econonomy`, `nost change`, `Hnet profit`,
+`pre cabin`, `payed`, `maitenance`, `reaseach`, `4.656`, `fundation`,
+`on any aircraft`, and the double spaces in several sentences. A short HTML
+comment at each call site records which statements carry them.
+
+### The address
+
+The origin writes `15, av. Arnaud Fraiteur, 1050 BRUSSELS (Belgium)`. The owner has
+confirmed the correct form and that is what is published here: **15/23 Avenue
+Arnaud Fraiteur, 1050 Brussels, Belgium**. The origin's rendering is superseded.
 
 ## Company
 
 | | |
 | --- | --- |
 | Brand | LSEAT |
-| Company line | LSEAT Cy |
-| Direct | yh@lseat.eu |
-| General | contact@lseat.eu |
+| Legal entity | LSEAT Engineering Srl |
+| Email | yh@lseat.eu |
 | Phone | +32 473 98 79 88 |
 | Address | 15/23 Avenue Arnaud Fraiteur, 1050 Brussels, Belgium |
 | Web | https://lseat.eu |
+
+`contact@lseat.eu` is **not** on the origin and is not published here.
 
 ## Tech stack
 
 - **Astro 4** - static-first framework, zero client framework runtime
 - **Tailwind CSS 3.4** - design tokens (deep-navy, slate-dark, aero-blue,
   electric-cyan, titanium-gray) and component classes (`.glassmorphism`,
-  `.btn-primary`, `.input-field`, ...)
+  `.btn-primary`, `.input-field`, `.badge-tech`, `.badge-cert`, ...)
 - **TypeScript 5.9** - strict typing, validated with `astro check`
 - **Web3Forms** - serverless contact pipeline (honeypot)
 
@@ -65,7 +78,7 @@ lseat-aerospace-platform/
 |-- public/                     # favicon.svg, logo-lseat.png, og-image.{svg,png}, media/, docs/
 |-- src/
 |   |-- legacy.ts               # THE ONLY PERMITTED COPY
-|   |-- components/             # Hero, Concept, Benefits, TechnicalAspects, ContactForm, Header, Footer
+|   |-- components/             # Hero, OriginGroups, TechnicalAspects, News, ContactForm, Header, Footer
 |   |-- layouts/BaseLayout.astro
 |   |-- pages/index.astro       # single page
 |   `-- styles/global.css       # Tailwind layers: base / components / utilities
@@ -77,10 +90,13 @@ lseat-aerospace-platform/
 `-- package.json
 ```
 
-`public/media/` still holds the eight recovered photographs and the mechanism
-drawing. They are unreferenced: the legacy sources contain no caption for any of
-them, and the drawing itself carries the recline-angle callouts that the purge
-removes, so publishing it would reintroduce the deleted figures as pixels.
+## Unreferenced assets
+
+`public/media/` holds eight recovered photographs and a mechanism drawing, and
+`public/docs/` holds two PDFs. All eight images are unreferenced: the origin
+publishes no caption for any of them, and the origin does not use the drawing, so
+publishing them would require inventing alt text, and the drawing carries
+recline-angle callouts the origin itself no longer states.
 
 ## Setup
 
@@ -124,7 +140,13 @@ This is a **public client-side** key. The form posts directly from the browser t
 `https://api.web3forms.com/submit` and carries a hidden `botcheck` honeypot.
 Never add secrets to a `PUBLIC_*` variable.
 
+The origin also prints a Google reCAPTCHA notice on its contact page. reCAPTCHA is
+**not** enabled on this deployment, so that sentence is not reproduced here; it
+would be an unsourced protection claim. Web3Forms can enable reCAPTCHA v3 from its
+own dashboard with the same access key.
+
 ## Deployment
 
 The site builds to a fully static bundle in `dist/`. `npm run build` is the only
-required command. Output directory `dist`, Node >= 22.
+required command. Output directory `dist`, Node >= 22. `dist/` is git-ignored and
+must not be committed.

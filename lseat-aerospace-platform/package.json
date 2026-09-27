@@ -1,7 +1,7 @@
 {
   "name": "lseat-aerospace-platform",
   "version": "1.0.0",
-  "description": "LSEAT. Relax and enjoy flying economy.",
+  "description": "LSEAT inserts sleep mode on existing Economy seats pitch and cabin.",
   "main": "src/pages/index.astro",
   "engines": {
     "node": ">=22.0.0"

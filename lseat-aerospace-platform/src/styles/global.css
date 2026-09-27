@@ -156,6 +156,12 @@
 
 }
 
+  /* The origin text carries runs of consecutive spaces that are part of the
+     source. Browsers collapse them by default, so every verbatim text node
+     carries this class to keep the transcription faithful on screen. */
+  .verbatim {
+    white-space: pre-wrap;
+  }
 @layer utilities {
   .text-balance {
     text-wrap: balance;

@@ -1,162 +1,80 @@
 /**
  * legacy.ts - the ONLY permitted copy on this site.
  *
- * Every editorial string rendered anywhere in the Astro application is declared
- * here, verbatim, exactly as it appears in the recovered legacy LSEAT sources:
+ * Every editorial string rendered by the Astro application is declared here,
+ * transcribed verbatim from the LIVE origin at https://lseat.eu. Pages read on
+ * 2026-09-27: /, /passenger-benefits, /airline-benefits, /compliances, /news and
+ * /contact. Nothing is written, reworded, condensed, corrected or embellished.
  *
- *   (A) Homepage,  Wayback capture 2020-09-21  -> tagline, navigation, contact line, form
- *   (B) /compliances, Wayback capture 2025-07-20 -> the only substantive technical text
- *   (C) Brochure 2025 -> headline and marketing statements
+ * WHAT THE LIVE ORIGIN DOES NOT CONTAIN, and what is therefore absent here:
+ *   - no Supplemental Type Certificate. /compliances reads "LSEAT is supplied with
+ *     a FORM 1 and PART 21 J engineering work." and no certificate of that kind is
+ *     named anywhere. There is no kit height either: /compliances reads "Kit size
+ *     stays within tolerances of seat TSO" and states no measurement of any kind.
+ *   - no angles and no travel values. No recline angle in degrees and no
+ *     millimetre travel figure appears anywhere on the origin. None is reproduced
+ *     here. The four MODE NAMES are sourced - /passenger-benefits names them:
+ *     sitting, "IFE watching", "relax reading" and sleep mode - so the names are
+ *     kept, inside the sentence that names them, and the numbers stay out.
  *
- * Nothing here is written, reworded, condensed, corrected or embellished. If a
- * string is not in the three sources above it does not belong in this file, and it
- * does not belong on the site.
- *
- * This file is deliberately ASCII-only: the non-breaking spaces and the typographic
- * apostrophe are written as \u escapes so the source cannot acquire mojibake.
- *
- * DELIBERATELY RETAINED SOURCE TYPOS
+ * RETAINED SOURCE TYPOS AND DEFECTS
  * ---------------------------------
- * (B) is a verbatim transcription of the archived page and carries three defects in
- * the original text. They are reproduced here character for character because the
- * owner instructed a strict verbatim mirror:
+ * The origin text carries the following defects. They are reproduced character
+ * for character, including the runs of consecutive spaces, because the owner
+ * instructed an exact mirror and instructed that malformed content is not to be
+ * dropped:
  *
- *   1. "compmnents"     in the PART 21G production sentence  (source spelling)
- *   2. "staying within" in "to staying within tolerances"    (source grammar)
- *   3. " ."             a space before the final full stop in "subcontracters ."
+ *   compnents         /compliances, PART 21G production sentence
+ *   subcontracters .  /compliances, space before the final full stop
+ *   elected.by        /passenger-benefits, missing space after the full stop
+ *   Econonomy         /airline-benefits, in "any Econonomy existing seats"
+ *   nost change       /airline-benefits, in "does nost change"
+ *   Hnet profit       /airline-benefits, in "Hnet profit comes"
+ *   pre cabin         /airline-benefits, in "passenger density pre cabin"
+ *   payed             /airline-benefits, "Monthly rental fee payed back"
+ *   maitenance        /airline-benefits, "No maitenance nor cabin crew training"
+ *   reaseach          /news, "Abstract Medical reaseach thrombose in aviation"
+ *   4.656             /news, "1 Thrombose/4.656 pax"
+ *   fundation         /news, "Dutch Thrombose fundation petition"
+ *   on any aircraft   /compliances, "adaptable to most seat types on any aircraft"
+ *   double spaces     several places; see VERBATIM_SPACES below
  *
- * A short HTML comment at each call site in src/components/TechnicalAspects.astro
- * repeats this note where the text is rendered.
+ * A short HTML comment at each call site in the components repeats this note
+ * where the affected text is rendered.
+ *
+ * This file is deliberately ASCII-only: the copyright sign and the non-breaking
+ * spaces are written as \u escapes so the source cannot acquire mojibake.
  */
 
+/** Rendered on every verbatim text node so the origin's double spaces survive. */
+export const VERBATIM_CLASS = 'verbatim';
+
 /* ------------------------------------------------------------------ *
- * (A) Homepage - Wayback capture 2020-09-21
+ * Navigation - / , as published on every origin page
  * ------------------------------------------------------------------ */
 
-export const tagline = 'Relax and enjoy flying economy';
-
-/** The 2020 navigation, in the exact order of the recovered capture. */
-export const legacyNav = [
-  'Home',
-  'Concept',
-  'Benefits',
-  'Market',
-  'Team',
-  'Partnerships',
-  'Investors',
-  'News/Media',
-  'Contact',
+export const siteNav = [
+  { label: 'Home', href: '#hero' },
+  { label: 'Passenger Benefits', href: '#passenger-benefits' },
+  { label: 'Airline benefits', href: '#airline-benefits' },
+  { label: 'Compliances', href: '#compliances' },
+  { label: 'NEWS', href: '#news' },
+  { label: 'Contact', href: '#contact' },
 ] as const;
 
-/** Nav labels that resolve to a section of this single-page build. */
-export const sectionNav: ReadonlyArray<{ label: string; href: string }> = [
-  { label: 'Home', href: '#hero' },
-  { label: 'Concept', href: '#concept' },
-  { label: 'Benefits', href: '#benefits' },
-  { label: 'Contact', href: '#contact' },
-];
-
-export const directEmail = 'yh@lseat.eu';
-export const generalEmail = 'contact@lseat.eu';
-
-/**
- * The 2020 capture printed the telephone as `+32 473 987 988`. The same digits are
- * displayed here in the site's own grouping, `+32 473 98 79 88`, separated by
- * non-breaking spaces. Only the grouping differs; the number is identical.
- */
-export const phoneDigits = '+32473987988';
-export const phoneDisplay = '+32\u00A0473\u00A098\u00A079\u00A088';
-
-/** The 2020 contact form: a single required `Email*` field and a `Send` button. */
-export const formFieldLabel = 'Email';
-export const formRequiredMark = '*';
-export const formSubmitLabel = 'Send';
-
-/** Company line carried by the 2020 page beneath the contact block. */
-export const companyLine = 'LSEAT Cy';
-
 /* ------------------------------------------------------------------ *
- * (B) /compliances - Wayback capture 2025-07-20
+ * Home - /
  * ------------------------------------------------------------------ */
 
-export const technicalTitle = 'Technical aspects';
-export const technicalLead = 'Full compliance with FAA and EASA regulations';
-
-export interface LegacyGroup {
-  heading: string;
-  statements: readonly string[];
-}
-
-export const technicalGroups: readonly LegacyGroup[] = [
-  {
-    heading: 'Kit content',
-    statements: [
-      'Two thin composite frames are inserted between the seat frame and the seat cushion. The upper one slides forwards and downwards on its frontal part.',
-      'Vertical back cushion motion is synchronised.',
-    ],
-  },
-  {
-    heading: 'Compliance',
-    statements: [
-      'A spring system maintains unoccupied seats sitting position to comply with 16G compliance.',
-      'Kit size is below half an inch high to staying within tolerances of seat TSO',
-      'Kit weight is below 1650 grams to stay within the 5 KG weight tolerance for three seats fitted on two floorlegs.',
-    ],
-  },
-  {
-    heading: 'Technical issues',
-    statements: [
-      'LSEAT is supplied with an STC and PART 21 J engineering work and a FORM 1. Production and compnents are in hands of PART 21G subcontracters .',
-      'Our retrofit kit is adaptable to most seat types for any aircraft. It inserts without seat or cabin modification, respecting strictly their certification integrity.',
-      'Installation time takes less than 15 minutes per seat need no A.O.G time.',
-    ],
-  },
-];
-
-/* ------------------------------------------------------------------ *
- * (C) Brochure 2025
- * ------------------------------------------------------------------ */
-
-export const conceptTitle = 'REINVENTING COMFORT IN ECONOMY CLASS';
-export const conceptLead = 'Transform any seat into a unique experience';
-export const conceptBody =
-  'LSEAT can convert any existing economy seat into sleep mode, while maintaining seat pitch and cabin certification integrity.';
-
-export const rental =
-  'LSEAT is not sold but offered through a flexible rental model, requiring no upfront investment. There\'s no financial risk, as the contract can be terminated free of charge after six months. The monthly rental fee is lower than the revenue generated from the very first day of operation.';
-
-export const maintenanceStatement =
-  'No maintenance is required, and no additional training is needed for cabin crew.';
-
-export interface LegacyBlock {
-  title: string;
-  statements: readonly string[];
-}
-
-export const benefitBlocks: readonly LegacyBlock[] = [
-  {
-    title: 'LUXURY SLEEP, ECONOMY SEAT',
-    statements: ['Sleep is a top priority for 80% of long-haul passengers.'],
-  },
-  {
-    title: 'MORE SPACE. MORE COMFORT. MORE YOU.',
-    statements: [
-      'Thanks to its generous recline, LSEAT is also certifiable as a rest seat for crew members during rest periods.',
-      'The kit qualifies under minor modification procedures and remains within TSO tolerances.',
-    ],
-  },
-  {
-    title: 'LSEAT',
-    statements: [maintenanceStatement],
-  },
-];
+export const homeHeadline = 'LSEAT inserts sleep mode on existing  Economy  seats pitch and cabin';
+export const homeLink = 'See Flyer';
 
 /* ------------------------------------------------------------------ *
  * Hero figures
  *
- * All four are lifted verbatim out of the (B) capture. No unit is converted, no
- * thousands separator is added, and no figure the legacy text does not contain is
- * introduced.
+ * All four are lifted verbatim out of the live /compliances page. No unit is
+ * converted, no thousands separator is added, and no figure the origin does not
+ * state is introduced.
  * ------------------------------------------------------------------ */
 
 export const heroFigures: ReadonlyArray<{ label: string; value: string }> = [
@@ -165,3 +83,182 @@ export const heroFigures: ReadonlyArray<{ label: string; value: string }> = [
   { label: 'A.O.G', value: 'no A.O.G time' },
   { label: 'A spring system', value: '16G compliance' },
 ];
+
+/* ------------------------------------------------------------------ *
+ * /passenger-benefits
+ * ------------------------------------------------------------------ */
+
+export interface OriginGroup {
+  heading: string;
+  statements: readonly string[];
+}
+
+export const passengerBenefits: readonly OriginGroup[] = [
+  {
+    heading: 'Upgrade passenger comfort with LSEAT',
+    statements: [
+      'Sleep is the main concern for 80 % passengers traveling long-haul',
+      "Most Economy passengers don't want or cannot afford to pay upgrade class costs, but they accept to pay some more for justified comfort improvement.",
+      'Each chosen mode is individual and does not affect mode chosen by the others',
+    ],
+  },
+  {
+    heading: 'Advantages for anyone any size',
+    statements: [
+      'For any passenger above average tall size, spend a flight with knees knocking on the back of the seat in front of him is a torture.',
+      'Whatever tall, and 2 meters or up, passenger can extend or cross his legs below the seat in front of him.',
+      'Table recline for meals is not affected.',
+    ],
+  },
+  {
+    heading: 'Intermediate positions',
+    statements: [
+      'Between sitting and sleep mode,  "IFE watching" and "relax reading"  dedicated positions can be elected.by body weight motion',
+      'LSEAT cushions motion adds to existing recline.',
+      'Not any other seat function is affected by the LSEAT modification.',
+    ],
+  },
+];
+
+/* ------------------------------------------------------------------ *
+ * /airline-benefits
+ * ------------------------------------------------------------------ */
+
+export const airlineBenefits: readonly OriginGroup[] = [
+  {
+    heading: 'No investment',
+    statements: [
+      'LSEAT is rented',
+      'Zero investment is  required.',
+      'No risk, as after six months a contract exit is possible at no charge',
+      "Monthly rental fee payed back with first day additional revenue earned with low ticket price mark-up. Hnet profit comes  with the next one's.",
+    ],
+  },
+  {
+    heading: 'Improve existing seats and cabin',
+    statements: [
+      'LSEAT inserts on any Econonomy existing seats, pitch and cabin.',
+      'Cost per passenger "LSEATed" does nost change, as passenger  density pre cabin does not change.',
+      "Increase LSEAT's to adapt  demand is fast.",
+    ],
+  },
+  {
+    heading: 'Operational features',
+    statements: [
+      'Installation or removal takes less than 15 minutes per seat and no AOG.',
+      'Seat and cabin certification integrity are maintained.',
+      'Minor Modification procedure as kit is within TSO tolerances.',
+      'No maitenance nor cabin crew training needed.',
+    ],
+  },
+];
+
+/* ------------------------------------------------------------------ *
+ * /compliances
+ * ------------------------------------------------------------------ */
+
+/** First statement of the /compliances "Technical issues" group, reused as the
+ *  structured-data description. */
+export const retrofitStatement =
+  'Our retrofit kit is adaptable to most seat types on any aircraft. It inserts without  seat or cabin modification, respecting strictly cabin certification integrity.';
+export const technicalTitle = 'Technical aspects';
+export const technicalLead = 'Full compliance with FAA and EASA regulations';
+
+export const technicalGroups: readonly OriginGroup[] = [
+  {
+    heading: 'Kit content',
+    statements: [
+      'Two thin composite frames are inserted between the seat frame and the seat cushion. The upper one slides forwards and downwards on its frontal part.',
+      'Vertical back cushion motion is  synchronised.',
+    ],
+  },
+  {
+    heading: 'Compliance',
+    statements: [
+      'A spring system maintains unoccupied seats sitting position to comply with 16G compliance.',
+      'Kit size stays within tolerances of seat TSO',
+      'Kit weight is below 1650 grams to stay within the 5 KG weight tolerance for three seats fitted on two floorlegs.',
+    ],
+  },
+  {
+    heading: 'Technical issues',
+    statements: [
+      'LSEAT is supplied with a FORM 1 and PART 21 J engineering work. Production and compnents are in hands of PART 21G subcontracters .',
+      'Our retrofit kit is adaptable to most seat types on any aircraft. It inserts without  seat or cabin modification, respecting strictly cabin certification integrity.',
+      'Installation time takes less than 15  minutes per seat need no A.O.G time.',
+    ],
+  },
+];
+
+/* ------------------------------------------------------------------ *
+ * /news
+ *
+ * The origin links four PDFs. This site hosts two of them. The two that are
+ * named here but carry no href are the entries we cannot supply; they are
+ * rendered as text, never as a link to a file that does not exist.
+ * ------------------------------------------------------------------ */
+
+export interface OriginItem {
+  title: string;
+  subtitle?: string;
+  href?: string;
+  download?: string;
+}
+
+export const newsItems: readonly OriginItem[] = [
+  {
+    title: 'AIRCRAFT CABIN MANAGEMENT publication Sept 2025',
+  },
+  {
+    title: 'IN FLIGHT Publication',
+    href: '/docs/LSEAT-Inflight-Magazine.pdf',
+    download: 'LSEAT-Inflight-Magazine.pdf',
+  },
+  {
+    title: 'Abstract Medical reaseach thrombose in aviation',
+    subtitle: 'Avoid 1 Thrombose/4.656 pax due to 4+ hours flights',
+  },
+  {
+    title: 'Dutch Thrombose fundation petition',
+  },
+];
+
+/** Brochure, linked from the home page as "See Flyer" on the origin. */
+export const brochureHref = '/docs/LSEAT-Brochure-2025.pdf';
+export const brochureDownload = 'LSEAT-Brochure-2025.pdf';
+export const downloadLabel = 'Download PDF';
+
+/* ------------------------------------------------------------------ *
+ * /contact
+ * ------------------------------------------------------------------ */
+
+export const contactTitle = 'LSEAT - Contact';
+export const contactLead = 'Send us an Email';
+
+export const formNameLabel = 'Name';
+export const formEmailLabel = 'Email';
+export const formRequiredMark = '*';
+export const formSubmitLabel = 'Send';
+
+export const companyName = 'LSEAT Engineering Srl';
+export const directEmail = 'yh@lseat.eu';
+export const phoneDigits = '+32473987988';
+export const phoneDisplay = '+32\u00A0473\u00A098\u00A079\u00A088';
+
+/**
+ * Address. The origin writes "15, av. Arnaud Fraiteur, 1050 BRUSSELS (Belgium)".
+ * The owner has confirmed the correct form and that form is what is published
+ * here; the origin's rendering is superseded.
+ */
+export const addressLines: readonly string[] = [
+  '15/23 Avenue Arnaud Fraiteur',
+  '1050 Brussels',
+  'Belgium',
+];
+
+/* ------------------------------------------------------------------ *
+ * Footer
+ * ------------------------------------------------------------------ */
+
+/** Reproduced exactly as the origin prints it, sign included. */
+export const copyright = 'Copyright \u00A9 2024 Lseat - All Rights Reserved.';
