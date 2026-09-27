@@ -1,9 +1,15 @@
 ---
 // LSEAT Aerospace - site header.
-// The logo is a raster-free SVG asset (public/logo.svg) shown on the official white
-// plate from the brochure artwork; the plate is required for contrast on deep navy.
-// The brand logo is an <img> element pointing at /logo.svg, rendered on the official
-// white plate for contrast on deep navy. It is brand identity, not a Lucide icon.
+// The logo is the owner-supplied brand artwork (public/logo-lseat.png), an 81x56
+// horizontal lockup shown on the official white plate from the artwork; the plate is
+// required for contrast on deep navy. The brand logo is an <img> element pointing at
+// /logo-lseat.png. It is brand identity, not a Lucide icon.
+//
+// Intrinsic ratio of the asset is 81/56 = 1.446429.
+//   Desktop bar, h-7 (28px): 28 * 1.446429 = 40.50 -> width="40" height="28".
+//   Mobile drawer,  h-6 (24px): 24 * 1.446429 = 34.71 -> width="35" height="24".
+// w-auto derives the painted width from that same intrinsic ratio, so the mark is
+// never scaled on one axis only and is not stretched.
 //
 // Mobile menu: an off-canvas slide-over drawer. The panel and its scrim are rendered
 // as siblings AFTER </header> on purpose: the header carries .glassmorphism, which
@@ -51,9 +57,9 @@ const contactHref = isHome ? '#contact' : '/#contact';
           class="inline-flex items-center rounded-lg bg-white px-2.5 py-1.5 shadow-sm ring-1 ring-black/10 xl:px-2"
         >
           <img
-            src="/logo.svg"
+            src="/logo-lseat.png"
             alt="LSEAT Aerospace"
-            width="112"
+            width="40"
             height="28"
             class="h-7 w-auto"
             loading="eager"
@@ -131,8 +137,30 @@ const contactHref = isHome ? '#contact' : '/#contact';
   inert
   class="fixed inset-y-0 right-0 z-[60] flex w-[min(21rem,88vw)] max-w-full translate-x-full flex-col overflow-y-auto overscroll-contain border-l border-electric-cyan/20 bg-deep-navy/95 px-5 pb-8 pt-5 shadow-2xl transition-transform duration-300 ease-out motion-reduce:transition-none xl:hidden"
 >
+  <!-- Brand mark, top left of the drawer, vertically aligned with the close button.
+       Intrinsic ratio 81/56 = 1.446429; at h-6 (24px) the honest reservation is
+       24 * 1.446429 = 34.714 -> width="35" height="24".
+       Non-interactive <span>: the drawer is a focus trap whose first focusable must
+       stay the close button, so this must not become a tab stop. The drawer keeps
+       its accessible name from role="dialog" + aria-label="Main menu", so the
+       removed "Menu" caption is not required for accessibility.
+       The white plate is retained: the mark is dark-on-light and the drawer is
+       bg-deep-navy/95, so without a plate it would be invisible. px-1.5 py-1 keeps
+       it tighter than the header plate so it does not dominate a narrow drawer. -->
   <div class="flex items-center justify-between gap-4 pb-5">
-    <p class="text-caption text-pure-white/50">Menu</p>
+    <span
+      class="inline-flex shrink-0 items-center rounded-lg bg-white px-1.5 py-1 shadow-sm ring-1 ring-black/10"
+    >
+      <img
+        src="/logo-lseat.png"
+        alt="LSEAT Aerospace"
+        width="35"
+        height="24"
+        class="h-6 w-auto"
+        loading="eager"
+        decoding="sync"
+      />
+    </span>
     <button
       id="lseat-menu-close"
       type="button"

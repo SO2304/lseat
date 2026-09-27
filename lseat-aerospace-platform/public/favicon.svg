@@ -1,17 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- LSEAT favicon: mark-only adaptation of logo.svg. The "SEAT" wordmark is
-     deliberately OMITTED (illegible at 16/32px) - only the blue L and red swoosh
-     remain. Geometry and colours copied verbatim; the group is translated (NOT
-     scaled) into a 64x64 square viewBox so the L+swoosh aspect ratio is preserved
-     exactly with an even margin. Colours are hardcoded: a favicon renders outside
-     the page's CSS, where an inherited colour keyword resolves to nothing. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32" role="img">
-  <title>LSEAT</title>
-  <g transform="translate(-11.75 5.25)">
-    <g fill="#E2231A">
-      <path d="M 17 39 L 30 28 L 50 15 L 50 22 L 30 34 Z"/>
-      <path d="M 72 6 L 55 30 L 44 12 Z"/>
-    </g>
-    <path d="M 22 15 V 41 H 48" fill="none" stroke="#1E5FA8" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img">
+<title>LSEAT</title>
+<!-- Traced from the authentic logo artwork; mark only, the SEAT wordmark is
+     illegible below 32px. Artwork pixel space, one uniform scale, so the mark is
+     never stretched. Colours are hardcoded, never an inherited colour keyword,
+     because a favicon renders outside page CSS. -->
+<g transform="translate(5.88 2.52) scale(.0686)">
+<path fill="#EC3A38" d="M0 7L30 48L60 88L90 126L120 162L150 197L180 229L210 259L240 287L270 314L300 340L330 364L360 386L390 406L420 425L450 444L480 461L510 478L540 493L570 508L600 521L630 534L660 547L690 556L720 565L750 574L770 580L770 786L750 782L720 774L690 765L660 756L630 747L600 737L570 727L540 715L510 703L480 690L450 676L420 661L390 645L360 628L330 609L300 589L270 568L240 546L210 523L180 500L150 475L120 448L90 420L60 388L30 354L0 319Z"/>
+<path fill="#375A9E" d="M183.5 130.5a82 82 0 0 1 164 0V730H687a61.5 61.5 0 0 1 0 123H261.5a78 78 0 0 1-78-78Z"/>
+</g>
 </svg>

@@ -1,7 +1,8 @@
 ---
 // LSEAT Aerospace - site footer.
-// The logo is a raster-free SVG asset (public/logo.svg) shown on the official white
-// plate from the brochure artwork, identical treatment to the header.
+// The logo is the owner-supplied brand artwork (public/logo-lseat.png), identical
+// treatment to the header: same asset, same white plate, same 28px render height.
+// Intrinsic ratio 1278/886 = 1.442438, so 28 * 1.442438 = 40.39 -> width="40".
 //
 // Touch targets: every interactive element here is at least 48px tall. Where that
 // would disturb the vertical rhythm, the extra height is cancelled with a negative
@@ -48,9 +49,9 @@ const legalItems = ['Legal Notice', 'Privacy Policy', 'Terms of Rental'];
             class="inline-flex items-center rounded-lg bg-white px-2.5 py-1.5 shadow-sm ring-1 ring-black/10"
           >
             <img
-              src="/logo.svg"
+              src="/logo-lseat.png"
               alt="LSEAT Aerospace"
-              width="112"
+              width="40"
               height="28"
               class="h-7 w-auto"
               loading="eager"
