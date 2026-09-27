@@ -1,7 +1,7 @@
 {
   "name": "lseat-aerospace-platform",
   "version": "1.0.0",
-  "description": "B2B platform for LSEAT Aerospace solutions, focusing on high conversion and secure web experience.",
+  "description": "LSEAT Engineering Portal — sleep-mode passenger seat conversion kit, 16G CS-25 / FAR-25, EASA Part 21J and EASA Form 1 documentation on request.",
   "main": "src/pages/index.astro",
   "engines": {
     "node": ">=22.0.0"
@@ -38,7 +38,6 @@
   },
   "keywords": [
     "aerospace",
-    "B2B",
     "web",
     "platform"
   ],
