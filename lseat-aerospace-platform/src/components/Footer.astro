@@ -13,14 +13,17 @@ const year = new Date().getFullYear();
 
 const isHome = Astro.url.pathname.replace(/\/+$/, '') === '';
 
+/* The same four owner labels as the header, same order, same in-page targets, split two
+   and two across the two columns. The engineering column keeps the "Request Engineering
+   File" mailto underneath, which is a contact channel rather than a section link. */
 const solutionLinks = [
-  { label: 'Specifications', hash: '#specifications' },
-  { label: '16G Compliance', hash: '#compliance' },
+  { label: 'Hero', hash: '#hero' },
+  { label: 'Specs & Kinematics', hash: '#specifications' },
 ].map((link) => ({ label: link.label, href: isHome ? link.hash : `/${link.hash}` }));
 
 const engineeringLinks = [
-  { label: 'MRO Retrofit Procedures', hash: '#retrofit' },
-  { label: 'Request EASA Form 1', hash: '#contact' },
+  { label: 'Retrofit MRO', hash: '#retrofit' },
+  { label: 'Contact', hash: '#contact' },
   {
     label: 'Request Engineering File',
     href: 'mailto:contact@lseat.eu?subject=Request%20Engineering%20File',

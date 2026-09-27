@@ -22,15 +22,16 @@ import { ArrowRight, FileText, Menu, X } from '@lucide/astro';
 const pathname = Astro.url.pathname.replace(/\/+$/, '');
 const isHome = pathname === '' || pathname === '/index';
 
-/* Exactly four entries. The previous list also carried "Kinematics & CAD" and
-   "ROI Simulator": both pointed at interactive tools that have been withdrawn, so both
-   entries were removed rather than left as dead links. The kinematics section survives as
-   a static data sheet and keeps id="kinematics", but it is not promoted to the primary
-   nav; it is reached from the hero call to action. */
+/* Exactly four entries, shared by the desktop row and the mobile drawer, in the owner's
+   wording. "Specs & Kinematics" points at #specifications, the top of the specifications
+   section; the Kinematics Data Sheet is the section immediately above it and keeps
+   id="kinematics", so it stays reachable both from the hero call to action and from the
+   in-page link added at the top of the specifications section. Nothing points at #roi:
+   the simulator that anchor served has been withdrawn and the section no longer exists. */
 const navLinks = [
-  { label: 'Specifications', hash: '#specifications' },
-  { label: '16G Compliance', hash: '#compliance' },
-  { label: 'MRO Retrofit', hash: '#retrofit' },
+  { label: 'Hero', hash: '#hero' },
+  { label: 'Specs & Kinematics', hash: '#specifications' },
+  { label: 'Retrofit MRO', hash: '#retrofit' },
   { label: 'Contact', hash: '#contact' },
 ].map((link) => ({ label: link.label, href: isHome ? link.hash : `/${link.hash}` }));
 
@@ -143,27 +144,38 @@ const contactHref = isHome ? '#contact' : '/#contact';
   <!-- Brand mark, top left of the drawer, vertically aligned with the close button.
        Intrinsic ratio 81/56 = 1.446429; at h-6 (24px) the honest reservation is
        24 * 1.446429 = 34.714 -> width="35" height="24".
-       Non-interactive <span>: the drawer is a focus trap whose first focusable must
-       stay the close button, so this must not become a tab stop. The drawer keeps
-       its accessible name from role="dialog" + aria-label="Main menu", so the
-       removed "Menu" caption is not required for accessibility.
+       Interactive <a href="/">: the header logo is display:none below 1280px, so before
+       this change a mobile visitor had no route back to the homepage from inside the
+       drawer. The anchor is the first tab stop of the focus trap, ahead of the close
+       button, and it carries no tabindex, so it is a single tab stop and the trap still
+       wraps in both directions. Clicking it is handled by the existing "close on any link
+       click" listener, which is exactly what returns focus to the hamburger toggle.
+       aria-label is deliberately distinct from the image alt: the label announces the
+       action, the alt still names the mark when the image is read on its own. The drawer
+       keeps its accessible name from role="dialog" + aria-label="Main menu".
        The white plate is retained: the mark is dark-on-light and the drawer is
        bg-deep-navy/95, so without a plate it would be invisible. px-1.5 py-1 keeps
        it tighter than the header plate so it does not dominate a narrow drawer. -->
   <div class="flex items-center justify-between gap-4 pb-5">
-    <span
-      class="inline-flex shrink-0 items-center rounded-lg bg-white px-1.5 py-1 shadow-sm ring-1 ring-black/10"
+    <a
+      href="/"
+      aria-label="LSEAT Aerospace &mdash; home"
+      class="inline-flex min-h-12 shrink-0 items-center rounded-lg"
     >
-      <img
-        src="/logo-lseat.png"
-        alt="LSEAT Aerospace"
-        width="35"
-        height="24"
-        class="h-6 w-auto"
-        loading="eager"
-        decoding="sync"
-      />
-    </span>
+      <span
+        class="inline-flex shrink-0 items-center rounded-lg bg-white px-1.5 py-1 shadow-sm ring-1 ring-black/10"
+      >
+        <img
+          src="/logo-lseat.png"
+          alt="LSEAT Aerospace"
+          width="35"
+          height="24"
+          class="h-6 w-auto"
+          loading="eager"
+          decoding="sync"
+        />
+      </span>
+    </a>
     <button
       id="lseat-menu-close"
       type="button"
