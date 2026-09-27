@@ -1,6 +1,6 @@
-# LSEAT Aerospace - B2B Platform
+# LSEAT Engineering Portal
 
-Aerospace-grade B2B website for LSEAT Aerospace (lseat.eu): a 3-seat ergonomic sleep-mode
+Aerospace engineering portal for LSEAT Aerospace (lseat.eu): a 3-seat ergonomic sleep-mode
 conversion kit for economy cabins, offered to airlines, MROs, OEMs and certification
 authorities through a rental model with no upfront investment.
 
@@ -10,7 +10,7 @@ authorities through a rental model with no upfront investment.
 | --- | --- |
 | Legal entity | **LSEAT ENGINEERING SRL** (Belgium) |
 | Brand | **LSEAT Aerospace** |
-| B2B engineering | contact@lseat.eu |
+| Engineering enquiries | contact@lseat.eu |
 | Direct | yh@lseat.eu |
 | Phone | +32 473 98 79 88 |
 | Address | 15/23 Avenue Arnaud Fraiteur, 1050 Brussels, Belgium |
@@ -30,7 +30,7 @@ needed for cabin crew.
 - **Tailwind CSS 3.4** - design tokens (deep-navy, aero-blue, electric-cyan, titanium-gray) and
   component classes (`.glassmorphism`, `.btn-primary`, `.input-field`, `.toast`, ...)
 - **TypeScript 5.9** - strict typing, validated with `astro check`
-- **Web3Forms** - serverless B2B contact pipeline (honeypot + optional reCAPTCHA v3)
+- **Web3Forms** - serverless engineering contact pipeline (honeypot + optional reCAPTCHA v3)
 - **No React, no CDN** - everything ships in the Astro bundle
 
 ## Engineering values

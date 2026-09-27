@@ -1,6 +1,6 @@
 ---
 /**
- * B2B Engineering Contact Hub - LSEAT Aerospace
+ * LSEAT Engineering Portal - LSEAT Aerospace
  * AJAX submission to Web3Forms (https://web3forms.com).
  * Icons from @lucide/astro. Toast icons remain inline SVG strings in JS because
  * they are injected into dynamically created DOM nodes.
@@ -75,7 +75,7 @@ const deliverables = [
 
 const contactChannels = [
   {
-    label: 'B2B engineering enquiries',
+    label: 'Engineering enquiries',
     value: 'contact@lseat.eu',
     href: 'mailto:contact@lseat.eu',
   },
@@ -99,7 +99,7 @@ const contactChannels = [
   <div class="section-container relative">
     <div class="section-header">
       <span class="section-badge">Engineering Enquiry</span>
-      <h2 class="section-title text-balance">B2B Engineering Contact Hub</h2>
+      <h2 class="section-title text-balance">Engineering Contact Hub</h2>
       <p class="section-subtitle text-balance">
         Direct line to the LSEAT Aerospace engineering team. Every enquiry is handled by an
         engineer, not by an automated form: technical response within 24&nbsp;h, complete
@@ -253,17 +253,17 @@ const contactChannels = [
 
           <!-- Form -->
           <form
-            id="b2b-contact-form"
+            id="engineering-contact-form"
             method="POST"
             action="https://api.web3forms.com/submit"
             novalidate
             data-access-key={web3formsKey}
-            aria-label="B2B enquiry to the LSEAT Aerospace engineering team"
+            aria-label="Engineering enquiry to the LSEAT Aerospace engineering team"
             class="space-y-5"
           >
             <input type="hidden" name="access_key" id="contact-access-key" value={web3formsKey} />
-            <input type="hidden" name="from_name" value="LSEAT Aerospace - B2B Engineering Contact Hub" />
-            <input type="hidden" name="subject" id="contact-subject" value="LSEAT B2B enquiry" />
+            <input type="hidden" name="from_name" value="LSEAT Engineering Portal" />
+            <input type="hidden" name="subject" id="contact-subject" value="LSEAT Engineering enquiry" />
             <input type="hidden" name="replyto" id="contact-replyto" value="" />
             <input type="hidden" name="utm_source" id="contact-utm-source" value="" />
             <input type="hidden" name="utm_medium" id="contact-utm-medium" value="" />
@@ -484,7 +484,7 @@ const contactChannels = [
               <p id="contact-message-error" class="mt-2 text-electric-cyan text-body-sm" role="alert" hidden></p>
             </div>
 
-            <!-- B2B qualification: consumer e-mail domains -->
+            <!-- Enquiry qualification: consumer e-mail domains -->
             <div class="rounded-lg border border-titanium-gray/50 bg-slate-dark/60 p-4">
               <label
                 for="contact-nonProfessional"
@@ -695,7 +695,7 @@ const contactChannels = [
         setFieldError(
           field,
           form,
-          'A business address is required to process a B2B enquiry. ' +
+          'A business address is required to process a business enquiry. ' +
             'Tick "I am using a non-business address" to send anyway.'
         );
         return false;
@@ -804,7 +804,7 @@ const contactChannels = [
     return toast;
   }
   function initContactForm(): void {
-    const form = document.getElementById('b2b-contact-form') as HTMLFormElement | null;
+    const form = document.getElementById('engineering-contact-form') as HTMLFormElement | null;
     if (!form || form.dataset.lseatReady === 'true') return;
     form.dataset.lseatReady = 'true';
 
@@ -844,8 +844,8 @@ const contactChannels = [
       const companyPart = company !== '' ? company : 'Company not provided';
       subjectField.value =
         category !== ''
-          ? 'LSEAT B2B ' + EMDASH + ' ' + category + ' ' + EMDASH + ' ' + companyPart
-          : 'LSEAT B2B enquiry ' + EMDASH + ' ' + companyPart;
+          ? 'LSEAT Engineering ' + EMDASH + ' ' + category + ' ' + EMDASH + ' ' + companyPart
+          : 'LSEAT Engineering enquiry ' + EMDASH + ' ' + companyPart;
     };
     if (categoryField) {
       categoryField.addEventListener('change', syncSubject);

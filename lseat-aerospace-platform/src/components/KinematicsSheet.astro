@@ -9,10 +9,25 @@
  *
  * Every number below is copied verbatim from the removed simulator's data model.
  * Nothing is rounded, re-derived or invented.
+ *
+ * The kinematic demonstrator video is embedded from youtube-nocookie.com and sits
+ * ABOVE the four-position data sheet: the motion is the primary explanation of the
+ * mechanism, the table is the reference that follows it. The nocookie host is
+ * deliberate - it reduces the tracking footprint a third-party frame would impose
+ * on an EU-hosted engineering site.
+ *
+ * No autoplay parameter is present and no script drives playback: loading="lazy"
+ * defers the frame until it nears the viewport, referrerpolicy withholds the full
+ * referrer, and starting playback remains entirely the visitor's decision. The
+ * section still ships ZERO client-side JavaScript of its own - the embed is a plain
+ * <iframe> element, not a script.
  */
 import { Ruler, Move, Layers, ZapOff, ShieldCheck } from '@lucide/astro';
 
 const NBSP = '\u00A0';
+
+const embedSrc = 'https://www.youtube-nocookie.com/embed/UvvI6EWZRu8?rel=0';
+const embedTitle = 'LSEAT Aviation Kinematic Recline Demonstration';
 
 interface Position {
   code: string;
@@ -76,6 +91,40 @@ const mechanism: MechanismRow[] = [
         four positions.
       </p>
     </header>
+
+    <figure class="glassmorphism-lg mb-8 overflow-hidden rounded-2xl md:mb-10">
+      <div
+        class="relative aspect-video w-full overflow-hidden rounded-xl border border-electric-cyan/20 bg-slate-dark shadow-2xl"
+      >
+        <iframe
+          class="absolute inset-0 h-full w-full border-0"
+          src={embedSrc}
+          title={embedTitle}
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <figcaption class="flex flex-col gap-3 border-t border-pure-white/10 p-5 md:p-6">
+        <h3 class="flex items-center gap-2.5 font-display text-display-sm text-pure-white">
+          <span
+            class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-pure-white/10 bg-slate-dark/70 text-aero-blue"
+            aria-hidden="true"
+          >
+            <Ruler class="h-4 w-4" stroke-width="1.75" focusable="false" />
+          </span>
+          Kinematic Recline Demonstration
+        </h3>
+        <p class="text-body-sm text-pure-white/70 text-balance">
+          An LSEAT publication showing the coupled glide transmission in motion, from the
+          upright sitting position to the 40&deg; sleep recline. It demonstrates how the
+          mechanism travels; it is not a certification artefact, and the four-position data
+          sheet below remains the authoritative record of the published values.
+        </p>
+      </figcaption>
+    </figure>
 
     <div class="glassmorphism-lg overflow-hidden rounded-2xl">
       <div class="overflow-x-auto">
