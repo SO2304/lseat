@@ -53,12 +53,29 @@ verbatim across the site.
 
 ## Sources and data provenance
 
-Every engineering figure listed above - `< 1,650 g` for a 3-seat block, `< 5 kg` on 2
-seat-track legs, `< 15 min` per seat, `0 h` AOG, `16G` CS-25 / FAR-25, the `40°` recline,
-the `-75 %` direct maintenance cost reduction, and the EASA Form 1 conformity release - is
-**LSEAT manufacturer engineering data, released with the EASA Form 1 documentation on
-request**. It is not published in any open dataset, and it is derived neither from a public
-standard nor from the marketing material described below.
+Two sources are used, and they are kept deliberately distinct.
+
+**1. LSEAT published technical data** - `lseat.eu/compliances`, captured 20 July 2025,
+archived at <https://web.archive.org/web/20250720023516/>. The live page is no longer
+available on the current platform, so the archive permalink is part of the citation: a reviewer
+must be able to open the capture and read the wording. This is the stronger of the two sources,
+because it is LSEAT's own published technical page rather than released-on-request engineering
+data. It supports the kit mass `< 1,650 g` for a 3-seat block, the `< 5 kg` load on 2
+seat-track legs, the `< 15 min` per-seat installation time with no A.O.G. time, the sub-half-inch
+kit profile, the spring return of an unoccupied seat to its sitting position, the STC /
+Part 21J engineering work / FORM 1 supply, and Part 21G subcontracted production.
+
+The capture does **not** contain the `40°` recline, the zero rear-pitch intrusion figure, the
+`0 W` or no-actuator statement, any moving sub-part count, the `-75 %` direct maintenance cost
+reduction, or a specific `CS-25.562` / `FAR-25.562` paragraph reference. It says only that the
+kit complies with FAA and EASA regulations, and with 16G, generically. Those figures keep the
+manufacturer provenance below and must not be attributed to the archived page.
+
+**2. LSEAT manufacturer engineering data, released on request.** The remaining figures - the
+`40°` recline, `0 h` AOG, `0 W`, the 3 moving sub-parts and the `-75 %` direct maintenance cost
+reduction - are **LSEAT manufacturer engineering data, released with the EASA Form 1
+documentation on request**. They are not published in any open dataset, and they are derived
+neither from a public standard nor from the marketing material described below.
 
 The **LSEAT 2025 brochure is a marketing publication, not a technical datasheet.** It
 contains no masses, no G-loadings, no TSO numbers, no CS-25/FAR-25 references and no

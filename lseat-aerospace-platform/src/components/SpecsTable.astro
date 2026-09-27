@@ -13,7 +13,18 @@ interface SpecRow {
   parameter: string;
   value: string;
   reference: string;
+  wrap?: boolean;
 }
+
+/* Archived LSEAT published technical data. lseat.eu/compliances is no longer live on the
+   current platform, so the archive permalink is part of the citation: a reviewer must be able
+   to open the capture. Applied per figure, never blanket-applied to the table, because the
+   capture does NOT contain the -75 % cost reduction, any recline angle, any actuator or
+   moving-part count, the zero rear-pitch intrusion figure, 0 W, or a CS-25.562 paragraph
+   reference. Those figures keep MANUFACTURER. */
+const ARCHIVED =
+  'LSEAT published technical data \u2014 lseat.eu/compliances, archived 20 July 2025 (web.archive.org/web/20250720023516/)';
+const MANUFACTURER = 'LSEAT manufacturer data';
 
 interface CategoryMeta {
   icon: 'file-check' | 'factory' | 'scale' | 'wrench' | 'shield-check';
@@ -38,6 +49,7 @@ const categoryMeta: Record<SpecCategory, CategoryMeta> = {
 };
 
 const certifications = [
+  'STC supplied with the kit',
   'EASA Part 21J',
   'FAA Part 21',
   'EASA CS-25.562',
@@ -47,17 +59,19 @@ const certifications = [
 ];
 
 const specs: SpecRow[] = [
-  { category: 'DELIVERABLES', parameter: 'Certification release', value: 'EASA Form 1 + Part 21J engineering package', reference: 'EASA Part 21J' },
+  { category: 'DELIVERABLES', parameter: 'Certification release', value: 'EASA Form 1 + Part 21J engineering work', reference: ARCHIVED, wrap: true },
+  { category: 'DELIVERABLES', parameter: 'STC document', value: 'STC (Supplemental Type Certificate) supplied and released by LSEAT', reference: ARCHIVED, wrap: true },
   { category: 'DELIVERABLES', parameter: 'Kinematic architecture', value: '2 composite frames inserted under the original seat pan', reference: 'LSEAT patent' },
-  { category: 'PRODUCTION', parameter: 'Manufacturing', value: 'Certified subcontract production', reference: 'EASA Part 21G' },
+  { category: 'PRODUCTION', parameter: 'Manufacturing', value: 'Certified subcontract production', reference: ARCHIVED, wrap: true },
   { category: 'PRODUCTION', parameter: 'Moving sub-parts', value: '3 (no motor, no electronics)', reference: 'Part 21J dossier' },
-  { category: 'MASS', parameter: 'Integrated kit mass (3-seat block)', value: '<\u00A01,650\u00A0g', reference: 'TSO tolerance' },
-  { category: 'MASS', parameter: 'Load on seat track legs', value: '<\u00A05\u00A0kg / 2 legs', reference: 'TSO tolerance' },
-  { category: 'MAINTENANCE', parameter: 'MRO installation time', value: '<\u00A015\u00A0min / seat, without removing seat track legs', reference: 'A-Check procedure' },
-  { category: 'MAINTENANCE', parameter: 'Direct maintenance cost reduction', value: '-75\u00A0%', reference: 'LSEAT manufacturer data' },
-  { category: 'MAINTENANCE', parameter: 'Electrical components', value: '0', reference: '0 W' },
-  { category: 'CERTIFICATION', parameter: 'Dynamic crash test', value: '16G CS-25 / FAR-25', reference: 'CS-25.562 / FAR-25.562' },
-  { category: 'CERTIFICATION', parameter: 'Unoccupied seat return', value: 'Spring-return to upright', reference: 'CS-25.562' },
+  { category: 'MASS', parameter: 'Integrated kit mass (3-seat block)', value: '<\u00A01,650\u00A0g', reference: ARCHIVED, wrap: true },
+  { category: 'MASS', parameter: 'Load on seat track legs', value: '<\u00A05\u00A0kg / 2 legs', reference: ARCHIVED, wrap: true },
+  { category: 'MASS', parameter: 'Kit profile height (above seat cushion)', value: '<\u00A00.5\u00A0in (12.7\u00A0mm)', reference: ARCHIVED, wrap: true },
+  { category: 'MAINTENANCE', parameter: 'MRO installation time', value: '<\u00A015\u00A0min / seat, without removing seat track legs', reference: ARCHIVED, wrap: true },
+  { category: 'MAINTENANCE', parameter: 'Direct maintenance cost reduction', value: '-75\u00A0%', reference: MANUFACTURER },
+  { category: 'MAINTENANCE', parameter: 'Electrical components', value: '0', reference: MANUFACTURER },
+  { category: 'CERTIFICATION', parameter: 'Dynamic crash test', value: '16G CS-25 / FAR-25', reference: ARCHIVED, wrap: true },
+  { category: 'CERTIFICATION', parameter: 'Unoccupied seat return', value: 'Spring-return to upright', reference: ARCHIVED, wrap: true },
   { category: 'CERTIFICATION', parameter: 'Aircraft On Ground', value: '0 h', reference: 'MRO procedure' },
 ];
 ---
@@ -96,6 +110,12 @@ const specs: SpecRow[] = [
       </div>
     </div>
 
+    <p class="mb-6 max-w-3xl text-body-sm text-pure-white/70 text-balance">
+      LSEAT is supplied with an STC (Supplemental Type Certificate), the Part 21J engineering work and a
+      FORM 1. Those are documents LSEAT supplies and releases on request: no STC number is published on
+      this site, and nothing here states that a regulator has already issued an STC for this kit.
+    </p>
+
     <div class="glassmorphism-lg relative rounded-xl overflow-hidden shadow-glass-lg">
       <div class="relative">
         <div class="overflow-x-auto">
@@ -128,7 +148,7 @@ const specs: SpecRow[] = [
                     <td class="px-5 py-4 align-top text-body-base text-pure-white/90">{row.parameter}</td>
                     <td class="px-5 py-4 align-top text-body-base font-semibold text-electric-cyan">{row.value}</td>
                     <td class="px-5 py-4 align-top">
-                      <span class="badge-tech whitespace-nowrap">{row.reference}</span>
+                      <span class:list={["badge-tech", !row.wrap && "whitespace-nowrap"]}>{row.reference}</span>
                     </td>
                   </tr>
                 );
@@ -152,7 +172,15 @@ const specs: SpecRow[] = [
 
     <p class="mt-6 max-w-3xl text-body-sm text-pure-white/70 text-balance">
       Figures are LSEAT manufacturer engineering data, released with the EASA Form 1 documentation on
-      request. The LSEAT 2025 brochure is a marketing publication and is not a technical datasheet.
+      request. Items marked as published technical data are taken from LSEAT's own published compliance
+      page (lseat.eu/compliances, archived 20 July 2025). The LSEAT 2025 brochure is a marketing
+      publication and is not a technical datasheet. Archived copy: web.archive.org/web/20250720023516/
+    </p>
+
+    <p class="mt-3 max-w-3xl text-body-sm text-pure-white/60 text-balance">
+      The low profile is what preserves the seat TSO spatial envelope: the kit stands less than
+      0.5 in (12.7 mm) high above the seat cushion, which is what keeps it within the tolerances of the
+      seat TSO, with no seat or cabin modification.
     </p>
 
     <div class="mt-6 flex flex-col gap-4 rounded-xl border border-pure-white/10 bg-slate-dark/40 p-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
