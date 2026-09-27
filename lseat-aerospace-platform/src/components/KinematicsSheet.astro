@@ -1,0 +1,169 @@
+---
+/**
+ * KinematicsSheet.astro
+ * Static engineering data sheet for the patented coupled glide.
+ *
+ * Replaces the two withdrawn interactive kinematic simulators. This component ships
+ * ZERO client-side JavaScript: there is no <script> element, no event handler and no
+ * data-attribute hook, so the whole section is static HTML.
+ *
+ * Every number below is copied verbatim from the removed simulator's data model.
+ * Nothing is rounded, re-derived or invented.
+ */
+import { Ruler, Move, Layers, ZapOff, ShieldCheck } from '@lucide/astro';
+
+const NBSP = '\u00A0';
+
+interface Position {
+  code: string;
+  name: string;
+  angle: string;
+  travel: string;
+}
+
+const positions: Position[] = [
+  { code: '01', name: '16G Upright Sitting Mode', angle: `0\u00B0`, travel: `0${NBSP}mm` },
+  { code: '02', name: 'IFE Watching Mode', angle: `12\u00B0`, travel: `45${NBSP}mm` },
+  { code: '03', name: 'Relax Reading Mode', angle: `25\u00B0`, travel: `30${NBSP}mm` },
+  { code: '04', name: 'Sleep Mode (40\u00B0 Recline)', angle: `40\u00B0`, travel: `20${NBSP}mm` },
+];
+
+interface MechanismRow {
+  label: string;
+  value: string;
+  icon: typeof Ruler;
+}
+
+const mechanism: MechanismRow[] = [
+  {
+    label: 'Transmission',
+    value:
+      'Dual composite frame system: the upper frame slides forwards and downwards, with synchronised vertical back-cushion motion.',
+    icon: Layers,
+  },
+  { label: 'Architecture', value: '3 moving sub-parts \u00B7 0 electric motors \u00B7 0 W', icon: Move },
+  {
+    label: 'Crash retention',
+    value: '16G CS-25.562 retention maintained in all four positions',
+    icon: ShieldCheck,
+  },
+  {
+    label: 'Rear envelope (Sleep Mode)',
+    value: '0 intrusion on rear seat pitch',
+    icon: Ruler,
+  },
+  { label: 'Power draw', value: '0 W \u00B7 no electrical component, no wiring', icon: ZapOff },
+];
+---
+
+<section
+  id="kinematics"
+  class="relative scroll-mt-24 bg-deep-navy py-24 md:py-32"
+  aria-labelledby="kinematics-title"
+>
+  <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+    <div class="absolute inset-0 bg-grid-pattern bg-grid-64 opacity-50"></div>
+  </div>
+
+  <div class="section-container relative">
+    <header class="section-header">
+      <span class="section-badge">Patented coupled motion</span>
+      <h2 id="kinematics-title" class="section-title">Kinematics Data Sheet</h2>
+      <p class="section-subtitle text-balance">
+        Dual composite frame system: the upper frame slides forwards and downwards, with
+        synchronised vertical back-cushion motion. The transmission is purely mechanical: no
+        electric motor, only 3 moving sub-parts, 16G CS-25.562 retention maintained in all
+        four positions.
+      </p>
+    </header>
+
+    <div class="glassmorphism-lg overflow-hidden rounded-2xl">
+      <div class="overflow-x-auto">
+        <table class="kin-table w-full border-collapse text-left">
+          <caption class="sr-only">
+            LSEAT passenger positions with backrest recline angle and seat pan travel
+          </caption>
+          <thead>
+            <tr class="border-b border-electric-cyan/20 bg-titanium-gray/40">
+              <th
+                scope="col"
+                class="px-3 py-3.5 text-caption font-semibold uppercase tracking-widest text-pure-white/80 sm:px-5"
+              >
+                Passenger position
+              </th>
+              <th
+                scope="col"
+                class="px-2 py-3.5 text-caption font-semibold uppercase tracking-widest text-pure-white/80 sm:px-5"
+              >
+                Backrest<br />recline
+              </th>
+              <th
+                scope="col"
+                class="px-2 py-3.5 text-caption font-semibold uppercase tracking-widest text-pure-white/80 sm:px-5"
+              >
+                Seat pan<br />travel
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-pure-white/10">
+            {
+              positions.map((position) => (
+                <tr class="transition-colors duration-200 hover:bg-electric-cyan/5">
+                  <th
+                    scope="row"
+                    class="px-3 py-3.5 align-top font-normal sm:px-5"
+                  >
+                    <span class="flex items-baseline gap-2.5">
+                      <span class="font-mono text-caption text-electric-cyan/70" aria-hidden="true">
+                        {position.code}
+                      </span>
+                      <span class="min-w-0 break-words text-body-sm font-semibold text-pure-white sm:text-body-base">
+                        {position.name}
+                      </span>
+                    </span>
+                  </th>
+                  <td class="px-2 py-3.5 align-top font-mono text-body-base font-semibold tabular-nums text-electric-cyan sm:px-5">
+                    {position.angle}
+                  </td>
+                  <td class="px-2 py-3.5 align-top font-mono text-body-base font-semibold tabular-nums text-pure-white sm:px-5">
+                    {position.travel}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-8 grid grid-cols-1 gap-4 md:mt-10 md:grid-cols-2 lg:grid-cols-3">
+      {
+        mechanism.map((row) => {
+          const RowIcon = row.icon;
+          return (
+            <div class="glassmorphism-card flex h-full flex-col gap-3 p-5">
+              <div class="flex items-center gap-3">
+                <span
+                  class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-aero-blue/30 bg-aero-blue/15 text-aero-blue"
+                  aria-hidden="true"
+                >
+                  <RowIcon class="h-4.5 w-4.5" stroke-width="1.75" focusable="false" />
+                </span>
+                <h3 class="text-caption font-semibold uppercase tracking-widest text-pure-white/70">
+                  {row.label}
+                </h3>
+              </div>
+              <p class="text-body-base text-pure-white/90">{row.value}</p>
+            </div>
+          );
+        })
+      }
+    </div>
+
+    <p class="mt-8 max-w-3xl text-body-sm text-pure-white/60 text-balance">
+      Seat pan travel is the forward translation of the seat pan from the upright sitting
+      position. All values on this sheet are LSEAT manufacturer engineering data, released
+      with the EASA Form 1 documentation on request.
+    </p>
+  </div>
+</section>

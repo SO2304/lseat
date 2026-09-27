@@ -1,0 +1,143 @@
+---
+/**
+ * ProductCards.astro
+ * Engineering reference cards: the mechanism drawing and the cabin installation
+ * photographs, restored from the archived lseat.eu CDN harvest.
+ *
+ * Every image listed here was opened and inspected before it was copied. Generic
+ * airliner stock photography, the third-party Unsplash frame, the revenue table, the
+ * "EASA FAA Compliant" logo graphic and the duplicated demo variants were all left in
+ * the archive and are deliberately NOT shipped. See README for the full list.
+ */
+import { ImageOff } from '@lucide/astro';
+
+interface Card {
+  src: string;
+  alt: string;
+  caption: string;
+  note: string;
+  width: number;
+  height: number;
+}
+
+const cards: Card[] = [
+  {
+    src: '/media/lseat-mechanism-drawing.jpg',
+    alt: 'Two side-view line drawings of the LSEAT seat mechanism, views 4c and 4d, with the seat pan travel dimension and the recline angle callouts marked.',
+    caption: 'Coupled glide mechanism',
+    note: 'Side view 4c / 4d, with the seat pan travel dimension and the recline angle callouts.',
+    width: 836,
+    height: 430,
+  },
+  {
+    src: '/media/lseat-cabin-sleep-mode.jpg',
+    alt: 'Economy cabin with an LSEAT seat in full sleep recline, seat-back inflight entertainment screen in the foreground.',
+    caption: 'Sleep mode, 40\u00B0 recline',
+    note: 'Full recline in a single-seat block, IFE serviceable in the same position.',
+    width: 1400,
+    height: 934,
+  },
+  {
+    src: '/media/lseat-cabin-relax-ife.jpg',
+    alt: 'Reclined LSEAT economy seats beside the cabin window, seat-back screens visible.',
+    caption: 'Relax reading mode',
+    note: 'Intermediate recline with the IFE in clear view of the seated passenger.',
+    width: 640,
+    height: 480,
+  },
+  {
+    src: '/media/lseat-cabin-installed.jpg',
+    alt: 'Installed LSEAT seats in an economy cabin row with two passengers seated.',
+    caption: 'Installed cabin block',
+    note: 'Retrofit in situ: no seat track legs removed, no cabin sidewall modification.',
+    width: 476,
+    height: 356,
+  },
+  {
+    src: '/media/lseat-cabin-relax.jpg',
+    alt: 'LSEAT economy seats in the relax position with passengers seated upright.',
+    caption: 'Relax position in service',
+    note: 'Spring return holds an unoccupied seat in the upright sitting position.',
+    width: 466,
+    height: 454,
+  },
+  {
+    src: '/media/lseat-seat-pair-ife.jpg',
+    alt: 'A pair of upright LSEAT economy seats with seat-back inflight entertainment screens and armrests.',
+    caption: 'Upright sitting mode',
+    note: 'Seat density unchanged: the kit occupies no additional pitch.',
+    width: 427,
+    height: 640,
+  },
+  {
+    src: '/media/lseat-cabin-in-service.jpg',
+    alt: 'LSEAT economy cabin in service, a passenger working on a laptop at a reclined seat beside the window.',
+    caption: 'Cabin in service',
+    note: 'Day cabin operation: the mechanism is passive and adds no electrical load.',
+    width: 1400,
+    height: 788,
+  },
+  {
+    src: '/media/lseat-seat-cushion.jpg',
+    alt: 'Seat cushion assembly with black anti-slip strips on the seat pan, photographed on the cabin floor.',
+    caption: 'Seat cushion assembly',
+    note: 'Kit component: the cushion is removed and replaced, the seat structure is untouched.',
+    width: 640,
+    height: 427,
+  },
+];
+---
+
+<section
+  id="media"
+  class="relative scroll-mt-24 py-24 md:py-32"
+  aria-labelledby="media-title"
+>
+  <div class="absolute inset-0 bg-grid-pattern bg-grid-64 pointer-events-none opacity-60" aria-hidden="true"></div>
+
+  <div class="section-container relative">
+    <header class="section-header">
+      <span class="section-badge">Restored records</span>
+      <h2 id="media-title" class="section-title text-balance">
+        Mechanism Drawing <span class="text-electric-cyan">&amp;</span> Cabin Record
+      </h2>
+      <p class="section-subtitle text-balance">
+        Photographs and the mechanism drawing recovered from the archived lseat.eu CDN
+        publication. Every frame on this page was inspected before publication.
+      </p>
+    </header>
+
+    <ul class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4" role="list">
+      {
+        cards.map((card) => (
+          <li class="glassmorphism-card flex h-full flex-col gap-3 overflow-hidden p-0" role="listitem">
+            <div class="flex items-center justify-center overflow-hidden bg-slate-950/70 p-3">
+              <img
+                src={card.src}
+                alt={card.alt}
+                width={card.width}
+                height={card.height}
+                loading="lazy"
+                decoding="async"
+                class="h-auto max-h-56 w-auto max-w-full rounded-md object-contain"
+              />
+            </div>
+            <div class="flex flex-1 flex-col gap-1.5 px-5 pb-5">
+              <h3 class="text-body-base font-semibold text-pure-white">{card.caption}</h3>
+              <p class="text-body-sm text-pure-white/60">{card.note}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="mt-8 flex items-start gap-2.5 text-body-sm text-pure-white/60">
+      <ImageOff class="mt-0.5 h-4 w-4 shrink-0 text-pure-white/40" stroke-width="1.75" aria-hidden="true" focusable="false" />
+      <span class="max-w-3xl text-balance">
+        Archival imagery published by LSEAT on its previous platform. Cabins and seats shown
+        are LSEAT installations; the drawing is the published mechanism view. No image on this
+        page is presented as a certification artefact.
+      </span>
+    </p>
+  </div>
+</section>

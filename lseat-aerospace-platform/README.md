@@ -94,7 +94,7 @@ Airworthiness Directive / certification process for the target aircraft type.
 
 ```
 lseat-aerospace-platform/
-|-- public/                     # static assets (favicon.svg, logo.svg, og-image.svg, og-image.png)
+|-- public/                     # favicon.svg, logo-lseat.png, og-image.{svg,png}, 2 PDFs, media/
 |-- src/
 |   |-- components/             # Astro UI sections (Hero, SpecsTable, ContactForm, ...)
 |   |-- layouts/                # page shells (BaseLayout, Section wrappers)
@@ -110,8 +110,31 @@ lseat-aerospace-platform/
 `-- package.json
 ```
 
-There is no `src/content/` directory. `public/` holds exactly the four static assets listed
-above: no `robots.txt`, no PDFs, no documents.
+There is no `src/content/` directory and no `src/scripts/` directory.
+
+`public/` holds: `favicon.svg`, `logo-lseat.png` (the owner-supplied brand artwork, 81x56),
+`og-image.svg` / `og-image.png`, two PDFs (`LSEAT-Brochure-2025.pdf`,
+`LSEAT-Inflight-Magazine.pdf`) and `public/media/`, which carries the 1920x1080 MVI_9553
+hero loop (`.webm` + `.mp4` + poster), the 1280x720 Dubai Airshow interview (`.webm` +
+poster) and eight delivery-optimised archival photographs and the mechanism drawing.
+The old `logo.svg` was removed in v2.1: the PNG is the authentic brand asset and the SVG
+was a lossy trace of it.
+
+The legacy CDN harvest at `../lseat-legacy/cdn-harvest` holds 101 files. Of those, only 11
+were copied in: 1 video, 1 poster, 1 PDF and 8 images. Rejected on purpose: the 33 Lato /
+Montserrat / Playfair / Source-Sans webfonts (the site self-hosts a single variable
+Plus Jakarta Sans woff2 and is verified against a font budget; shipping 33 more would
+undo that work), the 34 GoDaddy builder scripts, the EASA/FAA "Compliant" logo graphic
+(regulator marks presented as a product claim), two third-party medical papers on venous
+thrombosis, a trade-magazine issue that is not an LSEAT document, an Unsplash stock cabin
+photograph, a generic Boeing 787 press photo, an Embraer cabin photo, the LSEAT revenue
+table, a placeholder PNG, and the duplicated `lseat_demo_10LR` / `lseat_demo_12` /
+`blob-b6ecf59` variants of images already carried. `LSEAT - Brochure 2025_compressed.pdf`
+is byte-identical (sha256 `23e89665f9608112...`) to the copy already in `public/`, so it
+was not duplicated.
+
+`vimeo-poster-1800172145.jpg` was also rejected: it is a still from the Dubai Airshow TV
+interview and still carries the broadcaster's on-screen lower third.
 
 ## Setup
 

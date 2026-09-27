@@ -111,8 +111,17 @@
            border border-electric-cyan/30 rounded-full;
   }
 
+  /* Text colour is the only thing changed here.
+     text-aero-blue (#0284C7, L=0.206) on this chip measured 2.27:1 over the hero
+     footage: bg-aero-blue/15 over bg-slate-950/60 lets ~40% of a scrimmed-but-still
+     bright cabin frame through and the aero-blue glyphs vanish into it. A fully
+     opaque slate-950 plate only reaches 4.32:1, so plate opacity could never fix
+     it - the text colour is the limiter. text-pure-white measures 9.28:1 against
+     the brightest composited chip pixel over every frame of the hero clip.
+     The chip keeps its bg-aero-blue/15 fill and border-aero-blue/30 edge, so it
+     still reads as the blue "certification" variant beside .badge-tech. */
   .badge-cert {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 bg-aero-blue/15 text-aero-blue text-caption font-medium
+    @apply inline-flex items-center gap-1.5 px-3 py-1 bg-aero-blue/15 text-pure-white text-caption font-medium
            border border-aero-blue/30 rounded;
   }
 

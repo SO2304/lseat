@@ -14,9 +14,8 @@ const year = new Date().getFullYear();
 const isHome = Astro.url.pathname.replace(/\/+$/, '') === '';
 
 const solutionLinks = [
-  { label: 'Kinematics & CAD', hash: '#kinematics' },
   { label: 'Specifications', hash: '#specifications' },
-  { label: 'ROI Simulator', hash: '#roi' },
+  { label: '16G Compliance', hash: '#compliance' },
 ].map((link) => ({ label: link.label, href: isHome ? link.hash : `/${link.hash}` }));
 
 const engineeringLinks = [

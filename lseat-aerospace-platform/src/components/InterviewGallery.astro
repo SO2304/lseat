@@ -1,0 +1,79 @@
+---
+/**
+ * InterviewGallery.astro
+ * On-demand trade-press video player.
+ *
+ * Native HTML5 <video controls> only. There is no custom player, no autoplay, no
+ * <script> and no event handler in this component, so nothing can start playback on
+ * its own and the transport is keyboard operable by definition: the browser's own
+ * control bar exposes play/pause, seek, volume and fullscreen as focusable widgets.
+ *
+ * The single source is VP9 WebM. No MP4 twin is shipped: VP9 WebM is supported by
+ * every current browser, and a second 49 MB copy of the same four-and-a-half minutes
+ * is not worth doubling the page weight for.
+ */
+import { Film } from '@lucide/astro';
+
+const videoSrc = '/media/interview-lseat.webm';
+const poster = '/media/interview-poster.jpg';
+const mimeType = 'video/webm; codecs=vp9';
+---
+
+<section
+  id="interview"
+  class="relative scroll-mt-24 py-24 md:py-32"
+  aria-labelledby="interview-title"
+>
+  <div class="absolute inset-0 bg-grid-pattern bg-grid-64 pointer-events-none opacity-60" aria-hidden="true"></div>
+
+  <div class="section-container relative">
+    <header class="section-header">
+      <span class="section-badge">Trade press</span>
+      <h2 id="interview-title" class="section-title text-balance">
+        Interview Footage <span class="text-electric-cyan">&amp;</span> Field Record
+      </h2>
+      <p class="section-subtitle text-balance">
+        On-demand reference footage held in the public domain from the 2023 Dubai
+        Airshow. The player loads nothing until you press play.
+      </p>
+    </header>
+
+    <figure class="glassmorphism-lg mx-auto max-w-4xl overflow-hidden rounded-2xl">
+      <div class="relative w-full bg-slate-950">
+        <video
+          class="block h-auto w-full"
+          controls
+          preload="metadata"
+          playsinline
+          poster={poster}
+          width="1280"
+          height="720"
+        >
+          <source src={videoSrc} type={mimeType} />
+          Your browser cannot play this WebM video. The file is available on request.
+        </video>
+      </div>
+
+      <figcaption class="flex flex-col gap-3 border-t border-pure-white/10 p-5 md:p-6">
+        <p class="flex items-center gap-2.5 text-caption font-semibold uppercase tracking-widest text-pure-white/70">
+          <span
+            class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-pure-white/10 bg-slate-dark/70 text-aero-blue"
+            aria-hidden="true"
+          >
+            <Film class="h-4 w-4" stroke-width="1.75" focusable="false" />
+          </span>
+          Dubai Airshow TV, 2023 \u00B7 4 min 37 s \u00B7 broadcaster footage
+        </p>
+        <p class="text-body-sm text-pure-white/70 text-balance">
+          Interview footage recorded by Dubai Airshow TV at the 2023 Dubai Airshow. This is
+          third-party broadcaster footage, not an LSEAT production, and it is reproduced here
+          for background reference only. A lower-third mask has been applied to the opening
+          frames to remove a dated third-party presenter title card; the audio and the picture
+          are otherwise unaltered. Nothing said in this footage is an LSEAT specification,
+          certification claim or engineering commitment, and the captions and on-screen
+          graphics remain the property of the broadcaster.
+        </p>
+      </figcaption>
+    </figure>
+  </div>
+</section>

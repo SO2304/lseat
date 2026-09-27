@@ -22,11 +22,14 @@ import { ArrowRight, FileText, Menu, X } from '@lucide/astro';
 const pathname = Astro.url.pathname.replace(/\/+$/, '');
 const isHome = pathname === '' || pathname === '/index';
 
+/* Exactly four entries. The previous list also carried "Kinematics & CAD" and
+   "ROI Simulator": both pointed at interactive tools that have been withdrawn, so both
+   entries were removed rather than left as dead links. The kinematics section survives as
+   a static data sheet and keeps id="kinematics", but it is not promoted to the primary
+   nav; it is reached from the hero call to action. */
 const navLinks = [
-  { label: 'Kinematics & CAD', hash: '#kinematics' },
   { label: 'Specifications', hash: '#specifications' },
   { label: '16G Compliance', hash: '#compliance' },
-  { label: 'ROI Simulator', hash: '#roi' },
   { label: 'MRO Retrofit', hash: '#retrofit' },
   { label: 'Contact', hash: '#contact' },
 ].map((link) => ({ label: link.label, href: isHome ? link.hash : `/${link.hash}` }));
