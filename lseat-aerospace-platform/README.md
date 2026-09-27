@@ -94,7 +94,7 @@ Airworthiness Directive / certification process for the target aircraft type.
 
 ```
 lseat-aerospace-platform/
-|-- public/                     # favicon.svg, logo-lseat.png, og-image.{svg,png}, 2 PDFs, media/
+|-- public/                     # favicon.svg, logo-lseat.png, og-image.{svg,png}, media/, docs/ (2 PDFs)
 |-- src/
 |   |-- components/             # Astro UI sections (Hero, SpecsTable, ContactForm, ...)
 |   |-- layouts/                # page shells (BaseLayout, Section wrappers)
@@ -113,8 +113,9 @@ lseat-aerospace-platform/
 There is no `src/content/` directory and no `src/scripts/` directory.
 
 `public/` holds: `favicon.svg`, `logo-lseat.png` (the owner-supplied brand artwork, 81x56),
-`og-image.svg` / `og-image.png`, two PDFs (`LSEAT-Brochure-2025.pdf`,
-`LSEAT-Inflight-Magazine.pdf`) and `public/media/`, which carries the 1920x1080 MVI_9553
+`og-image.svg` / `og-image.png`, `public/docs/`, which carries the two PDFs
+(`LSEAT-Brochure-2025.pdf`, `LSEAT-Inflight-Magazine.pdf`, served at `/docs/...` and
+downloaded under their original filenames), and `public/media/`, which carries the 1920x1080 MVI_9553
 hero loop (`.webm` + `.mp4` + poster), the 1280x720 Dubai Airshow interview (`.webm` +
 poster) and eight delivery-optimised archival photographs and the mechanism drawing.
 The old `logo.svg` was removed in v2.1: the PNG is the authentic brand asset and the SVG
