@@ -16,17 +16,23 @@
  * deliberate - it reduces the tracking footprint a third-party frame would impose
  * on an EU-hosted engineering site.
  *
- * No autoplay parameter is present and no script drives playback: loading="lazy"
- * defers the frame until it nears the viewport, referrerpolicy withholds the full
- * referrer, and starting playback remains entirely the visitor's decision. The
- * section still ships ZERO client-side JavaScript of its own - the embed is a plain
- * <iframe> element, not a script.
+ * Autoplay is delegated entirely to YouTube's own embed parameters, so the section
+ * still ships ZERO client-side JavaScript of its own - the embed is a plain <iframe>
+ * element, not a script. autoplay=1 starts the frame as it loads and loading="lazy"
+ * defers that load until the frame nears the viewport, which yields "starts when it
+ * scrolls into view" with no observer of our own. mute=1 is mandatory rather than
+ * cosmetic: browsers block unmuted autoplay outright.
+ *
+ * Cross-origin autoplay policy still governs the result. The embed lives on
+ * youtube-nocookie.com while the page is served from lseat.eu, so a first-time
+ * visitor on Chrome or Safari may be shown a paused player needing one click. Only
+ * the IFrame Player API could override that, and it is deliberately not loaded.
  */
 import { Ruler, Move, Layers, ZapOff, ShieldCheck } from '@lucide/astro';
 
 const NBSP = '\u00A0';
 
-const embedSrc = 'https://www.youtube-nocookie.com/embed/UvvI6EWZRu8?rel=0';
+const embedSrc = 'https://www.youtube-nocookie.com/embed/UvvI6EWZRu8?autoplay=1&mute=1&rel=0';
 const embedTitle = 'LSEAT Aviation Kinematic Recline Demonstration';
 
 interface Position {
@@ -122,6 +128,9 @@ const mechanism: MechanismRow[] = [
           upright sitting position to the 40&deg; sleep recline. It demonstrates how the
           mechanism travels; it is not a certification artefact, and the four-position data
           sheet below remains the authoritative record of the published values.
+        </p>
+        <p class="text-body-sm text-pure-white/50">
+          Plays muted when it comes into view. Unmute with the player controls.
         </p>
       </figcaption>
     </figure>
