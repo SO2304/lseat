@@ -14,7 +14,7 @@ dist/
 # astro
 .astro/
 
-# environment — NEVER commit real secrets
+# environment - NEVER commit real secrets
 .env
 .env.local
 .env.*.local

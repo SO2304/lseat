@@ -1,7 +1,7 @@
 {
   "name": "lseat-aerospace-platform",
   "version": "1.0.0",
-  "description": "LSEAT Engineering Portal — sleep-mode passenger seat conversion kit, 16G CS-25 / FAR-25, EASA Part 21J and EASA Form 1 documentation on request.",
+  "description": "LSEAT. Relax and enjoy flying economy.",
   "main": "src/pages/index.astro",
   "engines": {
     "node": ">=22.0.0"

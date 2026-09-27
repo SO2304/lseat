@@ -1,81 +1,27 @@
 ---
 /**
- * Hero.astro — LSEAT Aerospace opening section.
- * Icons: @lucide/astro. Animated counters in vanilla JS
- * (IntersectionObserver + requestAnimationFrame).
+ * Hero.astro - the opening section of the verbatim legacy mirror.
+ *
+ * Every string rendered here comes from src/legacy.ts and nowhere else:
+ *   - the h1 is the 2020 tagline
+ *   - the contact line is the 2020 contact line
+ *   - the two calls to action are legacy navigation labels that resolve to real
+ *     sections of this page
+ *   - the four figures in the strip are lifted verbatim out of the 2025 capture
+ *     of /compliances
+ *
+ * The hero background video and its deferral logic are unchanged from v5.0: the
+ * element carries preload="none" and no <source> children, so the resource
+ * selection algorithm has nothing to fetch, and a synchronous inline script
+ * strips autoplay/loop for prefers-reduced-motion, save-data and 2g/slow-2g
+ * before any playback can begin. The deferred attach itself is the only
+ * application script this component ships.
  */
-import { Weight, Clock, Plane, ShieldCheck, FileText } from '@lucide/astro';
+import { heroFigures, tagline, directEmail, phoneDisplay, phoneDigits } from '../legacy';
 
-const NBSP_CHAR = '\u00A0';
-
-const kpiIcons: Record<string, typeof Weight> = {
-  weight: Weight,
-  clock: Clock,
-  plane: Plane,
-  shield: ShieldCheck,
-};
-
-interface Kpi {
-  id: string;
-  icon: string;
-  label: string;
-  prefix: string;
-  target: number;
-  suffix: string;
-  decimals: number;
-  detail: string;
-}
-
-const kpis: Kpi[] = [
-  {
-    id: "mass",
-    icon: "weight",
-    label: "Integrated Kit Mass",
-    prefix: "<",
-    target: 1650,
-    suffix: "\u00A0g",
-    decimals: 0,
-    detail: "For a 3-seat block. TSO tolerance <\u00A05\u00A0kg on 2 seat track legs.",
-  },
-  {
-    id: "mro",
-    icon: "clock",
-    label: "MRO Retrofit Time",
-    prefix: "<",
-    target: 15,
-    suffix: "\u00A0min",
-    decimals: 0,
-    detail: "Direct installation without removing seat track legs.",
-  },
-  {
-    id: "aog",
-    icon: "plane",
-    label: "Aircraft On Ground",
-    prefix: "",
-    target: 0,
-    suffix: "\u00A0h",
-    decimals: 0,
-    detail: "Zero forced airframe downtime.",
-  },
-  {
-    id: "crash",
-    icon: "shield",
-    label: "Dynamic Crash Test",
-    prefix: "",
-    target: 16,
-    suffix: "G CS-25 / FAR-25",
-    decimals: 0,
-    detail: "Automatic spring-return holds an unoccupied seat upright.",
-  },
-];
-
-const credibility = [
-  { label: "EASA Part 21J", variant: "badge-cert" },
-  { label: "FAA Part 21", variant: "badge-cert" },
-  { label: "3 moving sub-parts", variant: "badge-tech" },
-  { label: "0 motors", variant: "badge-tech" },
-];
+const kickerFigures = heroFigures;
 ---
+
 <section
   id="hero"
   class="relative isolate overflow-hidden bg-deep-navy text-pure-white"
@@ -130,18 +76,12 @@ const credibility = [
     <div class="absolute inset-0" data-hero-scrim="edge"></div>
 
     <div class="absolute inset-0 bg-grid-pattern bg-grid-64 opacity-70"></div>
-    <div class="absolute inset-0 bg-radial-glow"></div>
-    <div
-      class="absolute left-1/2 top-[-10%] h-[520px] w-[820px] -translate-x-1/2 rounded-full opacity-60"
-      style="background: radial-gradient(ellipse at center, rgba(0,210,254,0.14) 0%, rgba(2,132,199,0.06) 45%, transparent 72%);"
-    >
-    </div>
   </div>
 
-  <div class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[280px]" aria-hidden="true">
+  <div class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[220px]" aria-hidden="true">
     <svg
       class="h-full w-full"
-      viewBox="0 0 1440 280"
+      viewBox="0 0 1440 220"
       preserveAspectRatio="none"
       focusable="false"
       role="presentation"
@@ -159,116 +99,78 @@ const credibility = [
           <stop offset="100%" stop-color="#0284C7" stop-opacity="0.12"></stop>
         </linearGradient>
       </defs>
-      <rect x="0" y="0" width="1440" height="280" fill="url(#lseat-haze)"></rect>
-      <path d="M0 208 C 260 186, 420 170, 720 162 C 1020 170, 1180 186, 1440 208" fill="none" stroke="url(#lseat-horizon)" stroke-width="1"></path>
-      <path d="M0 224 C 300 206, 460 194, 720 188 C 980 194, 1140 206, 1440 224" fill="none" stroke="url(#lseat-horizon)" stroke-width="1" stroke-opacity="0.45"></path>
-      <path d="M0 244 C 340 230, 500 222, 720 218 C 940 222, 1100 230, 1440 244" fill="none" stroke="url(#lseat-horizon)" stroke-width="1" stroke-opacity="0.22"></path>
+      <rect x="0" y="0" width="1440" height="220" fill="url(#lseat-haze)"></rect>
+      <path d="M0 158 C 260 140, 420 126, 720 119 C 1020 126, 1180 140, 1440 158" fill="none" stroke="url(#lseat-horizon)" stroke-width="1"></path>
+      <path d="M0 176 C 300 160, 460 150, 720 144 C 980 150, 1140 160, 1440 176" fill="none" stroke="url(#lseat-horizon)" stroke-width="1" stroke-opacity="0.45"></path>
+      <path d="M0 198 C 340 186, 500 178, 720 174 C 940 178, 1100 186, 1440 198" fill="none" stroke="url(#lseat-horizon)" stroke-width="1" stroke-opacity="0.22"></path>
     </svg>
   </div>
 
-  <div class="section-container relative py-20 md:py-28 lg:py-32">
-    <div class="mx-auto max-w-4xl text-center">
-      <span class="section-badge">PATENTED INNOVATION — DESIGNED TO EASA CS-25 &amp; FAA FAR-25</span>
+  <div class="section-container relative py-12 md:py-20 lg:py-24">
+    <div class="max-w-4xl">
+      <p class="hero-rule"><span class="badge-cert">LSEAT</span></p>
 
-      <h1 id="hero-title" class="text-display-xl text-balance mt-6 font-display text-pure-white">
-        Upgrade Economy Comfort Without Sacrificing Seat Density.
+      <h1
+        id="hero-title"
+        class="mt-5 font-display text-pure-white text-balance text-[clamp(2.25rem,7vw,4.5rem)] font-extrabold leading-[1.04] tracking-tight"
+      >
+        {tagline}
       </h1>
 
-      <p class="text-body-lg text-balance mt-6 text-pure-white/70">
-        Ultra-lightweight (&lt;&nbsp;1,650&nbsp;g / 3 seats) non-electric retrofit kit enabling 40° sleep mode.
-        Zero AOG time, installed in &lt;&nbsp;15 minutes per seat.
-      </p>
-
-      <div class="mt-10 flex flex-col items-stretch justify-center gap-4 sm:flex-row sm:items-center">
-        <a href="#contact" class="btn-primary">Request the EASA Form 1 Dossier</a>
-        <a href="#kinematics" class="btn-secondary">View the Kinematic Data Sheet</a>
-      </div>
-
-      <p class="mt-6">
+      <p class="mt-5 text-body-base text-pure-white/75 sm:text-body-lg">
         <a
-          href="/docs/LSEAT-Brochure-2025.pdf"
-          download="LSEAT-Brochure-2025.pdf"
-          type="application/pdf"
-          class="inline-flex items-center gap-2 text-body-sm text-pure-white/70 underline decoration-pure-white/30 underline-offset-4 transition-colors duration-200 hover:text-pure-white hover:decoration-pure-white"
-        >
-          <FileText class="h-4 w-4 shrink-0" stroke-width="1.75" aria-hidden="true" focusable="false" />
-          <span>Download 2025 Technical Brochure</span>
-        </a>
+          href={'mailto:' + directEmail}
+          class="hero-contact-link font-mono tabular-nums transition-colors duration-200 hover:text-electric-cyan"
+        >{directEmail}</a>
+        <span class="mx-3 text-pure-white/30" aria-hidden="true">/</span>
+        <a
+          href={'tel:' + phoneDigits}
+          class="hero-contact-link font-mono tabular-nums transition-colors duration-200 hover:text-electric-cyan"
+        >{phoneDisplay}</a>
       </p>
 
-      <div class="mt-8 bg-slate-950/60 backdrop-blur-md border border-slate-800/80 rounded-xl p-4">
-        <ul class="flex flex-wrap items-center justify-center gap-3" aria-label="Certification references and mechanical architecture">
-          {
-            credibility.map((item) => (
-              <li>
-                <span class={item.variant}>{item.label}</span>
-              </li>
-            ))
-          }
-        </ul>
+      <div class="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
+        <a href="#contact" class="btn-primary">Contact</a>
+        <a href="#technical-aspects" class="btn-secondary">Technical aspects</a>
       </div>
     </div>
 
-    <div class="mt-16 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4" data-kpi-grid>
+    <ul
+      class="hero-figures mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-electric-cyan/22 bg-electric-cyan/22 lg:mt-12 lg:grid-cols-4"
+      aria-label="Technical aspects"
+    >
       {
-        kpis.map((kpi, index) => {
-          const KpiIcon = kpiIcons[kpi.icon];
-          return (
-          <article
-            class="kpi-card group flex flex-col gap-4"
-            data-kpi-card
-            data-index={String(index)}
-            style={`transition-delay: ${index * 90}ms`}
-          >
-            <div class="relative flex items-center gap-3">
-              <span
-                class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-electric-cyan/25 bg-electric-cyan/10 text-electric-cyan [&>svg]:h-5 [&>svg]:w-5"
-              >
-                <KpiIcon stroke-width="1.75" aria-hidden="true" focusable="false" />
-              </span>
-              <h2 class="text-caption font-semibold leading-snug text-pure-white/60">{kpi.label}</h2>
-            </div>
-
-            <p
-              class="relative font-mono text-display-sm font-semibold tabular-nums text-pure-white"
-              data-kpi-value
-              data-target={String(kpi.target)}
-              data-prefix={kpi.prefix}
-              data-suffix={kpi.suffix}
-              data-decimals={String(kpi.decimals)}
-            >
-              {kpi.prefix ? kpi.prefix + NBSP_CHAR : ''}{kpi.target.toLocaleString('en-US')}{kpi.suffix}
-            </p>
-
-            <p class="relative mt-auto text-body-sm text-pure-white/60">{kpi.detail}</p>
-          </article>
-          );
-        })
+        kickerFigures.map((figure) => (
+          <li class="flex flex-col gap-2 bg-slate-dark/90 px-4 py-4 sm:px-5 sm:py-5">
+            <span class="text-caption text-pure-white/55">{figure.label}</span>
+            <span class="font-mono text-body-lg font-semibold tabular-nums text-electric-cyan sm:text-display-sm">
+              {figure.value}
+            </span>
+          </li>
+        ))
       }
-    </div>
+    </ul>
   </div>
 </section>
+
 <style>
-  /* Flat deep-navy tint, folded in from the section's own #0B192C.
-     0.50 is the lightest round value that holds the measured contrast
-     floor once every retained glow layer is accounted for. */
+  /* Flat deep-navy tint, folded in from the section's own #0B192C. 0.50 is the
+     lightest round value that holds the measured contrast floor once every
+     retained glow layer is accounted for. */
   [data-hero-scrim='base'] {
     background-color: rgba(11, 25, 44, 0.5);
   }
 
-  /* Extra weight over the copy block: 0.55 at the core easing to a 0.38
-     plateau, so the headline is never sitting on the brightest footage. */
   [data-hero-scrim='text'] {
     background-image: radial-gradient(
       ellipse 78% 62% at 50% 40%,
-      rgba(7, 17, 31, 0.55) 0%,
-      rgba(7, 17, 31, 0.55) 52%,
-      rgba(7, 17, 31, 0.38) 82%,
-      rgba(7, 17, 31, 0.38) 100%
+      rgba(7, 17, 31, 0.58) 0%,
+      rgba(7, 17, 31, 0.58) 52%,
+      rgba(7, 17, 31, 0.42) 82%,
+      rgba(7, 17, 31, 0.42) 100%
     );
   }
 
-  /* Seats the footage into the section edges and clears the horizon rule. */
   [data-hero-scrim='edge'] {
     background-image: linear-gradient(
       180deg,
@@ -279,9 +181,6 @@ const credibility = [
     );
   }
 
-  /* Desktop only: a full-viewport blur is a per-frame paint on low-end
-     Android tile memory. The scrim alone clears contrast on mobile, so the
-     blur is spent only where the GPU can absorb it. */
   @media (min-width: 1024px) {
     [data-hero-video] {
       filter: blur(2px);
@@ -289,32 +188,61 @@ const credibility = [
     }
   }
 
-  [data-kpi-card] {
-    opacity: 0;
-    transform: translateY(22px);
-    transition:
-      opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
-      transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* Hard technical rule: a short cyan tick above the wordmark, the only purely
+     decorative element in the section. */
+  .hero-rule {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
   }
 
-  [data-kpi-card][data-revealed='true'] {
-    opacity: 1;
-    transform: translateY(0);
+  .hero-rule::after {
+    content: '';
+    display: block;
+    height: 1px;
+    width: 3rem;
+    background-color: rgba(0, 210, 254, 0.55);
   }
 
+  .hero-contact-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 255, 255, 0.28);
+    text-underline-offset: 0.3rem;
+  }
 
-  @media (prefers-reduced-motion: reduce) {
-    [data-kpi-card] {
+  .hero-contact-link:hover {
+    text-decoration-color: currentColor;
+  }
+
+  /* Staggered CSS-only entrance. No observer, no counter, no script: the four
+     figures are phrases, not numbers, so nothing here needs to count. */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-figures > li {
+      animation: hero-figure-in 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .hero-figures > li:nth-child(1) { animation-delay: 60ms; }
+    .hero-figures > li:nth-child(2) { animation-delay: 140ms; }
+    .hero-figures > li:nth-child(3) { animation-delay: 220ms; }
+    .hero-figures > li:nth-child(4) { animation-delay: 300ms; }
+  }
+
+  @keyframes hero-figure-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
       opacity: 1;
-      transform: none;
-      transition: none;
+      transform: translateY(0);
     }
   }
 </style>
 
 <script>
-  const NBSP = '\u00A0';
-
   interface NetworkInformationLike {
     saveData?: boolean;
     effectiveType?: string;
@@ -434,93 +362,6 @@ const credibility = [
 
     if (typeof motionPreference.addEventListener === 'function') {
       motionPreference.addEventListener('change', onMotionChange);
-    }
-  }
-
-  const formatEn = (value: number, decimals: number): string => {
-    const fixed = value.toFixed(decimals);
-    const parts = fixed.split('.');
-    const grouped = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return parts[1] ? grouped + '.' + parts[1] : grouped;
-  };
-
-  interface KpiEntry {
-    card: HTMLElement;
-    target: HTMLElement;
-  }
-
-  const grid = document.querySelector('[data-kpi-grid]');
-
-  if (grid) {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-kpi-card]'));
-    const entries = cards
-      .map((card): KpiEntry | null => {
-        const target = card.querySelector<HTMLElement>('[data-kpi-value]');
-        return target ? { card: card, target: target } : null;
-      })
-      .filter((entry): entry is KpiEntry => entry !== null);
-
-    const paint = (
-      target: HTMLElement,
-      prefix: string,
-      suffix: string,
-      decimals: number,
-      value: number
-    ): void => {
-      const gap = prefix ? NBSP : '';
-      target.textContent = prefix + gap + formatEn(value, decimals) + suffix;
-    };
-
-    const animate = (entry: KpiEntry): void => {
-      const target = entry.target;
-      const prefix = target.getAttribute('data-prefix') || '';
-      const suffix = target.getAttribute('data-suffix') || '';
-      const decimals = Number(target.getAttribute('data-decimals') || '0');
-      const goal = Number(target.getAttribute('data-target') || '0');
-      if (reduced) {
-        paint(target, prefix, suffix, decimals, goal);
-        return;
-      }
-
-      const duration = 1400;
-      const start = performance.now();
-
-      const step = (now: number): void => {
-        const t = Math.min(1, (now - start) / duration);
-        const eased = t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
-        paint(target, prefix, suffix, decimals, goal * eased);
-        if (t < 1) requestAnimationFrame(step);
-      };
-
-      requestAnimationFrame(step);
-    };
-
-    const runAll = (): void => {
-      entries.forEach((entry) => {
-        entry.card.setAttribute('data-revealed', 'true');
-        animate(entry);
-      });
-    };
-
-    if (!('IntersectionObserver' in window)) {
-      runAll();
-    } else {
-      const observer = new IntersectionObserver(
-        (observed) => {
-          observed.forEach((item) => {
-            if (!item.isIntersecting) return;
-            const card = item.target;
-            card.setAttribute('data-revealed', 'true');
-            const hit = entries.find((entry) => entry.card === card);
-            if (hit) animate(hit);
-            observer.unobserve(card);
-          });
-        },
-        { threshold: 0.25, rootMargin: '0px 0px -8% 0px' }
-      );
-
-      cards.forEach((card) => observer.observe(card));
     }
   }
 </script>

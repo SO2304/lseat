@@ -5,6 +5,7 @@ import '../styles/global.css';
 import jakartaSansVariableWoff2 from '@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin-wght-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { generalEmail, tagline, conceptBody } from '../legacy';
 
 export interface Props {
   title: string;
@@ -19,45 +20,26 @@ const siteUrl = new URL('/', base).toString();
 const canonicalUrl = new URL(Astro.url.pathname, base).toString();
 const ogImageUrl = new URL(ogImage, base).toString();
 
+/* Structured data carries only legacy wording: the product name and one brochure
+   statement. No specification figure, certification reference or product claim is
+   asserted here, because none of that survives in the recovered sources. */
 const organization = {
   '@type': 'Organization',
   '@id': `${siteUrl}#organization`,
-  name: 'LSEAT Aerospace',
+  name: 'LSEAT',
   url: siteUrl,
-  email: 'contact@lseat.eu',
-  description:
-    "Manufacturer of ergonomic sleep-mode passenger seat conversion kits for commercial aircraft cabins. EASA Part 21J and FAA Part 21 certification packages.",
-  inLanguage: 'en-US',
-  knowsAbout: [
-    'EASA Part 21J',
-    'FAA Part 21',
-    'CS-25',
-    'FAR-25',
-    'EASA Form 1',
-    'Passenger cabin',
-    'MRO retrofit',
-  ],
+  email: generalEmail,
+  description: conceptBody,
+  inLanguage: 'en',
 };
 
 const website = {
   '@type': 'WebSite',
   '@id': `${siteUrl}#website`,
   url: siteUrl,
-  name: 'LSEAT Aerospace',
-  inLanguage: 'en-US',
+  name: 'LSEAT',
+  inLanguage: 'en',
   publisher: { '@id': `${siteUrl}#organization` },
-};
-
-const product = {
-  '@type': 'Product',
-  '@id': `${siteUrl}#product`,
-  name: 'LSEAT 16G Economy Conversion Kit',
-  description:
-    'Sleep-mode ergonomic passenger seat conversion kit 40°, less than\u00A01,650\u00A0g for 3 seats, 0 W, MRO retrofit in less than\u00A015\u00A0min per seat. Designed for compliance with EASA CS-25 / FAA FAR-25, Part 21J package and EASA Form 1.',
-  category: 'Aerospace - cabin interior furnishing / aircraft retrofit',
-  inLanguage: 'en-US',
-  brand: { '@type': 'Brand', name: 'LSEAT Aerospace' },
-  manufacturer: { '@id': `${siteUrl}#organization` },
 };
 
 const jakartaSansAliasCss = [
@@ -74,6 +56,7 @@ const jakartaSansFallbackCss = [
   '@font-face{',
   "font-family:'Plus Jakarta Sans Fallback';",
   'font-style:normal;',
+  'font-display:swap;',
   'font-weight:200 800;',
   "src:local('Helvetica Neue'),local('Arial'),local('Liberation Sans');",
   'size-adjust:103.36%;',
@@ -157,7 +140,7 @@ const sharedChunkPreloads = (() => {
 
 const structuredData = JSON.stringify({
   '@context': 'https://schema.org',
-  '@graph': [organization, website, product],
+  '@graph': [organization, website],
 });
 ---
 
@@ -170,10 +153,10 @@ const structuredData = JSON.stringify({
 
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="author" content="LSEAT Aerospace" />
+    <meta name="author" content="LSEAT" />
     <meta
       name="keywords"
-      content="16G economy conversion kit, sleep-mode passenger seat, aerospace, cabin interior furnishing, EASA Part 21J, FAA Part 21, CS-25, FAR-25, EASA Form 1, MRO retrofit, LSEAT Aerospace"
+      content="LSEAT, LSEAT Cy, economy seat, sleep mode, TSO, STC, PART 21 J, PART 21G, FAA, EASA"
     />
     <link rel="canonical" href={canonicalUrl} />
     <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -192,7 +175,7 @@ const structuredData = JSON.stringify({
     <style set:html={fontCss} />
 
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="LSEAT Aerospace" />
+    <meta property="og:site_name" content="LSEAT" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
@@ -201,12 +184,12 @@ const structuredData = JSON.stringify({
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:alt" content="LSEAT Aerospace - 16G economy conversion kit" />
+    <meta property="og:image:alt" content={tagline} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
-    <meta name="twitter:image:alt" content="LSEAT Aerospace - 16G economy conversion kit" />
+    <meta name="twitter:image:alt" content={tagline} />
 
     <script type="application/ld+json" set:html={structuredData} />
   </head>

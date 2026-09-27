@@ -1,41 +1,32 @@
 ---
-// LSEAT Aerospace - site header.
-// The logo is the owner-supplied brand artwork (public/logo-lseat.png), an 81x56
-// horizontal lockup shown on the official white plate from the artwork; the plate is
-// required for contrast on deep navy. The brand logo is an <img> element pointing at
-// /logo-lseat.png. It is brand identity, not a Lucide icon.
-//
-// Intrinsic ratio of the asset is 81/56 = 1.446429.
-//   Desktop bar, h-7 (28px): 28 * 1.446429 = 40.50 -> width="40" height="28".
-//   Mobile drawer,  h-6 (24px): 24 * 1.446429 = 34.71 -> width="35" height="24".
-// w-auto derives the painted width from that same intrinsic ratio, so the mark is
-// never scaled on one axis only and is not stretched.
-//
-// Mobile menu: an off-canvas slide-over drawer. The panel and its scrim are rendered
-// as siblings AFTER </header> on purpose: the header carries .glassmorphism, which
-// applies backdrop-filter, and an ancestor with backdrop-filter/transform/filter
-// becomes the containing block for position: fixed descendants. Keeping the drawer
-// outside <header> guarantees the panel is positioned against the viewport and that
-// opening it never reflows the page.
-import { ArrowRight, FileText, Menu, X } from '@lucide/astro';
+/**
+ * Header.astro - site header.
+ *
+ * The logo is the owner-supplied brand artwork (public/logo-lseat.png), an 81x56
+ * horizontal lockup shown on the official white plate from the artwork; the plate
+ * is required for contrast on deep navy.
+ *
+ * Intrinsic ratio of the asset is 81/56 = 1.446429.
+ *   Desktop bar, h-7 (28px): 28 * 1.446429 = 40.50 -> width="40" height="28".
+ *   Mobile drawer,  h-6 (24px): 24 * 1.446429 = 34.71 -> width="35" height="24".
+ * w-auto derives the painted width from that same intrinsic ratio, so the mark is
+ * never scaled on one axis only and is not stretched.
+ *
+ * Every nav label is a legacy string taken from src/legacy.ts, and every label in
+ * the row resolves to a real section of this single page. The full nine-label
+ * 2020 navigation is transcribed in full, in order, in the footer.
+ *
+ * Mobile menu: an off-canvas slide-over drawer. The panel and its scrim are rendered
+ * as siblings AFTER </header> on purpose: the header carries .glassmorphism, which
+ * applies backdrop-filter, and an ancestor with backdrop-filter/transform/filter
+ * becomes the containing block for position: fixed descendants. Keeping the drawer
+ * outside <header> guarantees the panel is positioned against the viewport and that
+ * opening it never reflows the page.
+ */
+import { ArrowRight, Menu, X } from '@lucide/astro';
+import { sectionNav, technicalTitle } from '../legacy';
 
-const pathname = Astro.url.pathname.replace(/\/+$/, '');
-const isHome = pathname === '' || pathname === '/index';
-
-/* Exactly four entries, shared by the desktop row and the mobile drawer, in the owner's
-   wording. "Specs & Kinematics" points at #specifications, the top of the specifications
-   section; the Kinematics Data Sheet is the section immediately above it and keeps
-   id="kinematics", so it stays reachable both from the hero call to action and from the
-   in-page link added at the top of the specifications section. Nothing points at #roi:
-   the simulator that anchor served has been withdrawn and the section no longer exists. */
-const navLinks = [
-  { label: 'Hero', hash: '#hero' },
-  { label: 'Specs & Kinematics', hash: '#specifications' },
-  { label: 'Retrofit MRO', hash: '#retrofit' },
-  { label: 'Contact', hash: '#contact' },
-].map((link) => ({ label: link.label, href: isHome ? link.hash : `/${link.hash}` }));
-
-const contactHref = isHome ? '#contact' : '/#contact';
+const cta = { label: technicalTitle, href: '#technical-aspects' };
 ---
 
 <header class="sticky top-0 z-50 glassmorphism border-b border-electric-cyan/18">
@@ -48,21 +39,21 @@ const contactHref = isHome ? '#contact' : '/#contact';
   </div>
 
   <div class="section-container">
-    <div class="flex h-18 md:h-20 items-center justify-between gap-6 xl:gap-3">
+    <div class="flex h-18 items-center justify-between gap-4 md:h-20 xl:gap-6">
       <!-- Tap target: the anchor carries min-h-12 (48px) and the visible white plate
            is nested inside it, so the 48px hit area does not enlarge the plate or the
            28px logo image. -->
       <a
-        href="/"
+        href="#hero"
         class="inline-flex min-h-12 items-center rounded-lg"
-        aria-label="LSEAT Aerospace - back to home"
+        aria-label="Home"
       >
         <span
           class="inline-flex items-center rounded-lg bg-white px-2.5 py-1.5 shadow-sm ring-1 ring-black/10 xl:px-2"
         >
           <img
             src="/logo-lseat.png"
-            alt="LSEAT Aerospace"
+            alt="LSEAT"
             width="40"
             height="28"
             class="h-7 w-auto"
@@ -74,11 +65,8 @@ const contactHref = isHome ? '#contact' : '/#contact';
 
       <nav class="hidden xl:flex items-center gap-2" aria-label="Main navigation">
         {
-          navLinks.map((link) => (
-            <a
-              href={link.href}
-              class="btn-ghost whitespace-nowrap xl:px-1.5"
-            >
+          sectionNav.map((link) => (
+            <a href={link.href} class="btn-ghost whitespace-nowrap xl:px-2">
               {link.label}
             </a>
           ))
@@ -86,20 +74,10 @@ const contactHref = isHome ? '#contact' : '/#contact';
       </nav>
 
       <div
-        class="hidden xl:flex shrink-0 items-center gap-2 [&_.btn-primary]:whitespace-nowrap [&_.btn-primary]:px-5 [&_.btn-primary]:py-2.5 [&_.btn-primary]:text-body-sm xl:[&_.btn-primary]:px-4"
+        class="hidden shrink-0 items-center gap-2 xl:flex [&_.btn-primary]:whitespace-nowrap [&_.btn-primary]:px-5 [&_.btn-primary]:py-2.5 [&_.btn-primary]:text-body-sm"
       >
-        <a
-          href="/docs/LSEAT-Brochure-2025.pdf"
-          download="LSEAT-Brochure-2025.pdf"
-          type="application/pdf"
-          class="btn-ghost hidden whitespace-nowrap px-2 gap-1.5 xl:inline-flex"
-        >
-          <FileText class="h-4 w-4" stroke-width="1.75" aria-hidden="true" focusable="false" />
-          <span class="2xl:hidden" aria-hidden="true">Brochure</span>
-          <span class="sr-only 2xl:not-sr-only">Brochure (PDF)</span>
-        </a>
-        <a href={contactHref} class="btn-primary">
-          <span>Request Engineering File</span>
+        <a href={cta.href} class="btn-primary">
+          <span>{cta.label}</span>
           <ArrowRight class="h-4 w-4" stroke-width="2" aria-hidden="true" focusable="false" />
         </a>
       </div>
@@ -110,14 +88,12 @@ const contactHref = isHome ? '#contact' : '/#contact';
         class="xl:hidden inline-flex items-center justify-center h-12 w-12 rounded-md border border-electric-cyan/30 text-pure-white transition-colors duration-200 hover:border-electric-cyan hover:text-electric-cyan [&[aria-expanded=true]_.icon-open]:hidden [&[aria-expanded=true]_.icon-close]:block"
         aria-expanded="false"
         aria-controls="lseat-mobile-menu"
-        aria-label="Open main menu"
+        aria-label="Main navigation"
       >
         <Menu class="icon-open h-6 w-6" stroke-width="2" aria-hidden="true" focusable="false" />
         <X class="icon-close hidden h-6 w-6" stroke-width="2" aria-hidden="true" focusable="false" />
       </button>
     </div>
-
-    <span id="retrofit" class="scroll-mt-24" aria-hidden="true"></span>
   </div>
 </header>
 
@@ -137,29 +113,14 @@ const contactHref = isHome ? '#contact' : '/#contact';
   id="lseat-mobile-menu"
   role="dialog"
   aria-modal="true"
-  aria-label="Main menu"
+  aria-label="Main navigation"
   inert
   class="fixed inset-y-0 right-0 z-[60] flex w-[min(21rem,88vw)] max-w-full translate-x-full flex-col overflow-y-auto overscroll-contain border-l border-electric-cyan/20 bg-deep-navy/95 px-5 pb-8 pt-5 shadow-2xl transition-transform duration-300 ease-out motion-reduce:transition-none xl:hidden"
 >
-  <!-- Brand mark, top left of the drawer, vertically aligned with the close button.
-       Intrinsic ratio 81/56 = 1.446429; at h-6 (24px) the honest reservation is
-       24 * 1.446429 = 34.714 -> width="35" height="24".
-       Interactive <a href="/">: the header logo is display:none below 1280px, so before
-       this change a mobile visitor had no route back to the homepage from inside the
-       drawer. The anchor is the first tab stop of the focus trap, ahead of the close
-       button, and it carries no tabindex, so it is a single tab stop and the trap still
-       wraps in both directions. Clicking it is handled by the existing "close on any link
-       click" listener, which is exactly what returns focus to the hamburger toggle.
-       aria-label is deliberately distinct from the image alt: the label announces the
-       action, the alt still names the mark when the image is read on its own. The drawer
-       keeps its accessible name from role="dialog" + aria-label="Main menu".
-       The white plate is retained: the mark is dark-on-light and the drawer is
-       bg-deep-navy/95, so without a plate it would be invisible. px-1.5 py-1 keeps
-       it tighter than the header plate so it does not dominate a narrow drawer. -->
   <div class="flex items-center justify-between gap-4 pb-5">
     <a
-      href="/"
-      aria-label="LSEAT Aerospace &mdash; home"
+      href="#hero"
+      aria-label="Home"
       class="inline-flex min-h-12 shrink-0 items-center rounded-lg"
     >
       <span
@@ -167,7 +128,7 @@ const contactHref = isHome ? '#contact' : '/#contact';
       >
         <img
           src="/logo-lseat.png"
-          alt="LSEAT Aerospace"
+          alt="LSEAT"
           width="35"
           height="24"
           class="h-6 w-auto"
@@ -180,7 +141,7 @@ const contactHref = isHome ? '#contact' : '/#contact';
       id="lseat-menu-close"
       type="button"
       class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-electric-cyan/30 text-pure-white transition-colors duration-200 hover:border-electric-cyan hover:text-electric-cyan"
-      aria-label="Close main menu"
+      aria-label="Main navigation"
     >
       <X class="h-6 w-6" stroke-width="2" aria-hidden="true" focusable="false" />
     </button>
@@ -188,29 +149,16 @@ const contactHref = isHome ? '#contact' : '/#contact';
 
   <nav class="flex flex-col" aria-label="Mobile navigation">
     {
-      navLinks.map((link) => (
+      sectionNav.map((link) => (
         <a href={link.href} class="btn-ghost w-full justify-start text-body-base">
           {link.label}
         </a>
       ))
     }
-    <a
-      href="/docs/LSEAT-Brochure-2025.pdf"
-      download="LSEAT-Brochure-2025.pdf"
-      type="application/pdf"
-      class="btn-ghost w-full justify-start text-body-base"
-    >
-      <FileText class="h-4 w-4" stroke-width="1.75" aria-hidden="true" focusable="false" />
-      <span>Brochure (PDF)</span>
+    <a href={cta.href} class="btn-ghost w-full justify-start text-body-base">
+      {cta.label}
     </a>
   </nav>
-
-  <div class="mt-4 [&_.btn-primary]:w-full [&_.btn-primary]:px-5">
-    <a href={contactHref} class="btn-primary w-full">
-      <span>Request Engineering File</span>
-      <ArrowRight class="h-4 w-4" stroke-width="2" aria-hidden="true" focusable="false" />
-    </a>
-  </div>
 </div>
 
 <script>
@@ -239,7 +187,6 @@ const contactHref = isHome ? '#contact' : '/#contact';
         if (open === isOpen()) return;
 
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-        toggle.setAttribute('aria-label', open ? 'Close main menu' : 'Open main menu');
 
         menu.classList.toggle('translate-x-full', !open);
         scrim.classList.toggle('opacity-0', !open);
