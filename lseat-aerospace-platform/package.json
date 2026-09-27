@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "B2B platform for LSEAT Aerospace solutions, focusing on high conversion and secure web experience.",
   "main": "src/pages/index.astro",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",

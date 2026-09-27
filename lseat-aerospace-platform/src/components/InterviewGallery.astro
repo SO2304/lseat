@@ -1,22 +1,26 @@
 ---
 /**
  * InterviewGallery.astro
- * On-demand trade-press video player.
+ * On-demand interview player.
  *
- * Native HTML5 <video controls> only. There is no custom player, no autoplay, no
- * <script> and no event handler in this component, so nothing can start playback on
- * its own and the transport is keyboard operable by definition: the browser's own
- * control bar exposes play/pause, seek, volume and fullscreen as focusable widgets.
+ * LSEAT's own interview publication from the Dubai Air Show, embedded from the
+ * youtube-nocookie.com domain rather than self-hosted. Embedding replaces the
+ * former 31.55 MiB WebM, which sat over the 25 MiB per-file ceiling of the CDN and
+ * made the site undeployable; the embed costs zero bytes of repository weight.
  *
- * The single source is VP9 WebM. No MP4 twin is shipped: VP9 WebM is supported by
- * every current browser, and a second 49 MB copy of the same four-and-a-half minutes
- * is not worth doubling the page weight for.
+ * The nocookie host is deliberate: it reduces the tracking footprint a third-party
+ * frame would otherwise impose on an EU-hosted B2B site.
+ *
+ * No autoplay parameter is present. loading="lazy" defers the frame until it nears
+ * the viewport, and referrerpolicy="strict-origin-when-cross-origin" withholds the
+ * full referrer from the embed host. The iframe is keyboard focusable by default
+ * and needs no script of its own: starting playback is entirely the visitor's
+ * decision.
  */
 import { Film } from '@lucide/astro';
 
-const videoSrc = '/media/interview-lseat.webm';
-const poster = '/media/interview-poster.jpg';
-const mimeType = 'video/webm; codecs=vp9';
+const embedSrc = 'https://www.youtube-nocookie.com/embed/hjRS-EZgkbY?start=26&rel=0';
+const embedTitle = 'LSEAT interview recorded at the Dubai Air Show 2023';
 ---
 
 <section
@@ -28,30 +32,29 @@ const mimeType = 'video/webm; codecs=vp9';
 
   <div class="section-container relative">
     <header class="section-header">
-      <span class="section-badge">Trade press</span>
+      <span class="section-badge">Company publication</span>
       <h2 id="interview-title" class="section-title text-balance">
         Interview Footage <span class="text-electric-cyan">&amp;</span> Field Record
       </h2>
       <p class="section-subtitle text-balance">
-        On-demand reference footage held in the public domain from the 2023 Dubai
-        Airshow. The player loads nothing until you press play.
+        An interview recorded by LSEAT at the Dubai Air Show 2023, published on the company's
+        own channel and embedded here. Playback is entirely on demand.
       </p>
     </header>
 
     <figure class="glassmorphism-lg mx-auto max-w-4xl overflow-hidden rounded-2xl">
-      <div class="relative w-full bg-slate-950">
-        <video
-          class="block h-auto w-full"
-          controls
-          preload="metadata"
-          playsinline
-          poster={poster}
-          width="1280"
-          height="720"
-        >
-          <source src={videoSrc} type={mimeType} />
-          Your browser cannot play this WebM video. The file is available on request.
-        </video>
+      <div
+        class="relative aspect-video w-full overflow-hidden rounded-xl border border-electric-cyan/20 bg-slate-dark shadow-2xl"
+      >
+        <iframe
+          class="absolute inset-0 h-full w-full border-0"
+          src={embedSrc}
+          title={embedTitle}
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+        ></iframe>
       </div>
 
       <figcaption class="flex flex-col gap-3 border-t border-pure-white/10 p-5 md:p-6">
@@ -62,16 +65,14 @@ const mimeType = 'video/webm; codecs=vp9';
           >
             <Film class="h-4 w-4" stroke-width="1.75" focusable="false" />
           </span>
-          Dubai Airshow TV, 2023 \u00B7 4 min 37 s \u00B7 broadcaster footage
+          LSEAT published interview &middot; Dubai Air Show 2023
         </p>
         <p class="text-body-sm text-pure-white/70 text-balance">
-          Interview footage recorded by Dubai Airshow TV at the 2023 Dubai Airshow. This is
-          third-party broadcaster footage, not an LSEAT production, and it is reproduced here
-          for background reference only. A lower-third mask has been applied to the opening
-          frames to remove a dated third-party presenter title card; the audio and the picture
-          are otherwise unaltered. Nothing said in this footage is an LSEAT specification,
-          certification claim or engineering commitment, and the captions and on-screen
-          graphics remain the property of the broadcaster.
+          This interview was recorded by LSEAT at the Dubai Air Show 2023 and published on the
+          company's own channel. It is presented here as a company publication: the footage, the
+          audio and the on-screen graphics are LSEAT's own. Nothing recorded in this interview
+          constitutes an LSEAT specification, certification claim or engineering commitment. The
+          engineering values published elsewhere on this site remain the authoritative figures.
         </p>
       </figcaption>
     </figure>
