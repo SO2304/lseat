@@ -1,0 +1,94 @@
+---
+/**
+ * RouteIndex.astro - the home page's index of the origin's other five routes.
+ *
+ * The origin's own home page carries no such index: it links outward only
+ * through its header nav. This block exists because the origin is a six-route
+ * site and a mirror has to make the other five reachable from the home page as
+ * well as from the header. It is navigation chrome, not editorial copy: every
+ * label and every href is the origin's own, taken from siteNav, and no
+ * description, blurb or summary is written for any of them.
+ */
+import { siteNav } from '../legacy';
+
+const routes = siteNav.filter((item) => item.href !== '/');
+---
+
+<section
+  id="routes"
+  class="relative scroll-mt-24 bg-slate-dark py-16 md:py-24"
+  aria-labelledby="routes-title"
+>
+  <div class="absolute inset-0 bg-grid-pattern bg-grid-64 pointer-events-none opacity-60" aria-hidden="true"></div>
+
+  <div class="section-container relative">
+    <h2
+      id="routes-title"
+      class="section-title font-mono text-[clamp(1.75rem,4.5vw,2.75rem)] font-bold uppercase tracking-tight"
+    >
+      LSEAT
+    </h2>
+
+    <ul class="route-grid mt-12" role="list">
+      {
+        routes.map((route) => (
+          <li class="route-cell">
+            <a href={route.href} class="route-link font-mono">
+              {route.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .route-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    background-color: rgba(0, 210, 254, 0.18);
+    border: 1px solid rgba(0, 210, 254, 0.18);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  @media (min-width: 640px) {
+    .route-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .route-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  .route-cell {
+    background-color: #0f172a;
+  }
+
+  /* 48px minimum touch target. The link fills its cell and carries the padding,
+     so the whole cell is the hit area rather than the text alone. */
+  .route-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 6rem;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    font-size: 0.9375rem;
+    letter-spacing: 0.02em;
+    color: rgba(255, 255, 255, 0.85);
+    box-shadow: inset 0 0 0 1px transparent;
+    transition: color 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
+  }
+
+  .route-link:hover {
+    color: #ffffff;
+    background-color: rgba(0, 210, 254, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(0, 210, 254, 0.4);
+  }
+</style>

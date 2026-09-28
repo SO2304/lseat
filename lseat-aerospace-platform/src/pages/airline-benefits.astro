@@ -1,0 +1,36 @@
+---
+/**
+ * airline-benefits.astro - the origin's "/airline-benefits" route.
+ *
+ * The origin serves this as its own page at this exact href, reached from the
+ * nav label "Airline benefits" - lower-case b, the origin's own casing - on all
+ * six of its pages. Same structure as /passenger-benefits: a heading and three
+ * blocks, each a sub-heading, bullet statements and one photograph.
+ *
+ * Legacy source typos retained deliberately: "Econonomy" for "Economy", "does
+ * nost change", "Hnet profit", "density pre cabin", "fee payed back", "adapt
+ * demand", "No maitenance", and the runs of consecutive spaces in "Zero
+ * investment is  required.", "Hnet profit comes  with the next one's.",
+ * "passenger  density pre cabin" and "adapt  demand".
+ *
+ * The origin repeats the line "Improve existing seats and cabin" five times
+ * across the first two blocks. Every repetition is reproduced, because dropping
+ * the duplicates would be editing the source.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import OriginPage from '../components/OriginPage.astro';
+import { airlineBenefits, airlinePhotos, technicalLead } from '../legacy';
+
+const title = 'Airline benefits';
+const description = technicalLead;
+---
+
+<BaseLayout title={title} description={description}>
+  <OriginPage
+    id="airline-benefits"
+    title={title}
+    groups={airlineBenefits}
+    photos={airlinePhotos}
+    surface="slate-dark"
+  />
+</BaseLayout>

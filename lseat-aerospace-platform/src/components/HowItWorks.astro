@@ -1,0 +1,47 @@
+---
+/**
+ * HowItWorks.astro - the origin home page's "How it works...(video)" section.
+ *
+ * The heading is the origin's own, verbatim, in the origin's own casing. Under
+ * it the origin publishes the owner's own Vimeo film as a third-party embed, and
+ * the exact iframe is republished: same player, same film id 1076326110, same
+ * parameter string. The title attribute carries the section's own heading, which
+ * is the one piece of text the source supplies for this embed; nothing
+ * descriptive is invented.
+ *
+ * This adds no first-party JavaScript. The embed is lazy, so nothing is fetched
+ * from Vimeo until the block is near the viewport.
+ */
+import { videoEmbedSrc, videoSectionTitle } from '../legacy';
+---
+
+<section
+  id="how-it-works"
+  class="relative scroll-mt-24 bg-slate-dark py-16 md:py-24"
+  aria-labelledby="how-it-works-title"
+>
+  <div class="absolute inset-0 bg-grid-pattern bg-grid-64 pointer-events-none opacity-60" aria-hidden="true"></div>
+
+  <div class="section-container relative">
+    <header>
+      <h2
+        id="how-it-works-title"
+        class="section-title font-mono text-[clamp(1.75rem,4.5vw,2.75rem)] font-bold uppercase tracking-tight"
+      >
+        {videoSectionTitle}
+      </h2>
+    </header>
+
+    <div class="mt-10 overflow-hidden rounded-lg border border-electric-cyan/20 md:mt-12">
+      <iframe
+        src={videoEmbedSrc}
+        title={videoSectionTitle}
+        class="block aspect-video w-full"
+        allowfullscreen
+        referrerpolicy="strict-origin-when-cross-origin"
+        loading="lazy"
+      >
+      </iframe>
+    </div>
+  </div>
+</section>

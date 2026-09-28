@@ -1,0 +1,41 @@
+---
+/**
+ * compliances.astro - the origin's "/compliances" route.
+ *
+ * The origin serves this as its own page at this exact href, reached from the
+ * nav label "Compliances" on all six of its pages. It is a badge, a heading, a
+ * lead sentence and three blocks, each a sub-heading, bullet statements and one
+ * photograph in the left column.
+ *
+ * Legacy source typos retained deliberately: "compmnents" for the misspelt
+ * "components", the space before the full stop in "subcontracters .", "on any
+ * aircraft" in the retrofit sentence, and the double spaces in "motion is
+ * synchronised", "less than 15  minutes" and "without  seat or cabin
+ * modification".
+ *
+ * There is NO Supplemental Type Certificate on the origin: it reads "LSEAT is
+ * supplied with a FORM 1 and PART 21 J engineering work." and no certificate of
+ * that kind is named. There is NO kit height either: it reads "Kit size stays
+ * within tolerances of seat TSO", and states no measurement of any kind.
+ * Neither is reproduced, and no angle or travel value appears on the origin at
+ * all, so none is stated.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import OriginPage from '../components/OriginPage.astro';
+import { technicalGroups, technicalLead, technicalPhotos, technicalTitle } from '../legacy';
+
+const title = 'LSEAT - Compliances';
+const description = technicalLead;
+---
+
+<BaseLayout title={title} description={description}>
+  <OriginPage
+    id="compliances"
+    badge="Compliances"
+    title={technicalTitle}
+    lead={technicalLead}
+    groups={technicalGroups}
+    photos={technicalPhotos}
+    surface="slate-dark"
+  />
+</BaseLayout>

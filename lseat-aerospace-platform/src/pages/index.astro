@@ -1,23 +1,23 @@
 ---
 /**
- * index.astro - the single page.
+ * index.astro - the origin's home route, "/".
  *
- * Section order follows the origin's own navigation: Home, Passenger Benefits,
- * Airline benefits, Compliances, NEWS, Contact. Every section renders text
- * transcribed verbatim from https://lseat.eu and declared in src/legacy.ts.
+ * Block order follows the origin's own home page, top to bottom:
+ *   1. the hero, headline over a full-bleed background fill
+ *   2. "How it works...(video)" and the origin's own Vimeo embed
+ *   3. "See Flyer" and the origin's single "Download PDF" action
+ * then the route index, which is navigation chrome this mirror needs and which
+ * the origin does not carry, and then the footer.
+ *
+ * There is no further editorial section on the origin's home page. Nothing is
+ * added below the three blocks above except that index.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
-import OriginGroups from '../components/OriginGroups.astro';
-import TechnicalAspects from '../components/TechnicalAspects.astro';
-import News from '../components/News.astro';
-import ContactForm from '../components/ContactForm.astro';
-import {
-  homeHeadline,
-  passengerBenefits,
-  airlineBenefits,
-  technicalLead,
-} from '../legacy';
+import HowItWorks from '../components/HowItWorks.astro';
+import Flyer from '../components/Flyer.astro';
+import RouteIndex from '../components/RouteIndex.astro';
+import { homeHeadline, technicalLead } from '../legacy';
 
 const title = `LSEAT - ${homeHeadline}`;
 const description = `${homeHeadline}. ${technicalLead}`;
@@ -25,44 +25,7 @@ const description = `${homeHeadline}. ${technicalLead}`;
 
 <BaseLayout title={title} description={description}>
   <Hero />
-
-  <!--
-    Legacy source typos retained deliberately. The statements in this section are
-    transcribed from the live origin at /passenger-benefits exactly as found. The
-    defects in the source that are reproduced below, and not corrected, are:
-    "elected.by" for "elected by", and the runs of consecutive spaces in "Between
-    sitting and sleep mode,  "IFE watching" and "relax reading"  dedicated
-    positions". The four mode names - sitting, "IFE watching", "relax reading" and
-    sleep mode - are sourced and are kept here inside the sentence that names
-    them. No angle and no travel value accompanies them, because the origin states
-    none anywhere.
-  -->
-  <OriginGroups
-    id="passenger-benefits"
-    eyebrow="Passenger Benefits"
-    title="Passenger benefits"
-    groups={passengerBenefits}
-    surface="deep-navy"
-  />
-
-  <!--
-    Legacy source typos retained deliberately. The statements in this section are
-    transcribed from the live origin at /airline-benefits exactly as found. The
-    defects in the source that are reproduced below, and not corrected, are:
-    "Econonomy" for "Economy", "does nost change" for "does not change",
-    "Hnet profit" for "Net profit", "density pre cabin", "fee payed back",
-    "adapt  demand" and "No maitenance". The runs of consecutive spaces in "Zero
-    investment is  required.", "Hnet profit comes  with the next one's.",
-    "passenger  density pre cabin" and "adapt  demand" are reproduced too.
-  -->
-  <OriginGroups
-    id="airline-benefits"
-    title="Airline benefits"
-    groups={airlineBenefits}
-    surface="slate-dark"
-  />
-
-  <TechnicalAspects />
-  <News />
-  <ContactForm />
+  <HowItWorks />
+  <Flyer />
+  <RouteIndex />
 </BaseLayout>

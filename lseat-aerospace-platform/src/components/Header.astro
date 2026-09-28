@@ -13,13 +13,28 @@
  * never scaled on one axis only and is not stretched.
  *
  * The navigation is the origin's own, transcribed with its original and rather
- * inconsistent capitalisation: "Passenger Benefits" with a capital B, "Airline
- * benefits" with a lower-case b, "Compliances", "NEWS" in full caps, "Contact".
- * "Contact" is carried as the header's primary button rather than as a sixth
- * text link, so no label is duplicated and the bar keeps one clear action. All
- * six labels resolve to real sections of this single page.
+ * inconsistent capitalisation: "Home", "Passenger Benefits" with a capital B,
+ * "Airline benefits" with a lower-case b, "Compliances", "NEWS" in full caps and
+ * "Contact".
  *
- * The origin's "More" item is GoDy's duplicate-menu control for the collapsed
+ * The origin is a six-route site and every one of these six labels is a REAL PAGE
+ * on it, not an anchor: the served markup gives them the hrefs "/",
+ * "/passenger-benefits", "/airline-benefits", "/compliances", "/news" and
+ * "/contact", in that order, identically on all six pages. Those exact hrefs are
+ * used here, so all six labels land on their own routes.
+ *
+ * HOME-AWARE. "Home" is a root-relative "/" href, exactly as the origin writes
+ * it. A root-relative path already resolves from every depth, so Home works from
+ * /passenger-benefits, /airline-benefits, /compliances, /news and /contact
+ * without a prefix, a "../" hop or a document-relative path. No page ever emits
+ * a bare "" or "#" home href.
+ *
+ * "Contact" is carried with the primary button treatment as the last item of the
+ * one nav, so the bar still reads as six labels in the origin's order and still
+ * has one clear action. It is a seventh treatment, not a replacement for a
+ * label: no label is dropped and none is duplicated.
+ *
+ * The origin's "More" item is GoDaddy's duplicate-menu control for the collapsed
  * mobile layout. It carries no destination of its own and is not reproduced.
  *
  * Mobile menu: an off-canvas slide-over drawer. The panel and its scrim are
@@ -30,10 +45,11 @@
  * positioned against the viewport and that opening it never reflows the page.
  */
 import { Menu, X } from '@lucide/astro';
-import { siteNav } from '../legacy';
+import { homeHref, siteNav } from '../legacy';
 
-const contactItem = siteNav.find((item) => item.label === 'Contact') ?? siteNav[siteNav.length - 1];
-const textItems = siteNav.filter((item) => item.href !== contactItem.href);
+/* One nav, all six origin labels, in the origin's order, on real routes. */
+const lastIndex = siteNav.length - 1;
+const isPrimary = (index: number): boolean => index === lastIndex;
 ---
 
 <header class="sticky top-0 z-50 glassmorphism border-b border-electric-cyan/18">
@@ -50,7 +66,7 @@ const textItems = siteNav.filter((item) => item.href !== contactItem.href);
       <!-- Tap target: the anchor carries min-h-12 (48px) and the visible white plate
            is nested inside it, so the 48px hit area does not enlarge the plate or the
            28px logo image. -->
-      <a href="#hero" class="inline-flex min-h-12 items-center rounded-lg" aria-label="Home">
+      <a href={homeHref} class="inline-flex min-h-12 items-center rounded-lg" aria-label="Home">
         <span
           class="inline-flex items-center rounded-lg bg-white px-2.5 py-1.5 shadow-sm ring-1 ring-black/10 xl:px-2"
         >
@@ -68,19 +84,19 @@ const textItems = siteNav.filter((item) => item.href !== contactItem.href);
 
       <nav class="hidden xl:flex items-center gap-1" aria-label="Main navigation">
         {
-          textItems.map((link) => (
-            <a href={link.href} class="btn-ghost whitespace-nowrap xl:px-2">
+          siteNav.map((link, index) => (
+            <a
+              href={link.href}
+              class:list={[
+                'whitespace-nowrap',
+                isPrimary(index) ? 'btn-primary px-5 py-2.5 text-body-sm' : 'btn-ghost xl:px-2',
+              ]}
+            >
               {link.label}
             </a>
           ))
         }
       </nav>
-
-      <div
-        class="hidden shrink-0 items-center gap-2 xl:flex [&_.btn-primary]:whitespace-nowrap [&_.btn-primary]:px-5 [&_.btn-primary]:py-2.5 [&_.btn-primary]:text-body-sm"
-      >
-        <a href={contactItem.href} class="btn-primary">{contactItem.label}</a>
-      </div>
 
       <button
         id="lseat-nav-toggle"
@@ -119,7 +135,7 @@ const textItems = siteNav.filter((item) => item.href !== contactItem.href);
 >
   <div class="flex items-center justify-between gap-4 pb-5">
     <a
-      href="#hero"
+      href={homeHref}
       aria-label="Home"
       class="inline-flex min-h-12 shrink-0 items-center rounded-lg"
     >
@@ -149,15 +165,12 @@ const textItems = siteNav.filter((item) => item.href !== contactItem.href);
 
   <nav class="flex flex-col" aria-label="Mobile navigation">
     {
-      textItems.map((link) => (
+      siteNav.map((link) => (
         <a href={link.href} class="btn-ghost w-full justify-start text-body-base">
           {link.label}
         </a>
       ))
     }
-    <a href={contactItem.href} class="btn-ghost w-full justify-start text-body-base">
-      {contactItem.label}
-    </a>
   </nav>
 </div>
 

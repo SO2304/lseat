@@ -1,0 +1,155 @@
+---
+/**
+ * OriginPage.astro - one presentation for the three origin routes that share a
+ * block structure: /passenger-benefits, /airline-benefits and /compliances.
+ *
+ * Those three pages are structurally identical on the origin. Each is a heading,
+ * an optional lead sentence, and then three blocks, where each block is the
+ * origin's own sub-heading, the origin's own bullet statements, and one
+ * photograph. The photograph sits in the left column and the text in the right
+ * column; the origin sets order:-1 on the photograph at narrow viewports, so the
+ * photograph still comes first in the reading order there. That is reproduced
+ * here with the photograph first in the DOM as well, which is strictly better:
+ * the source and the visual order now agree at every width.
+ *
+ * The three pages differ only in their heading, their lead and their copy, so
+ * they share this component and declare their own data in legacy.ts.
+ *
+ * Legacy source typos in the statements are retained deliberately; the note in
+ * legacy.ts names every one. A short comment at each call site repeats it.
+ */
+import type { OriginGroup, OriginPhoto } from '../legacy';
+import OriginPhotoView from './OriginPhoto.astro';
+
+export interface Props {
+  id: string;
+  badge?: string;
+  title: string;
+  lead?: string;
+  groups: readonly OriginGroup[];
+  photos: readonly OriginPhoto[];
+  surface: 'deep-navy' | 'slate-dark';
+}
+
+const { id, badge, title, lead, groups, photos, surface } = Astro.props;
+
+/* One photograph per block, paired by index, exactly as the origin pairs them.
+   The three recovered sets are the same length as their three block sets. */
+const blocks = groups.map((group, index) => ({
+  group,
+  photo: photos[index],
+}));
+---
+
+<section
+  id={id}
+  class:list={[
+    'origin-page relative scroll-mt-24 py-16 md:py-24',
+    surface === 'deep-navy' ? 'bg-deep-navy' : 'bg-slate-dark',
+  ]}
+  aria-labelledby={`${id}-title`}
+>
+  <div class="absolute inset-0 bg-grid-pattern bg-grid-64 pointer-events-none opacity-60" aria-hidden="true"></div>
+
+  <div class="section-container relative">
+    <header>
+      {badge && <span class="section-badge">{badge}</span>}
+      <h1
+        id={`${id}-title`}
+        class="section-title font-mono text-[clamp(1.75rem,4.5vw,2.75rem)] font-bold uppercase tracking-tight"
+      >
+        {title}
+      </h1>
+      {lead && (
+        <p class="verbatim mt-5 max-w-3xl font-mono text-body-base text-electric-cyan sm:text-body-lg">
+          {lead}
+        </p>
+      )}
+    </header>
+
+    <div class="origin-blocks mt-12 md:mt-16">
+      {
+        blocks.map(({ group, photo }) => (
+          <div class="origin-block">
+            <div class="origin-block-media">
+              {photo && <OriginPhotoView photo={photo} />}
+            </div>
+            <div class="origin-block-text">
+              <h2 class="origin-block-head font-mono text-caption uppercase tracking-widest text-pure-white/60">
+                {group.heading}
+              </h2>
+              <ul class="flex flex-col gap-4" role="list">
+                {group.statements.map((statement) => (
+                  <li class="flex gap-4">
+                    <span class="origin-tick" aria-hidden="true" />
+                    <p class="verbatim text-body-base text-pure-white/90">{statement}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Hairline-framed block stack, 1px rules drawn with gap + background so the
+     dividers never need a border colour of their own. */
+  .origin-blocks {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+    background-color: rgba(0, 210, 254, 0.18);
+    border: 1px solid rgba(0, 210, 254, 0.18);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .origin-block {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    background-color: #0b192c;
+    padding: 1.5rem;
+  }
+
+  @media (min-width: 900px) {
+    .origin-block {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: start;
+      gap: 2rem;
+      padding: 2rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .origin-block {
+      padding: 2rem;
+    }
+  }
+
+  .origin-block-media {
+    min-width: 0;
+  }
+
+  .origin-block-text {
+    min-width: 0;
+  }
+
+  .origin-block-head {
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* 1px cyan tick in place of a bullet: restrained, technical, no glyph. */
+  .origin-tick {
+    flex: 0 0 auto;
+    width: 0.75rem;
+    height: 1px;
+    margin-top: 0.75em;
+    background-color: rgba(0, 210, 254, 0.7);
+  }
+</style>

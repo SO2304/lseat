@@ -11,8 +11,15 @@
  * transcription rather than a generated notice.
  *
  * The navigation block is the origin's own six labels, in the origin's order, and
- * every one of them resolves to a real section of this single page. The contact
- * block is the /contact page's own content.
+ * every one of them is a real route on the origin: "/", "/passenger-benefits",
+ * "/airline-benefits", "/compliances", "/news", "/contact". Those are the hrefs
+ * used here, so the footer index lands on the same six pages the header does.
+ * "Home" is the root-relative "/", which resolves from every depth, so the
+ * footer Home works from every page too.
+ *
+ * The contact block is the /contact page's own content, including the owner's
+ * confirmed address form and yh@lseat.eu, which is the only mailbox the origin
+ * publishes. No other mailbox address is reproduced here.
  *
  * NOT REPRODUCED, and reported rather than silently dropped:
  *   - the origin's three social links. On the origin they are icon-only images
@@ -26,6 +33,7 @@
  */
 import { Mail, MapPin, Phone } from '@lucide/astro';
 import {
+  homeHref,
   siteNav,
   companyName,
   directEmail,
@@ -42,7 +50,7 @@ import {
       <div class="lg:col-span-5">
         <!-- min-h-12 tap target on the anchor; the white plate stays nested inside it
              so the plate and the 28px logo keep their original rendered size. -->
-        <a href="#hero" class="inline-flex min-h-12 items-center rounded-lg" aria-label="Home">
+        <a href={homeHref} class="inline-flex min-h-12 items-center rounded-lg" aria-label="Home">
           <span
             class="inline-flex items-center rounded-lg bg-white px-2.5 py-1.5 shadow-sm ring-1 ring-black/10"
           >

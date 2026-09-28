@@ -1,28 +1,29 @@
 ---
 /**
- * Hero.astro - the opening section.
+ * Hero.astro - the opening section of the origin's home page.
  *
  * Rendered copy, all from the live origin:
- *   - the h1 is the origin home page headline, runs of consecutive spaces included
- *   - the two calls to action are origin navigation labels that resolve to real
- *     sections of this page
- *   - the four figures are lifted verbatim out of the live /compliances page
- *   - the "See Flyer" link is the origin label for the 2025 brochure, which this
- *     site does host
+ *   - the h1 is the origin home page headline, runs of consecutive spaces
+ *     included: "LSEAT inserts sleep mode on existing  Economy  seats pitch
+ *     and cabin"
+ *   - the four figures are lifted verbatim out of the live /compliances page,
+ *     each recorded beside the sentence it is a substring of in legacy.ts
  *
- * The hero background video and its deferral logic are unchanged: the element
- * carries preload="none" and no <source> children, so the resource selection
- * algorithm has nothing to fetch, and a synchronous inline script strips
- * autoplay and loop for prefers-reduced-motion, save-data and 2g/slow-2g before
- * any playback can begin.
+ * THE BACKGROUND VIDEO IS GONE, deliberately. The MVI_9553 cabin clip this
+ * deployment previously shipped as /media/hero-cabin.mp4, .webm and
+ * hero-cabin-poster.jpg is NOT origin content. The origin's hero is its own
+ * background-fill video, a Vimeo asset this project does not hold and does not
+ * mirror, so under the mirror rule the local clip, its scrim and its playback
+ * script were all removed rather than passed off as the origin's own. With the
+ * clip gone the scrim has nothing to darken, and with the scrim gone the
+ * playback script has nothing to attach, so the section is now a static
+ * gradient plus the design system's grid. This also removes the last large
+ * binaries from public/.
+ *
+ * The origin's own "How it works...(video)" film is republished where the
+ * origin publishes it, as the origin's own Vimeo iframe, in HowItWorks.astro.
  */
-import { homeHeadline, homeLink, heroFigures, brochureHref, brochureDownload, downloadLabel, siteNav } from '../legacy';
-
-const cta = [
-  { label: 'Compliances', href: '#compliances' },
-  { label: 'Contact', href: '#contact' },
-] as const;
-const primary = siteNav.find((item) => item.label === cta[0].label) ?? siteNav[0];
+import { homeHeadline, heroFigures } from '../legacy';
 ---
 
 <section
@@ -31,53 +32,16 @@ const primary = siteNav.find((item) => item.label === cta[0].label) ?? siteNav[0
   aria-labelledby="hero-title"
 >
   <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
-    <video
-      id="hero-video"
-      data-hero-video
-      class="absolute inset-0 -z-10 h-full w-full object-cover"
-      poster="/media/hero-cabin-poster.jpg"
-      preload="none"
-      muted
-      playsinline
-      loop
-      autoplay
-      aria-hidden="true"
-      tabindex="-1"
-      disablepictureinpicture
-      disableRemotePlayback
+    <div
+      class="absolute inset-0"
+      style="background-image: radial-gradient(ellipse 90% 70% at 50% 0%, rgba(2, 132, 199, 0.28) 0%, rgba(2, 132, 199, 0) 62%);"
     >
-    </video>
-
-    <script is:inline>
-      (function () {
-        var video = document.getElementById('hero-video');
-        if (!video) return;
-
-        var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
-        var connection = navigator.connection;
-        var saveData = !!(connection && connection.saveData);
-        var slowLink =
-          !!connection &&
-          (connection.effectiveType === '2g' || connection.effectiveType === 'slow-2g');
-
-        if (motion.matches || saveData || slowLink) {
-          // Runs synchronously during parse. The element carries preload="none"
-          // and no source children, so the resource selection algorithm has
-          // nothing to fetch and no frame can decode: stripping the flags here
-          // is unconditionally before any playback begins.
-          video.removeAttribute('autoplay');
-          video.removeAttribute('loop');
-          video.setAttribute('data-hero-motion', 'poster-only');
-        } else {
-          video.setAttribute('data-hero-motion', 'eligible');
-        }
-      })();
-    </script>
-
-    <div class="absolute inset-0" data-hero-scrim="base"></div>
-    <div class="absolute inset-0" data-hero-scrim="text"></div>
-    <div class="absolute inset-0" data-hero-scrim="edge"></div>
-
+    </div>
+    <div
+      class="absolute inset-0"
+      style="background-image: linear-gradient(180deg, rgba(11, 25, 44, 0) 0%, rgba(11, 25, 44, 0) 55%, rgba(11, 25, 44, 0.6) 100%);"
+    >
+    </div>
     <div class="absolute inset-0 bg-grid-pattern bg-grid-64 opacity-70"></div>
   </div>
 
@@ -120,82 +84,29 @@ const primary = siteNav.find((item) => item.label === cta[0].label) ?? siteNav[0
         {homeHeadline}
       </h1>
 
-      <div class="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
-        <a href={primary.href} class="btn-primary">{primary.label}</a>
-        <a href={cta[1].href} class="btn-secondary">{cta[1].label}</a>
-      </div>
-
-      <p class="mt-7 font-mono text-body-sm">
-        <a
-          href={brochureHref}
-          download={brochureDownload}
-          type="application/pdf"
-          class="inline-flex min-h-12 items-center gap-2 text-electric-cyan underline decoration-electric-cyan/40 underline-offset-4 transition-colors duration-200 hover:text-pure-white hover:decoration-pure-white"
-        >
-          <span>{homeLink}</span>
-          <span class="text-pure-white/45" aria-hidden="true">/</span>
-          <span class="text-pure-white/70">{downloadLabel}</span>
-        </a>
-      </p>
+      <ul
+        class="hero-figures mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-electric-cyan/22 bg-electric-cyan/22 lg:mt-12 lg:grid-cols-4"
+        aria-label="Technical aspects"
+      >
+        {
+          heroFigures.map((figure) => (
+            <li class="flex flex-col gap-2 bg-slate-dark/90 px-4 py-4 sm:px-5 sm:py-5">
+              <span class="text-caption text-pure-white/55">{figure.label}</span>
+              <span class="font-mono text-body-lg font-semibold tabular-nums text-electric-cyan sm:text-display-sm">
+                {figure.value}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
     </div>
-
-    <ul
-      class="hero-figures mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-electric-cyan/22 bg-electric-cyan/22 lg:mt-12 lg:grid-cols-4"
-      aria-label="Technical aspects"
-    >
-      {
-        heroFigures.map((figure) => (
-          <li class="flex flex-col gap-2 bg-slate-dark/90 px-4 py-4 sm:px-5 sm:py-5">
-            <span class="text-caption text-pure-white/55">{figure.label}</span>
-            <span class="font-mono text-body-lg font-semibold tabular-nums text-electric-cyan sm:text-display-sm">
-              {figure.value}
-            </span>
-          </li>
-        ))
-      }
-    </ul>
   </div>
 </section>
 
 <style>
-  /* Flat deep-navy tint, folded in from the section's own #0B192C. 0.50 is the
-     lightest round value that holds the measured contrast floor once every
-     retained glow layer is accounted for. */
-  [data-hero-scrim='base'] {
-    background-color: rgba(11, 25, 44, 0.5);
-  }
-
-  [data-hero-scrim='text'] {
-    background-image: radial-gradient(
-      ellipse 78% 62% at 50% 40%,
-      rgba(7, 17, 31, 0.58) 0%,
-      rgba(7, 17, 31, 0.58) 52%,
-      rgba(7, 17, 31, 0.42) 82%,
-      rgba(7, 17, 31, 0.42) 100%
-    );
-  }
-
-  [data-hero-scrim='edge'] {
-    background-image: linear-gradient(
-      180deg,
-      rgba(11, 25, 44, 0.45) 0%,
-      rgba(11, 25, 44, 0) 22%,
-      rgba(11, 25, 44, 0) 55%,
-      rgba(11, 25, 44, 0.6) 100%
-    );
-  }
-
-  @media (min-width: 1024px) {
-    [data-hero-video] {
-      filter: blur(2px);
-      transform: scale(1.05);
-    }
-  }
-
   /* The .badge-cert chip plus a short trailing hairline. .badge-cert keeps its
-     #FFFFFF text: that is the colour measured at 9.28:1 against the brightest
-     composited chip pixel over every frame of the hero clip. Do not change it
-     to a sky tone, which measures 4.33:1 and fails. */
+     #FFFFFF text: over the brightest composited chip pixel it measures 9.28:1.
+     Do not change it to a sky tone, which measures 4.33:1 and fails. */
   .hero-rule {
     display: flex;
     align-items: center;
@@ -234,127 +145,3 @@ const primary = siteNav.find((item) => item.label === cta[0].label) ?? siteNav[0
     }
   }
 </style>
-
-<script>
-  interface NetworkInformationLike {
-    saveData?: boolean;
-    effectiveType?: string;
-  }
-
-  type IdleWindow = Window & {
-    requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
-  };
-
-  const heroVideo = document.querySelector<HTMLVideoElement>('[data-hero-video]');
-
-  if (heroVideo && heroVideo.getAttribute('data-hero-motion') === 'eligible') {
-    const heroSources: ReadonlyArray<{ src: string; type: string }> = [
-      { src: '/media/hero-cabin.webm', type: 'video/webm; codecs="vp9"' },
-      { src: '/media/hero-cabin.mp4', type: 'video/mp4; codecs="avc1.640029"' },
-    ];
-
-    const getConnection = (): NetworkInformationLike | undefined =>
-      (navigator as Navigator & { connection?: NetworkInformationLike }).connection;
-
-    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    const shouldSuppress = (): boolean => {
-      if (motionPreference.matches) return true;
-      const connection = getConnection();
-      if (!connection) return false;
-      return (
-        connection.saveData === true ||
-        connection.effectiveType === '2g' ||
-        connection.effectiveType === 'slow-2g'
-      );
-    };
-
-    let attached = false;
-    let scheduled = false;
-    let isHeroNearViewport = true;
-
-    const startPlayback = (): void => {
-      if (!heroVideo.paused) return;
-      heroVideo.play().catch(() => {
-        /* autoplay refused: the poster remains the experience */
-      });
-    };
-
-    const attachSources = (): void => {
-      if (attached || shouldSuppress()) return;
-      attached = true;
-
-      heroVideo.muted = true;
-      heroVideo.defaultMuted = true;
-
-      heroSources.forEach((source) => {
-        const element = document.createElement('source');
-        element.src = source.src;
-        element.type = source.type;
-        heroVideo.appendChild(element);
-      });
-
-      heroVideo.load();
-
-      if (isHeroNearViewport) {
-        startPlayback();
-      } else {
-        heroVideo.pause();
-      }
-    };
-
-    const scheduleAttach = (): void => {
-      if (scheduled || attached) return;
-      scheduled = true;
-
-      const idleWindow = window as IdleWindow;
-      const run = (): void => {
-        scheduled = false;
-        attachSources();
-      };
-
-      if (typeof idleWindow.requestIdleCallback === 'function') {
-        idleWindow.requestIdleCallback(run, { timeout: 2000 });
-      } else {
-        window.setTimeout(run, 1);
-      }
-    };
-
-    if ('IntersectionObserver' in window) {
-      const heroObserver = new IntersectionObserver(
-        (observed) => {
-          const entry = observed[0];
-          if (!entry) return;
-          isHeroNearViewport = entry.isIntersecting;
-
-          if (entry.isIntersecting) {
-            if (attached) {
-              if (!shouldSuppress()) startPlayback();
-            } else {
-              scheduleAttach();
-            }
-            return;
-          }
-
-          if (attached && !heroVideo.paused) heroVideo.pause();
-        },
-        { rootMargin: '150% 0px' }
-      );
-
-      heroObserver.observe(heroVideo);
-    } else {
-      scheduleAttach();
-    }
-
-    const onMotionChange = (): void => {
-      if (motionPreference.matches) {
-        heroVideo.pause();
-        heroVideo.removeAttribute('loop');
-      }
-    };
-
-    if (typeof motionPreference.addEventListener === 'function') {
-      motionPreference.addEventListener('change', onMotionChange);
-    }
-  }
-</script>

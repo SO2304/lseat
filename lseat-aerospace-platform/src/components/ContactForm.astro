@@ -2,31 +2,44 @@
 /**
  * ContactForm.astro - the live /contact page, rebuilt.
  *
- * The origin form is "Send us an Email" with a Name field, an Email* field and a
- * Send button. This form matches that: two fields, one required marker, one
- * button, and the origin's own labels. None of the previous platform's
- * machinery is here and none of its copy survives - no enquiry categories, no
- * organisation, fleet, aircraft or job-title fields, no freemail block and its
- * override, no GDPR or newsletter checkboxes, no placeholders, no success panel,
- * no toasts.
+ * THE LABELS ARE THE ORIGIN'S, THE PIPELINE IS OURS. The origin's form is
+ * "Send us an Email" with a field labelled "Name", a field labelled "Email*"
+ * and a button labelled "Send". Those three labels and that lead are the
+ * origin's own and are reproduced exactly. The submission pipeline underneath is
+ * this deployment's: the same Web3Forms endpoint, the same
+ * PUBLIC_WEB3FORMS_KEY, and the same hidden "botcheck" honeypot field name, so
+ * the existing Web3Forms dashboard setting keeps working untouched. Labels from
+ * one system, transport from the other, and the two are never conflated.
  *
- * The submission pipeline is unchanged: the same Web3Forms endpoint, the same
- * PUBLIC_WEB3FORMS_KEY, the same hidden botcheck honeypot field name. What is
- * gone is the copy and the surplus fields, not the plumbing.
+ * ADDRESS. The origin prints "15, av. Arnaud Fraiteur," / "1050 BRUSSELS
+ * (Belgium)". The owner has separately confirmed the correct form as
+ * "15/23 Avenue Arnaud Fraiteur, 1050 Brussels, Belgium", and that is what is
+ * published here. The origin's own address, street number 15 with no house
+ * suffix and the postcode and city in full capitals, is not reproduced.
  *
- * THE ORIGIN'S GOOGLE reCAPTCHA NOTICE IS NOT REPRODUCED. The origin prints
- * "This site is protected by reCAPTCHA and the Google Privacy Policy and Terms
- * of Service apply." That sentence is accurate on the origin and would not be
- * accurate here, because reCAPTCHA is not enabled on this deployment. Publishing
- * an anti-spam protection claim that is not in force would be an unsourced
- * claim, which is the one thing this build refuses to do. Web3Forms can enable
- * reCAPTCHA v3 from its own dashboard with the same access key; if the owner
- * turns it on, the notice can be restored.
+ * NOT REPRODUCED, and reported rather than silently dropped:
  *
- * The origin's "Office hours / Today / By Appointment / Get directions" block is
- * GoDaddy business-hours chrome rather than editorial content, and "Get
- * directions" would need a maps destination that is not published anywhere, so
- * it is not reproduced.
+ *   - the Google reCAPTCHA notice. The origin prints "This site is protected by
+ *     reCAPTCHA and the Google Privacy Policy and Terms of Service apply." That
+ *     sentence is true on the origin and would be false here: reCAPTCHA is NOT
+ *     enabled on this deployment, so publishing it would be an unsourced
+ *     anti-spam protection claim on a site that has none. Web3Forms can enable
+ *     reCAPTCHA v3 from its own dashboard with the same access key; if the owner
+ *     turns it on, the notice can be restored.
+ *
+ *   - "Get directions". On the origin it is a bare <button> with no href
+ *     anywhere in the served HTML: GoDaddy's script builds the maps URL at run
+ *     time from the address, and no destination is ever published. Inventing one
+ *     would be fabrication, so the control is omitted.
+ *
+ *   - "By Appointment". The string appears ZERO times in the served markup of
+ *     all six origin pages. The office hours block the origin does print is
+ *     "Office hours", "Open today" and "09:00 am - 05:00 pm", and only that is
+ *     reproduced.
+ *
+ *   - the second, general mailbox address that appears in earlier revisions of this
+ *     file. The origin does not publish it, so it is not published here. The only
+ *     mailbox on the origin is yh@lseat.eu, and that is the only one here.
  */
 import { MapPin, Mail, Phone } from '@lucide/astro';
 import {
@@ -41,6 +54,9 @@ import {
   phoneDisplay,
   phoneDigits,
   addressLines,
+  officeHoursTitle,
+  officeHoursDayLabel,
+  officeHoursValue,
 } from '../legacy';
 
 const web3formsKey: string = import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '';
@@ -49,19 +65,19 @@ const ENDPOINT = 'https://api.web3forms.com/submit';
 
 <section
   id="contact"
-  class="relative scroll-mt-24 bg-slate-dark py-20 md:py-28"
+  class="relative scroll-mt-24 bg-slate-dark py-16 md:py-24"
   aria-labelledby="contact-title"
 >
   <div class="absolute inset-0 bg-grid-pattern bg-grid-64 pointer-events-none opacity-60" aria-hidden="true"></div>
 
   <div class="section-container relative">
     <header>
-      <h2
+      <h1
         id="contact-title"
         class="section-title font-mono text-[clamp(1.75rem,4.5vw,2.75rem)] font-bold uppercase tracking-tight"
       >
         {contactTitle}
-      </h2>
+      </h1>
       <p class="mt-5 font-mono text-body-base text-electric-cyan sm:text-body-lg">{contactLead}</p>
     </header>
 
@@ -80,7 +96,9 @@ const ENDPOINT = 'https://api.web3forms.com/submit';
 
           <!-- Honeypot: if it is filled the submission is abandoned. Same field
                name Web3Forms already expects, so the existing dashboard setting
-               keeps working unchanged. -->
+               keeps working unchanged. The wrapper is hidden and aria-hidden, so
+               the field is out of the tab order and out of the accessibility
+               tree while remaining a working server-side trap. -->
           <div class="hidden" aria-hidden="true">
             <label for="lseat-botcheck">botcheck</label>
             <input type="text" id="lseat-botcheck" name="botcheck" tabindex="-1" autocomplete="off" />
@@ -144,6 +162,18 @@ const ENDPOINT = 'https://api.web3forms.com/submit';
           <Mail class="h-4 w-4 shrink-0" stroke-width="1.75" aria-hidden="true" focusable="false" />
           {directEmail}
         </a>
+
+        <div class="mt-2 border-t border-pure-white/10 pt-5">
+          <h2 class="font-mono text-caption uppercase tracking-widest text-pure-white/60">
+            {officeHoursTitle}
+          </h2>
+          <dl class="mt-3 flex flex-col gap-1 font-mono text-body-sm">
+            <div class="flex flex-wrap items-baseline gap-x-3">
+              <dt class="text-pure-white/70">{officeHoursDayLabel}</dt>
+              <dd class="tabular-nums text-pure-white/90">{officeHoursValue}</dd>
+            </div>
+          </dl>
+        </div>
       </div>
     </div>
   </div>

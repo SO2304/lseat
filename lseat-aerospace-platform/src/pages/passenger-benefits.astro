@@ -1,0 +1,33 @@
+---
+/**
+ * passenger-benefits.astro - the origin's "/passenger-benefits" route.
+ *
+ * The origin serves this as its own page at this exact href, reached from the
+ * nav label "Passenger Benefits" on all six of its pages. It is a heading and
+ * three blocks, each block a sub-heading, a set of bullet statements and one
+ * photograph in the left column.
+ *
+ * Legacy source typos retained deliberately: "elected.by" for "elected by", and
+ * the runs of consecutive spaces in 'Between sitting and sleep mode,  "IFE
+ * watching" and "relax reading"  dedicated positions'. The four mode names -
+ * sitting, "IFE watching", "relax reading" and sleep mode - are sourced and are
+ * kept inside the sentence that names them. No angle and no travel value
+ * accompanies them, because the origin states none anywhere.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import OriginPage from '../components/OriginPage.astro';
+import { passengerBenefits, passengerPhotos, technicalLead } from '../legacy';
+
+const title = 'Passenger benefits';
+const description = technicalLead;
+---
+
+<BaseLayout title={title} description={description}>
+  <OriginPage
+    id="passenger-benefits"
+    title={title}
+    groups={passengerBenefits}
+    photos={passengerPhotos}
+    surface="deep-navy"
+  />
+</BaseLayout>

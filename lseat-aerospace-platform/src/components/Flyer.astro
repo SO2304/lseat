@@ -1,0 +1,46 @@
+---
+/**
+ * Flyer.astro - the origin home page's "See Flyer" section.
+ *
+ * The heading is the origin's own, verbatim. Under it the origin publishes
+ * exactly one link, labelled "Download PDF", pointing at
+ *
+ *   //img1.wsimg.com/blobby/go/b29d8b63-.../LSEAT%20 - Brochure 2025_compressed.pdf
+ *
+ * This repository holds that same 2025 brochure as
+ * /docs/LSEAT-Brochure-2025.pdf, so the single origin action resolves to a file
+ * this deployment actually serves. One link, one label, no invented second
+ * label.
+ */
+import { brochureHref, brochureDownload, downloadLabel, flyerSectionTitle } from '../legacy';
+---
+
+<section
+  id="see-flyer"
+  class="relative scroll-mt-24 bg-deep-navy py-16 md:py-24"
+  aria-labelledby="see-flyer-title"
+>
+  <div class="absolute inset-0 bg-grid-pattern bg-grid-64 pointer-events-none opacity-60" aria-hidden="true"></div>
+
+  <div class="section-container relative">
+    <header>
+      <h2
+        id="see-flyer-title"
+        class="section-title font-mono text-[clamp(1.75rem,4.5vw,2.75rem)] font-bold uppercase tracking-tight"
+      >
+        {flyerSectionTitle}
+      </h2>
+    </header>
+
+    <p class="mt-8">
+      <a
+        href={brochureHref}
+        download={brochureDownload}
+        type="application/pdf"
+        class="btn-secondary w-full sm:w-auto"
+      >
+        {downloadLabel}
+      </a>
+    </p>
+  </div>
+</section>

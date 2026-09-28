@@ -1,0 +1,24 @@
+---
+/**
+ * news.astro - the origin's "/news" route.
+ *
+ * The origin serves this as its own page at this exact href, reached from the
+ * nav label "NEWS" - in full caps, the origin's own casing - on all six of its
+ * pages. It is a bare list of four entries, each a title and a "Download PDF"
+ * action, with no heading above the list.
+ *
+ * This deployment hosts one of the origin's four PDFs, so exactly one entry
+ * carries a link. The other three render as title text only: no link, no
+ * placeholder label, no invented filename.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import News from '../components/News.astro';
+import { technicalLead } from '../legacy';
+
+const title = 'LSEAT - NEWS';
+const description = technicalLead;
+---
+
+<BaseLayout title={title} description={description}>
+  <News />
+</BaseLayout>

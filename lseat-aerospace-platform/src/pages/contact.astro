@@ -1,0 +1,27 @@
+---
+/**
+ * contact.astro - the origin's "/contact" route.
+ *
+ * The origin serves this as its own page at this exact href, reached from the
+ * nav label "Contact" on all six of its pages. It carries the heading "LSEAT -
+ * Contact", the lead "Send us an Email", the form, the company's own address
+ * block and the office hours block.
+ *
+ * The visible labels are the origin's. The submission pipeline is this
+ * deployment's own Web3Forms endpoint, key and botcheck honeypot. See
+ * ContactForm.astro for the full list of what is deliberately not reproduced
+ * and why: the reCAPTCHA notice, the "Get directions" control, "By Appointment",
+ * and the general mailbox address that this deployment once carried and the origin
+ * does not publish.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactForm from '../components/ContactForm.astro';
+import { contactLead, contactTitle } from '../legacy';
+
+const title = contactTitle;
+const description = contactLead;
+---
+
+<BaseLayout title={title} description={description}>
+  <ContactForm />
+</BaseLayout>

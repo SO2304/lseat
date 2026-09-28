@@ -1,0 +1,44 @@
+---
+/**
+ * OriginPhoto.astro - one of the origin's own photographs.
+ *
+ * THE alt ATTRIBUTE IS DELIBERATELY EMPTY. The origin publishes no caption, no
+ * tag, no title and no owner-written alt text for any of its photographs. The
+ * only alt values GoDaddy emits are machine-generated French sentences that the
+ * owner did not write, and they are not the owner's copy, so they are not
+ * reproduced. Inventing an English description here would be exactly the
+ * "0 marketing, 0 invention" failure this build refuses, so the honest
+ * accessible choice is alt="": a decorative photograph with no source-provided
+ * description, which screen readers correctly skip rather than announce a
+ * guess.
+ *
+ * WIDTH AND HEIGHT are the intrinsic pixel dimensions declared in legacy.ts,
+ * read from each recovered file's own header. They are set per file on purpose:
+ * the eight recovered photographs have eight different aspect ratios, from
+ * 0.667 to 1.944, and carrying one card's numbers onto another would be wrong
+ * and would reintroduce layout shift. The attributes are emitted on the
+ * element, so the browser reserves the exact box before the bytes arrive and
+ * CLS stays at 0.
+ *
+ * No caption, figcaption, title or aria-describedby is emitted. There is
+ * nothing to describe and nothing sourced to describe it with.
+ */
+import type { OriginPhoto } from '../legacy';
+
+export interface Props {
+  photo: OriginPhoto;
+}
+
+const { photo } = Astro.props;
+---
+
+<img
+  src={photo.src}
+  alt=""
+  width={photo.width}
+  height={photo.height}
+  loading="lazy"
+  decoding="async"
+  class="block h-auto w-full rounded-lg border border-electric-cyan/18"
+  style={`aspect-ratio: ${photo.width} / ${photo.height};`}
+/>

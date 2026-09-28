@@ -2,17 +2,16 @@
 /**
  * News.astro - the live /news page.
  *
- * The origin publishes four entries and links four PDFs. This site hosts two of
- * those files, so exactly two entries carry a link. The other two are rendered
- * as text with no href: the origin content is real and is reported, but there is
- * no file here to point at, and a link to a missing file is not built. No
- * placeholder label is rendered in their place, because any such label would be
- * copy the origin does not publish.
+ * The origin lists four entries and links four PDFs. The hrefs, as served, are
+ * recorded beside each entry in legacy.ts. This deployment hosts ONE of the
+ * four files, the IN FLIGHT magazine, so exactly one entry carries a link. The
+ * other three render as their title text alone: the origin content is real and
+ * is reported, but there is no file here to point at, and a link to a missing
+ * file is not built. No placeholder label is rendered in their place, because
+ * any such label would be copy the origin does not publish.
  *
- * The two entries this site cannot supply are:
- *   - "AIRCRAFT CABIN MANAGEMENT publication Sept 2025"
- *   - "Abstract Medical reaseach thrombose in aviation" and "Dutch Thrombose
- *     fundation petition"
+ * The origin publishes no heading on this page above the list, so the page's
+ * h1 is the origin's own nav label for this route, "NEWS", used verbatim.
  *
  * RETAINED SOURCE TYPOS, all from the live /news page:
  *   "reaseach"   "Abstract Medical reaseach thrombose in aviation"
@@ -25,28 +24,26 @@ import { newsItems, downloadLabel } from '../legacy';
 
 <section
   id="news"
-  class="relative scroll-mt-24 bg-deep-navy py-20 md:py-28"
+  class="relative scroll-mt-24 bg-deep-navy py-16 md:py-24"
   aria-labelledby="news-title"
 >
   <div class="absolute inset-0 bg-grid-pattern bg-grid-64 pointer-events-none opacity-60" aria-hidden="true"></div>
 
   <div class="section-container relative">
-    <header>
-      <h2
-        id="news-title"
-        class="section-title font-mono text-[clamp(1.75rem,4.5vw,2.75rem)] font-bold uppercase tracking-tight"
-      >
-        NEWS
-      </h2>
-    </header>
+    <h1
+      id="news-title"
+      class="section-title font-mono text-[clamp(1.75rem,4.5vw,2.75rem)] font-bold uppercase tracking-tight"
+    >
+      NEWS
+    </h1>
 
     <ul class="news-grid mt-12 md:mt-16" role="list">
       {
         newsItems.map((item) => (
           <li class="news-cell flex flex-col gap-3">
-            <h3 class="font-mono text-body-base font-semibold leading-snug text-pure-white">
+            <h2 class="font-mono text-body-base font-semibold leading-snug text-pure-white">
               {item.title}
-            </h3>
+            </h2>
             {item.subtitle && (
               <p class="verbatim text-body-sm text-pure-white/70">{item.subtitle}</p>
             )}
@@ -71,10 +68,10 @@ import { newsItems, downloadLabel } from '../legacy';
     <!--
       Legacy source typos retained deliberately. "reaseach" for "research",
       "4.656" and "fundation" are defects in the live /news page, reproduced as
-      found because the owner instructed an exact mirror. Two of the four entries
-      are not linked because this site does not host their files; no placeholder
-      label is rendered in their place, since the origin publishes no label for
-      them either beyond the download action.
+      found because the owner instructed an exact mirror. Three of the four
+      entries are not linked because this deployment does not host their files;
+      no placeholder label is rendered in their place, since the origin publishes
+      no label for them either beyond the download action.
     -->
   </div>
 </section>
